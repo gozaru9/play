@@ -37,7 +37,10 @@ table {
   top: 100px;
   z-index: 99999;
 }
-
+.individual-message-box{
+/*  overflow: scroll; */
+/*  height: 200px;*/
+}
 /*     Header
 /* ------------------------------------- */
 #header {

@@ -125,13 +125,24 @@ $(function() {
     });
     //個人への返信
     $('#individualMessageInfo').delegate('button', 'click', function() {
-        var closeVale = $(this).attr('id').split('_');
-        var closeTarget = 'individualMessageInfo_'+closeVale[1];
         
-        console.log('返信ボタンのイベント');
-        console.log(closeTarget);
-        $('#'+closeTarget).fadeToggle("slow");
-
+        var target = $(this).attr('id').split('_');
+        if (target[0] === 'individualReSend') {
+            if($('#individualReMessage').val().trim().length===0)return;
+            var data = {
+                message: $('#individualReMessage').val(),
+                target: $(this).val()
+            };
+    		socket.emit('individual send', data);
+    		var pushTarget = '#individualPush_'+target[1];
+    		$(pushTarget).append('<p>'+nl2br(escapeHTML($('#individualReMessage').val()))+'</p>');
+    		
+            $('#individualReMessage').val('');
+            
+        } else {
+            var closeTarget = 'individualMessageInfo_'+target[1];
+            $('#'+closeTarget).fadeToggle("slow");
+        }
     });
     
     //部屋の選択
@@ -223,27 +234,34 @@ $(function() {
 	socket.on('individual push', function (data) {
 
         var areaId = 'individualMessageInfo_'+data.userId;
-        var messageAreaId = 'individualPush_'+data.target;
-        var reId = 'individualReSend_'+data.target;
-        var pushMessage = $('#'+messageAreaId).text();
-        var element = '';
-        console.log(pushMessage);
+        var messageAreaId = 'individualPush_'+data.userId;
         //同じ人からのメッセージが来ているのかを判定
-        if (pushMessage) {
-            pushMessage += '<br>'+data.message;
-            $('#'+messageAreaId).text(nl2br(escapeHTML(data.message)));
+        if ($('#'+messageAreaId).html()) {
+            var m = '<p>'+nl2br(escapeHTML(data.message))+'</p>';
+            console.log(m);
+            $('#'+messageAreaId).append(m);
+
+            //すでに画面に表示されていた場合
+            if (!$('#'+areaId).is(':visible')) {
+                $('#'+areaId).slideToggle("slow");
+            }
         } else {
+            var element = '';
+            var reId = 'individualReSend_'+data.userId;
+            var closeId = 'individualClose_'+data.userId;
             element =
                 '<div id='+areaId+' class="toggleMessage" style="display: none;">'
                 +'<div class="panel panel-info"><div class="panel-heading">'
+                +'<button id='+closeId+' type="button" class="close">&times;</button>'
                 +'<span>'+data.userName+'</span></div>'
-                +'<div class="panel-body"><span id='+messageAreaId+'>'+nl2br(escapeHTML(data.message))+'</span></div>'
+                +'<div class="panel-body"><div id='+messageAreaId+' class="individual-message-box"><p>'+nl2br(escapeHTML(data.message))+'</p></div><hr>'
+                +'<textarea id="individualReMessage" class="form-control" name="individualReMessage"></textarea></div>'
                 +'<div class="panel-footer">'
-                +'<button id='+reId+' class="btn btn-primary">返信する</button>'
+                +'<button id='+reId+' value='+data.userId+' class="btn btn-primary">返信する</button>'
                 +'</div></div></div>';
             document.getElementById("individualMessageInfo").innerHTML += element;
+            $('#'+areaId).slideToggle("slow");
         }
-        $('#'+areaId).slideToggle("slow");
 	});
 	//サーバーが受け取ったメッセージを返して実行する
 	socket.on('msg push', function (data) {
@@ -298,7 +316,7 @@ $(function() {
 
 	});
 	$('div[name=reseveMessage]').mouseout(function(){
-        
+
 	});
 	
 	$('a[name=beforeday]').click(function(){
