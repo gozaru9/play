@@ -1,0 +1,45 @@
+        <div class="modal fade" id="createRoomForm" tabindex="-1" role="dialog" aria-labelledby="createRoomFormLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="createRoomFormLabel">部屋を作成する</h4>
+                    </div>
+                    <form id="createChatForm" class="form-horizontal">
+                        <div d="createChatDiv" class="modal-body">
+                            <div class="row form-group">
+                                <div class="col-sm-12">
+                                    <input data-bind="value: roomName" type="text" class="form-control" name="roomName" placeholder="部屋の名前を入力してください">
+                                </div>
+                            </div>
+                            
+                            <div class="row form-group">
+                                <div class="col-sm-12">
+                                    <input data-bind="value: description" type="text" class="form-control" name="description" placeholder="部屋の説明">
+                                </div>
+                            </div>
+
+                            <div class="row form-group">
+                                <div class="col-sm-6">
+                                    <div class="container">
+                                        <h4><span class="label label-success text-center">参加メンバーを押してしてください</span><h4>
+                                    </div>
+                                    <select id="selectMember" name="selectMember" class="form-control" size=10 data-bind="event: { change: addMember }, options: selectMember, optionsText: 'name',optionsValue: 'values', selectedOptions: multipleSelectedOptionValues"></select>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="container">
+                                        <h4><span class="label label-success text-center">削除メンバーを押してしてください</span><h4>
+                                    </div>
+                                    <select id="selectedMember" name="selectedMember" class="form-control" size=10 data-bind="event: { change: removeMember },options: selectedMember, optionsText: 'name',optionsValue: 'values'"></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button data-bind="click:removeAll" type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+                            <button data-bind="click:createRoom" id="chatCreateButton" class="btn btn-primary">作成する</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" src="/viewModel/viewChatModel.js"></script>

@@ -1,0 +1,197 @@
+<!doctype html>
+<html>
+    <head>
+        <%- include ../head.ejs %>
+        <link href="/font-awesome/css/font-awesome.css" rel="stylesheet">
+        <link href="/stylesheets/sticky-footer-navbar.css" rel="stylesheet">
+        <link href="/stylesheets/chatapp.css" rel="stylesheet">
+        <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+        <script type="text/javascript" src="/javascripts/client.js"></script>
+        
+        <script>
+        $(function() {
+            var target = "<%= targetRoomId %>";
+            console.log(target);
+            if (target !== 'undefined'){
+                var socket = io.connect('https://play-c9-gozaru9.c9.io');
+                //connect all room
+                <% rooms.forEach(function(room){ %>
+                    joinRoom("<%= room._id %>");
+                <% }) %>
+
+                if ($('#'+target).length === 0) {
+                    $('#roomName').html("<%= roomName %>");
+                    $('#memberEditButton').val(target);
+                    $('#roomContents').find(".active").hide(0).removeClass("active");
+                    var element = $("<div>", {class: "panel-body active", id: target});
+                    $('#roomContents').append(element).show(0);
+                    $('#roomList').find(".active").removeClass("active");
+                    $('input[value='+target+']:radio').parent('label').addClass('active');
+                    $('li[name='+target+']').addClass('active');
+                    $.ajax({
+                        type: 'POST',
+                        url: '/chat/getUserByRoomId',
+                        dataType: 'json',
+                        data: ({roomId:target}),
+                        cache: false,
+                        success: function(data) {
+                            
+                            $('#roomUserList').children().remove();
+                            var length = data.users.length;
+                            for (var i = 0; i < length; i++) {
+                                $('#roomUserList').append($("<li>",{name: data.users[i]._id}).append(
+                                    $("<i>",{class: data.users[i].status})).append(data.users[i].name));
+                            }
+                            var msgLength = data.messages.length;
+                            for (var j = 0; j < msgLength; j++) {
+                                $('#'+target).append($('<ul class="chat"><li class="left clearfix"><!--<span class="chat-img pull-left"><img src="img/ff.gif" alt="User Avatar" class="img-circle" /></span>--><div class="chat-body clearfix"><div class="header"><strong class="primary-font">'+data.messages[j].user.name+'</strong><small class="pull-right text-muted"><i class="fa fa-clock-o fa-fw"></i>'+data.messages[j].time+'</small><p>'+nl2br(escapeHTML(data.messages[j].msg))+'</p></div></li></ul></div>'));
+                            }
+
+                            $('#'+target).animate({ scrollTop: getScrolBottom($('#'+target))}, 'slow');
+                    　　},
+                    　　error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    　　    console.log(XMLHttpRequest);
+                    　　    console.log(textStatus);
+                    　　},
+                    });
+                    return;
+                }
+            }
+        });
+        </script>
+        
+    </head>
+    
+    <body>
+    <div id="wrap">
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a href="#modal" class="second navbar-brand" style="margin-left:10px;"><span class="glyphicon glyphicon-circle-arrow-right"></span></a>
+                <a class="navbar-brand" href="#">Chat Application</a>
+            </div>
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="/chat/lobby">Lobby </a></li>
+                    <li data-toggle="modal" data-target="#allMessageForm"><a href="#">all message</a></li>
+                    <li data-toggle="modal" data-target="#messageForm"><a href="#">message</a></li>
+                    <li data-toggle="modal" data-target="#createRoomForm"><a href="#">create room</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a style="margin-right:15px;" href="#" class="dropdown-toggle" data-toggle="dropdown"><%= userName %><b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li data-toggle="modal" data-target="#profileForm"><a href="#">Profile </a></li>
+                            <li data-toggle="modal" data-target="#settingForm"><a href="#">Settings </a></li>
+                            <li class="divider"></li>
+                            <li><a href="/chat/logout">Log out </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div id="messageInfo" class="toggleMessage" style="display: none;">
+            <div class="panel panel-info">
+                <div class="panel-heading">部屋に招待されました</div>
+                <div class="panel-body">
+                    <span id="msgRoom"></span>
+                </div>
+            </div>
+        </div>
+    
+        <div id="individualMessageInfo"></div>
+        
+        <div class="chat-container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="all"></div>
+                    <div class="col-md-9">
+                        <div class="page-header">
+                            <h1 id="roomName"></h1>
+                        </div>
+                        <div class="chat-panel panel panel-default">
+                            <div class="panel-heading">
+                                <i class="fa fa-comments fa-fw"></i>
+                                本日(<span id="today"></span>) <a name="beforeday" href="#">1日前</a> <a name="beforeday" href="#">7日前</a> <a name="beforeday" href="#">60日前</a> <a name="beforeday" href="#">3ヶ月前</a>
+                                <div class="btn-group pull-right">
+                                    <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                                        <i class="fa fa-chevron-down"></i>
+                                    </button>
+                                    <ul class="dropdown-menu slidedown">
+                                        <li><a href="#" id="status1" name="statusChange"><i class="fa fa-check-circle fa-fw"></i> Available</a></li>
+                                        <li><a href="#" id="status2" name="statusChange"><i class="fa fa-times fa-fw"></i> Busy</a></li>
+                                        <li><a href="#" id="status3" name="statusChange"><i class="fa fa-clock-o fa-fw"></i> Away</a></li>
+                                        <li><a href="#" id="status4" name="statusChange"><i class="fa fa-sign-out fa-fw"></i> Return home</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div id="roomContents">
+                                <div id="contentsAll" class="panel-body active"></div>
+                            </div>
+                            <div class="panel-footer">
+                                <div class="send-message-box">
+                                <p>
+                                    <div class="input-area">
+                                        <textarea id="message" class="form-control" rows="3" placeholder="メッセージを入力してください"></textarea>
+                                    </div>
+                                </p>
+                                <button type="button" id="sendButton" class="btn btn-success btn-lg">Send Message</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 visible-lg">
+                        <div class="page-header">
+                            <h4>Room Information</h4>
+                        </div>
+
+                        <div class="page-header">
+                            <h4>Whor's here</h4>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <ul id="roomUserList" class="list-unstyled">
+                                </ul>
+                            </div>
+                            <div class="panel-footer">
+                            <a data-toggle="modal" href="#memberEditForm" class="btn btn-success" id="memberEditButton">メンバー編集</a>
+                            </div>
+                        </div>
+
+                        <div class="page-header">
+                            <h4>Other Room Information</h4>
+                        </div>
+                        <div id="roomList">
+                            <ul id="roomListUl" class="nav nav-pills nav-stacked">
+                            <% rooms.forEach(function(room){ %>
+                              <li name=<%= room._id %> class="">
+                                <a name="roomSelectRadio" href="#">
+                                  <%= room.name %>
+                                </a>
+                              </li>
+                            <% }) %>
+                            </ul>                        
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    <%- include ../chat/individualMessage.ejs %>
+    <%- include ../chat/allSendMessage.ejs %>
+    <%- include ../chat/sendMessage.ejs %>
+    <%- include ../chat/createRoom.ejs %>
+    <%- include ../chat/profile.ejs %>
+    <%- include ../chat/setting.ejs %>
+    <%- include ../chat/memberEdit.ejs %>
+    <%- include ../sideMenu.ejs %>
+    </div>
+    </body>
+</html>

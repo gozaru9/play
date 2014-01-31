@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+    <head>
+        <%- include ../head.ejs %>
+        <script type="text/javascript" src="/javascripts/table.js"></script>
+        <script type="text/javascript" src="/javascripts/submit.js"></script>
+        <script type="text/javascript">
+            $(document).ready( function() {
+                $("input:button[name=btn_delete]").click(function(){
+                    var id=getTableHiddenValue(this);
+                    var data = {_id:id};
+                    createFormSubmitByParam('/code/delete',data);
+                    return false;
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <%- include ../header.ejs %>
+        
+        <div class="pull-right line-margin">
+            <button class="btn btn-info" data-toggle="modal" data-target="#codeForm">
+              コード登録
+            </button>  
+        </div>
+        
+        <div class="clearfix"></div>
+        
+        <!-- /code-dialog -->
+        <form class="form-horizontal" method="POST" action="/code/regist">
+            <div class="modal fade" id="codeForm" tabindex="-1" role="dialog" aria-labelledby="codeFormLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="codeFormLabel">コード登録</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="inputName">コード名</label>
+                                <div class="col-sm-5">
+                                    <input type="text" class="form-control" id="inputName" name="name" placeholder="名称を入れてください">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="inputEmail">説明</label>
+                                <div class="col-sm-5">
+                                    <input type="test" class="form-control" id="inputEmail" name="description" placeholder="説明を入れてください" >
+                                </div>
+                            </div>
+                            <div class="panel panel-default">
+                                <div class="panel-body">
+                                    <div data-bind='foreach: items'>
+                                        <div class="form-group">
+                                            <label class="col-sm-2 control-label" for="inputValue">コード値</label>
+                                            <div class="col-sm-5">
+                                                <input data-bind='value: codeValue, codeValue[]: true' class="form-control" id="inputValue" placeholder="">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-sm-2 control-label" for="inputValueName">コード値名</label>
+                                            <div class="col-sm-5">
+                                                <input data-bind='value: valueName, valueName[]: true' class="form-control" id="inputValueName" placeholder="">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-sm-2 control-label" for="inputDispName">表示名</label>
+                                            <div class="col-sm-5">
+                                                <input data-bind='value: dispName, dispName[]: true'  class="form-control" id="inputDispName" placeholder="">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button data-bind='click: addItems' class="btn btn-primary">追加する</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+                                <button type="submit" class="btn btn-primary">登録する</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>        
+        
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr class="active">
+                        <th>ID</th>
+                        <th>名称</th>
+                        <th>説明</th>
+                        <th></th>
+                    </tr>
+                </thead>        
+                <tbody>
+                <% items.forEach(function(item){ %>
+                    <tr>
+                        <td><%= item._id %></td>
+                        <td><%= item.name %></td>
+                        <td><%= item.description %></td>
+                        <td><input type="button" class="btn btn-default" name="btn_delete" value="終了"></td>
+                        <input type="hidden" value=<%= item._id %>>
+                    </tr>
+                <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </body>    
+    <script type="text/javascript" src="/viewModel/viewCodeModel.js"></script>
+</html>

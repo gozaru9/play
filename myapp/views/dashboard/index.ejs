@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+    <head>
+        <%- include ../head.ejs %>
+        <script type="text/javascript" src="/javascripts/table.js"></script>
+        <script type="text/javascript" src="/javascripts/submit.js"></script>
+    </head>
+    <body>
+        <%- include ../header.ejs %>
+        <div class="alert alert-info alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            メンバーパネルから自分に送信されたメッセージを表示させるエリア。
+        </div>
+
+        <%- include ../todo/index.ejs %>
+        
+        <div class="row">       
+            <div class="col-sm-6">
+                <div class="panel panel-info">
+                    <div class="panel-heading">メンバー</div>
+                    <div class="panel-body"><%- include ../account/accountParts.ejs %></div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="panel panel-success">
+                    <div class="panel-heading">さんぷるのヘッダ</div>
+                    <div class="panel-body"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="panel panel-warning">
+                    <div class="panel-heading">パネルのヘッダ</div>
+                    <div class="panel-body">
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="panel panel-danger">
+                    <div class="panel-heading">パネルのヘッダ</div>
+                    <div class="panel-body">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <%- include ../footer.ejs %>
+    </body>
+</html>

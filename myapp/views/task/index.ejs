@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+    <head>
+        <%- include ../head.ejs %>
+        <script type="text/javascript" src="/javascripts/table.js"></script>
+        <script type="text/javascript" src="/javascripts/submit.js"></script>
+        <script type="text/javascript">
+            $(document).ready( function() {
+                $("input:button[name=btn_delete]").click(function(){
+                    var id=getTableHiddenValue(this);
+                    var data = {_id:id};
+                    createFormSubmitByParam('/account/delete',data);
+                    return false;
+                });
+                /*
+                $("tr").click(function(){
+                    var id=getTableHiddenValue(this);
+//                    createFormSubmitByParam('/account/update',id);
+                    $("div#referenceForm").attr("aria-hidden", false);
+                    $("div#referenceForm").removeClass("modal fade").addClass("in fade modal"); 
+                    $("div#referenceForm").attr("style", "display:block");
+                    return false;
+                });
+                */
+            });
+        </script>
+    </head>
+    <body>
+        <%- include ../header.ejs %>
+        
+        <div class="pull-right line-margin">
+            <button class="btn btn-info" data-toggle="modal" data-target="#entryForm">
+              簡易登録
+            </button>  
+            <button class="btn btn-info" data-toggle="modal" data-target="#categoryForm">
+              カテゴリ登録
+            </button>  
+        </div>
+        
+        <div class="clearfix"></div>
+        
+        <!-- /entry-dialog -->
+        <form class="form-horizontal" method="POST" action="/task/regist">
+            <div class="modal fade" id="entryForm" tabindex="-1" role="dialog" aria-labelledby="entryFormLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="entryFormLabel">簡易登録</h4>
+                        </div>
+                        <div class="modal-body">
+                        <%- include regist.ejs %>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+                            <button type="submit" class="btn btn-primary">登録する</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>        
+        <!-- /category-dialog -->
+        <form class="form-horizontal" method="POST" action="/task/category">
+            <div class="modal fade" id="categoryForm" tabindex="-1" role="dialog" aria-labelledby="categoryFormLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="categoryFormLabel">カテゴリ登録</h4>
+                        </div>
+                        <div class="modal-body">
+                        <%- include categoryRegist.ejs %>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+                            <button type="submit" class="btn btn-primary">登録する</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>        
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr class="active">
+                        <th>ID</th>
+                        <th>カテゴリ</th>
+                        <th>状態</th>
+                        <th>タスク名</th>
+                        <th>期日</th>
+                        <th>担当者</th>
+                        <th>進捗</th>
+                        <th></th>
+                    </tr>
+                </thead>        
+                <tbody>
+                <% items.forEach(function(item){ %>
+                    <tr>
+                        <td><%= item._id %></td>
+                        <td><%= item.category %></td>
+                        <td><%= item.status %><span class="label label-default">未着手</span></td>
+                        <td><%= item.name %></td>
+                        <td><%= item.endDate %></td>
+                        <td><%= item.responders %></td>
+                        <td><%= item.progress %></td>
+                        <td><input type="button" class="btn btn-default" name="btn_delete" value="終了"></td>
+                        <input type="hidden" value=<%= item._id %>>
+                    </tr>
+                <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </body>    
+</html>

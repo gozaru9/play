@@ -1,0 +1,58 @@
+<!-- このVIEWを使用するには以下のものを読み込んでおく必要がある-->
+<link rel='stylesheet' href="/javascripts/lib/ui/css/jquery-ui-1.10.3.custom.min.css"/>
+<script type="text/javascript" src="/javascripts/lib/ui/jquery-ui-1.10.3.custom.min.js"></script>
+<script type="text/javascript" src="/javascripts/lib/ui/jquery.ui.datepicker-ja.js"></script>
+<div class="panel panel-default">
+    <div class="panel-heading">TODO<span id="todoCount" class="badge"></span></div>
+        <div id="todoDiv" class="panel-body">
+            <form id="todoForm" class="form-inline">
+                <div class="form-group">
+                    <div class="todo-width">
+                        <input data-bind="value: contents" type="text" class="form-control" name="contents" placeholder="todo">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <select class="form-control" data-bind="options: important, optionsText: 'name',optionsValue: 'values', value: selected">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <div class="date-width">
+                        <input data-bind="value: endDate" type="text" id="endDate" name="endDate" class="form-control" placeholder="YYYY/MM/DD">
+                    </div>
+                </div>
+                <button data-bind='click: addTodo' class="btn btn-primary">追加する</button>
+            </form>   
+        <hr>
+        
+        <div data-bind="foreach: todoList">
+            <div data-bind="if: important === 1" >
+                <div class="alert alert-info alert-dismissable">
+                    <button data-bind='click: $parent.deleteTodo' type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <!--
+                    <span data-bind="text: $data"></span>
+                    -->
+                    <span data-bind="text: contents"></span>
+                </div>
+            </div>
+            <div data-bind="if: important === 2" >
+                <div class="alert alert-warning alert-dismissable">
+                    <button data-bind='click: $parent.deleteTodo' type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <span data-bind="text: contents"></span>
+                </div>
+            </div>
+            <div data-bind="if: important === 3" >
+                <div class="alert alert-danger alert-dismissable">
+                    <button data-bind='click: $parent.deleteTodo' type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <span data-bind="text: contents"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function(){
+        $("#endDate").datepicker();
+        $("#endDate").datepicker("option", "dateFormat", 'yy/mm/dd');
+    });
+</script>
+<script type="text/javascript" src="/viewModel/viewTodoModel.js"></script>

@@ -1,0 +1,73 @@
+        <div class="modal fade" id="memberEditForm" tabindex="-1" role="dialog" aria-labelledby="memberEditFormLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="memberEditFormLabel">メンバーの追加/削除を行います</h4>
+                    </div>
+                    <form id="memberEditForm" class="form-horizontal">
+                        <div class="modal-body">
+                        <div class="alert alert-info alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><span>実装中</span></div>
+                            <div class="row form-group">
+                                <div class="col-sm-6">
+                                    <div class="container">
+                                        <h4><span class="label label-success text-center">参加メンバーを押してしてください</span><h4>
+                                    </div>
+                                    <select id="selectEditMember" name="selectEditMember" class="form-control" size=10 ></select>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="container">
+                                        <h4><span class="label label-success text-center">削除メンバーを押してしてください</span><h4>
+                                    </div>
+                                    <select id="selectedEditMember" name="selectedEditMember" class="form-control" size=10></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+                            <button id="memberEditCompleteButton" class="btn btn-primary" >作成する</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <script>
+            $('#selectEditMember').change(function(event){
+                selectMove('selectEditMember', 'selectedEditMember', false);
+            });
+            $('#selectedEditMember').change(function(event){
+                selectDelete('selectedEditMember');
+            });
+            $('#memberEditCompleteButton').click(function(){
+                var users = [];
+                $("select[name=selectedEditMember]").children().each(function() {
+                    users.push({_id:$(this).val(), name:$(this).text()});
+                });
+                if (users.length === 0) return false;
+                
+                var roomId = $('#memberEditButton').val();
+                var editMember = {roomId:roomId, users:users};
+                console.log(editMember);
+                
+                $.ajax({
+                    type: 'POST',
+                    url: '/chat/memberUpdate',
+                    dataType: 'json',
+                    data: editMember,
+                    cache: false,
+                    success: function(data) {
+                    	var socket = io.connect('https://play-c9-gozaru9.c9.io');
+                    	socket.send({ cookie: document.cookie });
+                        //選択されたメンバーに送信する
+                    	socket.emit('member edit', users);
+                        alert('メンバーを変更しました。');
+                    },
+                　　error: function(XMLHttpRequest, textStatus, errorThrown) {
+                　　    console.log(XMLHttpRequest);
+                　　    console.log(textStatus);
+                　　},
+                });
+                return false;
+            });
+            
+        </script>

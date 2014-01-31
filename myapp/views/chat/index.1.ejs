@@ -1,0 +1,153 @@
+<!doctype html>
+<html>
+    <head>
+        <%- include ../head.ejs %>
+    </head>
+    <body>
+    <% if (isLogin) { %>
+    <div class="navbar navbar-inverse">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="#modal" class="second navbar-brand"><span class="glyphicon glyphicon-circle-arrow-right"></span></a>
+            <p id="userName" class="navbar-text"><%= userName %></p>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="/dashboard">ホーム</a></li>
+                <li data-toggle="modal" data-target="#messageForm"><a href="#">message</a></li>
+                <li data-toggle="modal" data-target="#createRoomForm"><a href="#">create room</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">アーカイブ <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">チャット</a></li>
+                        <li><a href="#">ノート</a></li>
+                    </ul>
+                </li>
+                <li class="active"><a href="/chat/logout">ログアウト</a></li>
+            </ul>
+        </div>
+    </div>
+    
+    <%- include ../chat/allSendMessage.ejs %>
+    <%- include ../chat/createRoom.ejs %>
+
+    <div id="all"></div>
+
+    <div class="row">       
+        <div class="col-sm-8">
+            <ul id="roomHead" class="nav nav-tabs">
+            
+                <li class="active" name="allChatMessages"><a href="#allChatMessages" data-toggle="tab">全体チャット</a></li>
+            </ul>
+            
+            <div id="roomContents" class="tab-content">
+                <div class="tab-pane active" id="allChatMessages">
+                    <div class="panel">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div id="messageUserallChatMessages" class="panel-body message-area"></div>
+                            </div>
+                            <div class="col-sm-9">
+                                <div id="messageAreaallChatMessages" class="panel-body message-area"></div>
+                            </div>                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <fieldset>
+            <div class="form-group">
+                <div class="pull-right line-margin"></div>
+                <div class="row">       
+                    <div class="col-sm-11">
+                    
+                        <div class="btn-group" data-toggle="buttons">
+                          <label class="btn btn-primary">
+                            <input name="loginStatusRadios" type="radio" value="1"> ろぐいん中
+                          </label>
+                          <label class="btn btn-primary">
+                            <input name="loginStatusRadios" type="radio" value="2"> 離席
+                          </label>
+                        </div>
+                    
+                        <textarea name="message" id="message" class="form-control" id="exampleInput" placeholder="メッセージを入力してください"></textarea>
+                    </div>
+                    <div class="col-sm-1">
+                        <button id="sendButton" class="btn btn-default">送信</button>
+                        <button id="leaveButton" class="btn btn-default">メッセージを受け取らない</button>
+                    </div>
+                </div>
+            </div>
+            </fieldset>
+        </div>
+            <div class="col-sm-2">
+            <!--
+                <ul id="roomTable" data-bind="foreach: roomList" class="list-group nav nav-tabs">
+                  <li class="list-group-item"><a data-bind="attr: { href: _id, title: details },text: name" data-toggle="tab"></a></li>
+                </ul>
+            -->            
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead> 
+                            <tr class="active">
+                                <th>room</th>
+                            </tr>
+                        </thead>
+                        <tbody id="roomTable" data-bind="foreach: roomList">
+                            <tr>
+                                <td><button data-bind="click: chatViewModel.entryRoom, text: name, value: _id" name="roomListButton" class="btn btn-default" ></button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+        
+    <hr>
+    <%- include ../todo/index.ejs %>
+
+    <%- include ../sideMenu.ejs %>
+    
+    <% } else { %>
+     <div class="container">
+        <div class="row">
+            <div class="col-md-4 col-md-offset-4">
+                <div class="login-panel panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Please Sign In</h3>
+                    </div>
+                    <div class="panel-body">
+                        <form method="POST" action="/chat/login">
+                            <fieldset>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="E-mail" name="mailAddress" type="email" autofocus>
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="Password" name="password" type="password" value="">
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input name="remember" type="checkbox" value="Remember Me">Remember Me
+                                    </label>
+                                </div>
+                                <!-- Change this to a button or input when using this as a form -->
+                                <button class="btn btn-lg btn-success btn-block">Login</button>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <% } %>      
+    
+    </body>
+</html>
