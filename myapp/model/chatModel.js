@@ -3,8 +3,11 @@ var Core = require('../core/coreModel.js');
 var mongoose = require('mongoose');
 var crypto = require('crypto');
 var collection = 'chats';
+var collection2 = 'mymessages';
 
-// ModelのSchema Class定義する
+/**
+ * 部屋とメッセージを保持するコレクション
+ * */
 var chatSchema = new mongoose.Schema({
   created: {type: Date, default: Date.now},
   updated: {type: Date, default: Date.now},
@@ -12,6 +15,17 @@ var chatSchema = new mongoose.Schema({
   description: String,
   messages: {type:Array},
   users: {type:Array}
+});
+/**
+ * 自分自身へ送信されたメッセージを保持するコレクション
+ * */
+var myMessageSchema = new mongoose.Schema({
+  created: {type: Date, default: Date.now},
+  updated: {type: Date, default: Date.now},
+  sender:{type: String},
+  recipient:{type: String},//受信者
+  messages: {type:String},
+  time: {type:String}
 });
 
 // middleware
@@ -23,6 +37,7 @@ chatSchema.pre('save', function (next) {
 
 // モデル化。model('モデル名', '定義したスキーマクラス')
 var myModel = mongoose.model(collection, chatSchema);
+var myMsg = mongoose.model(collection2, myMessageSchema);
 
 var chatModel = function chatModel() {
     
@@ -63,8 +78,12 @@ chatModel.prototype.save = function(req){
         }
     });
 };
-
-//メッセージ登録
+/**
+ * メッセージを登録する
+ * 
+ * @author niikawa
+ * @param data
+ * */
 chatModel.prototype.addMessage = function(data) {
     var Chat = this.db.model(collection);
     Chat.findOne({ "_id" : data.roomId}, function(err, room){
@@ -73,8 +92,30 @@ chatModel.prototype.addMessage = function(data) {
         room.save();
     });
 };
+/**
+ * 個別メッセージを登録する
+ * 
+ * @author niikawa
+ * @param data
+ * */
+chatModel.prototype.addMyMessage = function(data) {
+    
+    var MyMsg = new myMsg(data);
 
-//ユーザー追加/変更
+    MyMsg.save(function(err){
+        if (err) {
+            console.log(err);
+            throw err;
+        }
+    });
+};
+/**
+ * ユーザー追加/変更
+ * 
+ * @author niikawa
+ * @param data
+ * @param callback
+ * */
 chatModel.prototype.memberUpdate = function(data, callback) {
 
     console.log('-------chatModel member update----------------');
@@ -86,7 +127,34 @@ chatModel.prototype.memberUpdate = function(data, callback) {
         callback(err, '');
     });
 };
+/**
+ * 指定期間内の部屋のメッセージを取得する
+ * @author niikwa
+ * @param req
+ * @param callback
+ * */
+chatModel.prototype.getMessageById = function(req, callback) {
+    
+    var Chat = this.db.model(collection);
+    
+    if (req.period === undefined) {
+        console.log('get limit 50');
+        console.log(req.roomId);
+        Chat.find({'_id': req.roomId}, 'messages', callback).limit(1);
 
+    } else {
+        
+        
+    }
+    
+};
+/**
+ * 自分の入れる部屋を取得
+ * 
+ * @author niikawa
+ * @param req
+ * @param callback
+ * */
 chatModel.prototype.getMyRoom = function(req, callback) {
 
     console.log('-------chatModel getMyRoom----------------');

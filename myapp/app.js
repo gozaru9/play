@@ -184,16 +184,28 @@ var chatRoom = io.sockets.on('connection', function (socket) {
 
     //クライアント側からのイベントを受け取る。
     socket.on('individual send', function (data) {
+        
         console.log('individual send!!');
         console.log(data);
         //io.sockets.manager.roomClients[socket.id]
         data.userId=socket.handshake.session._id;
         data.userName=socket.handshake.session.name;
+        data.time=moment().format('YYYY-MM-DD hh:mm:ss');
+        
         User.getById(data.target, function(err, user) {
             
             console.log('get user');
             console.log(user);
+            data.targetId = user._id;
+            data.targetName = user.name;
+            
+            var individualData 
+                = {sender:data.userId, recipient: user._id,
+                   messages: data.message, time: data.time};
+            Chat.addMyMessage(individualData);
+            
             io.sockets.socket(user.soketId).emit('individual push', data);
+            socket.emit('individual my push', data);
         });
     });
     
@@ -208,6 +220,7 @@ var chatRoom = io.sockets.on('connection', function (socket) {
         console.log(io.sockets.clients(data.roomId));
         
         Chat.addMessage(data);
+        
     });
     socket.on('all send', function (msg) {
 

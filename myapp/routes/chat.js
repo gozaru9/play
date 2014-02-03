@@ -168,6 +168,7 @@ exports.getUserByRoomId = function(req, res) {
 
         async.parallel(
             [function (callback) {
+//                chat.getMessageById(req.body, callback);
                 chat.getById(req.body.roomId, callback);
             },function (callback) {
                 model.getAll(req, callback);

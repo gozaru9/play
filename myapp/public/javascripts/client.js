@@ -117,7 +117,7 @@ $(function() {
 	        
             $('#individualMessageDiv').fadeToggle("slow");
 	    }
-	   return false; 
+	    return false; 
 	});
     //個人メッセージエリアを閉じる
     $('#individualClose').click(function() {
@@ -134,11 +134,23 @@ $(function() {
                 target: $(this).val()
             };
     		socket.emit('individual send', data);
-    		var pushTarget = '#individualPush_'+target[1];
-    		$(pushTarget).append('<p>'+nl2br(escapeHTML($('#individualReMessage').val()))+'</p>');
-    		
             $('#individualReMessage').val('');
             
+        } else if (target[0] === 'individualMessageInfo') {
+            
+            var closeTarget = 'individualMessageInfo_'+target[1];
+            $('#'+closeTarget).fadeToggle("slow");
+
+        } else if (target[0] === 'individualAdd') {
+            console.log('ドッキング');
+            var add = $('#roomContents').find(".active").attr("id");
+            $('#'+add).hide(500);
+            $('#'+add).removeClass("active");
+            var element = $("<div>", {class: "panel-body active", id: add});
+            element.append($('#individualPush_'+target[1]));
+            //今ひょうじされているメッセージを取得　individualPush_52dbf01fba910a0000000001
+            //チャットエリアを生成
+            $('#roomContents').append(element).show(500);
         } else {
             var closeTarget = 'individualMessageInfo_'+target[1];
             $('#'+closeTarget).fadeToggle("slow");
@@ -235,12 +247,10 @@ $(function() {
 
         var areaId = 'individualMessageInfo_'+data.userId;
         var messageAreaId = 'individualPush_'+data.userId;
+        var m = '<ul class="chat"><li class="left clearfix"><div class="clearfix"><div name="reseveMessage" class="header"><strong class="primary-font">'+data.userName+'</strong><small class="pull-right text-muted"><i class="fa fa-clock-o fa-fw"></i>'+data.time+'</small><p>'+nl2br(escapeHTML(data.message))+'</p></div></li></ul></div>';
         //同じ人からのメッセージが来ているのかを判定
         if ($('#'+messageAreaId).html()) {
-            var m = '<p>'+nl2br(escapeHTML(data.message))+'</p>';
-            console.log(m);
             $('#'+messageAreaId).append(m);
-
             //すでに画面に表示されていた場合
             if (!$('#'+areaId).is(':visible')) {
                 $('#'+areaId).slideToggle("slow");
@@ -249,18 +259,54 @@ $(function() {
             var element = '';
             var reId = 'individualReSend_'+data.userId;
             var closeId = 'individualClose_'+data.userId;
+            var addId = 'individualAdd_'+data.userId;
             element =
                 '<div id='+areaId+' class="toggleMessage" style="display: none;">'
                 +'<div class="panel panel-info"><div class="panel-heading">'
                 +'<button id='+closeId+' type="button" class="close">&times;</button>'
                 +'<span>'+data.userName+'</span></div>'
-                +'<div class="panel-body"><div id='+messageAreaId+' class="individual-message-box"><p>'+nl2br(escapeHTML(data.message))+'</p></div><hr>'
+                +'<div class="panel-body"><div id='+messageAreaId+' class="individual-message-box">'+m+'<hr>'
                 +'<textarea id="individualReMessage" class="form-control" name="individualReMessage"></textarea></div>'
                 +'<div class="panel-footer">'
-                +'<button id='+reId+' value='+data.userId+' class="btn btn-primary">返信する</button>'
+                +'<button id='+reId+' value='+data.userId+' class="btn btn-primary">Send Massage</button>'
+                +'<button id='+addId+' value='+data.userId+' class="btn btn-primary">ドッキング</button>'
                 +'</div></div></div>';
             document.getElementById("individualMessageInfo").innerHTML += element;
             $('#'+areaId).slideToggle("slow");
+            $('#'+areaId).draggable();
+        }
+	});
+	socket.on('individual my push', function (data) {
+
+        var areaId = 'individualMessageInfo_'+data.targetId;
+        var messageAreaId = 'individualPush_'+data.targetId;
+        var m = '<ul class="chat"><li class="left clearfix"><div class="clearfix"><div name="reseveMessage" class="header"><strong class="primary-font">'+data.userName+'</strong><small class="pull-right text-muted"><i class="fa fa-clock-o fa-fw"></i>'+data.time+'</small><p>'+nl2br(escapeHTML(data.message))+'</p></div></li></ul></div>';
+        //同じ人からのメッセージが来ているのかを判定
+        if ($('#'+messageAreaId).html()) {
+            $('#'+messageAreaId).append(m);
+            //すでに画面に表示されていた場合
+            if (!$('#'+areaId).is(':visible')) {
+                $('#'+areaId).slideToggle("slow");
+            }
+        } else {
+            var element = '';
+            var reId = 'individualReSend_'+data.targetId;
+            var closeId = 'individualClose_'+data.targetId;
+            var addId = 'individualAdd_'+data.userId;
+            element =
+                '<div id='+areaId+' class="toggleMessage" style="display: none;">'
+                +'<div class="panel panel-info"><div class="panel-heading">'
+                +'<button id='+closeId+' type="button" class="close">&times;</button>'
+                +'<span>'+data.targetName+'</span></div>'
+                +'<div class="panel-body"><div id='+messageAreaId+' class="individual-message-box">'+m+'<hr>'
+                +'<textarea id="individualReMessage" class="form-control" name="individualReMessage"></textarea></div>'
+                +'<div class="panel-footer">'
+                +'<button id='+reId+' value='+data.targetId+' class="btn btn-primary">Send Massage</button>'
+                +'<button id='+addId+' value='+data.targetId+' class="btn btn-primary">ドッキング</button>'
+                +'</div></div></div>';
+            document.getElementById("individualMessageInfo").innerHTML += element;
+            $('#'+areaId).slideToggle("slow");
+            $('#'+areaId).draggable();
         }
 	});
 	//サーバーが受け取ったメッセージを返して実行する

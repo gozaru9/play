@@ -43,7 +43,7 @@ coreModel.prototype.getAll = function(res,callback){
     var target = this.db.model(this.modelName);
     target.find({}, function(err, docs) {
         callback(res, docs);
-    });
+    }).sort( { _id : 1} );
 };
 
 /**
