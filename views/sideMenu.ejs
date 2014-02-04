@@ -7,7 +7,11 @@
 
 <div id="individual" class="list-group">
 <% allUsers.forEach(function(user){ %>
-  <a href="#" name=<%= user._id %> class="list-group-item"><i class="fa fa-check-circle fa-fw"></i><%= user.name %></a>
+  <a href="#" name=<%= user._id %> class="list-group-item">
+    <li name="<%= user._id %>" class="list-unstyled">
+        <i class="<%= user.status %>"></i><%= user.name %>
+    </li>
+</a>
 <% }) %>
 </div>
 
