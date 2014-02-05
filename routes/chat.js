@@ -66,9 +66,12 @@ exports.index = function(req, res){
                 for (var allUserIndex = 0; allUserIndex < allUsersNum; allUserIndex++) {
                     allUsers[allUserIndex].status = getStatusClass(allUsers[allUserIndex].loginStatus);
                 }
+                
+                var fixed = results[0].concat(results[1]);
+                
                 res.render('chat/index', {title: 'chat', userName:req.session.name, 
                     rooms:rooms, targetRoomId:req.body.room, roomName:name, users:users, 
-                    messages:messages, allUsers:allUsers});
+                    messages:messages, allUsers:allUsers, fixed:fixed});
             });
 
     } else {
@@ -110,7 +113,7 @@ exports.lobby = function(req, res){
     }
 };
 /**
- * リクエストを受け取り、lobby画面を描画する
+ * リクエストを受け取り、fixedSectence画面を描画する
  * 
  * @author niikawa
  * @method fixedSectence
