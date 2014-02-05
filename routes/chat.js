@@ -312,20 +312,17 @@ exports.memberUpdate = function(req, res) {
  * @param {Object} res 画面へのレスポンス
  */
 exports.fixedSectenceSave = function(req, res) {
-    if (req.body._id) {
-        async.series(
-            [function(callback) {
-                fixed.save(req, callback);
-            }]
-            ,function(err, result) {
-                if (err) console.log('fixedSectenceSave err');
-                res.redirect('chat/fixedSectence');
-            }
-        );
-    } else {
-        res.redirect('chat/fixedSectence');
-    }
     
+    console.log('------fixedSectenceSave--------');
+    async.series(
+        [function(callback) {
+            fixed.save(req, callback);
+        }]
+        ,function(err, result) {
+            if (err) console.log('fixedSectenceSave err');
+            res.redirect('chat/fixedSectence');
+        }
+    );
 };
 /**
  * リクエストを受け取り、定型文を削除する
@@ -337,12 +334,10 @@ exports.fixedSectenceSave = function(req, res) {
  */
 exports.fixedSectenceDelete = function(req, res) {
     console.log('------fixedSectenceDelete--------');
-
     if (req.body._id) {
         fixed.remove(req.body._id);
     }
     res.redirect('chat/fixedSectence');
-    
 };
 
 /**

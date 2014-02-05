@@ -2,7 +2,8 @@ $(function() {
     
     $('button[name=myFixedUpdateButton]').click(function() {
         
-        
+        $('#title').val();
+        $('#contents').val();
         
     });
     $('button[name=myFixedDeleteButton]').click(function() {
