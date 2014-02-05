@@ -3,9 +3,6 @@ var Core = require('../core/coreModel.js');
 var mongoose = require('mongoose');
 var crypto = require('crypto');
 var collection = 'm_user';
-//例外処理用
-//var domain = require('domain');
-//var d = domain.create();
 
 // ModelのSchema Class定義する
 var usersSchema = new mongoose.Schema({
@@ -23,8 +20,6 @@ var usersSchema = new mongoose.Schema({
 // save処理の前にフックをかけれる。RailsでいうFilterみたいな機能
 usersSchema.pre('save', function (next) {
     
-//    this.password = 
-//        crypto.createHash('md5').update(this.password).digest("hex");
     next();
 });
 

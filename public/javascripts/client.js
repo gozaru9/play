@@ -396,4 +396,12 @@ $(function() {
         　　},
         });
 	});
+	//定型文
+	$('a[name="fixedSectences"]').click(function(){
+        var val = $(this).attr('href');
+        $('#message').val($(val).val());
+        $('#fixedSectencesDiv').removeClass("open");
+        $('#message').focus();
+        return false;
+	});
 });

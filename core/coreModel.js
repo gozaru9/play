@@ -1,10 +1,15 @@
 /**
- * モデル基底
- * */
+ * core model class
+ * 
+ * @author niikawa
+ * @namespace core
+ * @class coreModel
+ * @constructor
+ */
 var coreModel = function coreModel(modelName) {
     
     this.modelName = modelName;
-
+    this.schema = '';
     console.log('execute coreModel');
     console.log(this.modelName);
 };
@@ -21,8 +26,12 @@ coreModel.prototype = {
 
 /**
  * DB処理後に実行する処理.
- * functionが格納される
- * */
+ * functionが格納される.
+ * 
+ * @author niikawa
+ * @method setNextFunc
+ * @param {Function} func
+ */
 coreModel.prototype.setNextFunc = function(func) {
     
     this.nextFunc = func;
@@ -30,16 +39,27 @@ coreModel.prototype.setNextFunc = function(func) {
 
 /**
  * nextFuncのパラメータ
- * */
+ * 
+ * @author niikawa
+ * @method setNextParam
+ * @param {Object} param nextFuncに渡されるパラメータ
+ */
 coreModel.prototype.setNextParam = function(param) {
     
     this.parameter = param;
 };
 
 /**
- * コレクションの値をすべて取得する
- * */
+ * コレクションの値をすべて取得する.
+ * _idの昇順で取得.
+ * 
+ * @author niikawa
+ * @method getAll
+ * @param {Object} res
+ * @param {Function} callback
+ */
 coreModel.prototype.getAll = function(res,callback){
+    console.log('------------get all ----------');
     var target = this.db.model(this.modelName);
     target.find({}, function(err, docs) {
         callback(res, docs);
@@ -47,8 +67,13 @@ coreModel.prototype.getAll = function(res,callback){
 };
 
 /**
- * _idに合致した情報を取得する
- * */
+ * _idに合致した情報を取得する.
+ * 
+ * @author niikawa
+ * @method getById
+ * @param {Object} id
+ * @param {Function} callback
+ */
 coreModel.prototype.getById = function(id, callback){
     
     var target = this.db.model(this.modelName);
@@ -56,17 +81,46 @@ coreModel.prototype.getById = function(id, callback){
         callback(err, docs);
     });
 };
+
 /**
- * コレクションを更新
- * @
- * */
-coreModel.prototype.update = function (id, callback) {
+ * POSTされたリクエスト値から対象のコレクションにデータを登録する
+ * 
+ * @author niikawa
+ * @method save
+ * @param {Object} req
+ * @param {Function} callback
+ */
+coreModel.prototype.save = function(req, callback){
+
+};
+
+/**
+ * _idに合致したコレクションを更新する
+ * 
+ * @author niikawa
+ * @method update
+ * @param {Object} req
+ * @param {Function} callback
+ */
+coreModel.prototype.update = function (req, callback) {
     var target = this.db.model(this.modelName);
-    target.findOne({_id:id},function(err, target){
+    target.findOne({_id:req.body._id},function(err, target){
     if(err || target === null){return;}
         //TODO コレクションのモデルを動的にここで判定できるのか？
         target.save();
     });
 };
+/**
+ * _idに合致したコレクションを削除する
+ * 
+ * @author niikawa
+ * @method remove
+ * @param {Object} _id
+ * @param {Function} callback
+ */
+coreModel.prototype.remove = function(_id, callback){
+
+};
+
 //モジュール化
 module.exports = coreModel;

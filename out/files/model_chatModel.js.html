@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>model/chatModel.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/model.chatModel.html">model.chatModel</a></li>
+            
+                <li><a href="../classes/.html"></a></li>
+            
+                <li><a href="../classes/DataTable.Api.html">DataTable.Api</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: model/chatModel.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+var util = require(&#x27;util&#x27;);
+var Core = require(&#x27;../core/coreModel.js&#x27;);
+var mongoose = require(&#x27;mongoose&#x27;);
+/**
+ * chat modelで使用するコレクション名.
+ * 
+ * @property collection
+ * @type {String}
+ * @default &quot;chat&quot;
+ */
+var collection = &#x27;chats&#x27;;
+/**
+ * 部屋とメッセージを保持するコレクション.
+ * 
+ * @property collection2
+ * @type {String}
+ * @default &quot;chat&quot;
+ */
+var collection2 = &#x27;mymessages&#x27;;
+/**
+ * 部屋とメッセージを保持するコレクション.
+ * 
+ * @property chatSchema
+ * @type {Object}
+ */
+var chatSchema = new mongoose.Schema({
+  created: {type: Date, default: Date.now},
+  updated: {type: Date, default: Date.now},
+  name: String,
+  description: String,
+  messages: {type:Array},
+  users: {type:Array}
+});
+/**
+ * 自分自身へ送信されたメッセージを保持するコレクション.
+ * 
+ * @property myMessageSchema
+ * @type {Object}
+ */
+var myMessageSchema = new mongoose.Schema({
+  created: {type: Date, default: Date.now},
+  updated: {type: Date, default: Date.now},
+  roomId:{type: String, default: &#x27;&#x27;},
+  sender:{type: String},
+  recipient:{type: String},//受信者
+  messages: {type:String},
+  time: {type:String}
+});
+
+// middleware
+// save処理の前にフックをかけれる。RailsでいうFilterみたいな機能
+chatSchema.pre(&#x27;save&#x27;, function (next) {
+    
+    next();
+});
+
+// モデル化。model(&#x27;モデル名&#x27;, &#x27;定義したスキーマクラス&#x27;)
+
+var myModel = mongoose.model(collection, chatSchema);
+var myMsg = mongoose.model(collection2, myMessageSchema);
+
+/**
+ * Chat Model Class.
+ *
+ * @author niikawa
+ * @namespace model
+ * @class chatModel
+ * @constructor
+ * @extends Core
+ */
+var chatModel = function chatModel() {
+    
+    this.nextFunc = &#x27;&#x27;;
+    this.parameter = &#x27;&#x27;;
+    this.modelName = collection;
+    
+    Core.call(this, collection);
+};
+
+//coreModelを継承する
+util.inherits(chatModel, Core);
+
+/**
+ * 部屋を作成する.
+ * 
+ * @author niikawa
+ * @method save
+ * @param {Object} req 画面からのリクエスト
+ */
+chatModel.prototype.save = function(req){
+    
+    var chat = new myModel(req.body);
+    console.log(&#x27;-------chat seve----------------&#x27;);
+    console.log(chat);
+
+    //コールバック内で使用するため参照を保持
+    var nextFunc  = this.nextFunc;
+    var parameter = this.parameter;
+
+    chat.save(function(err){
+        if (err) {
+            console.log(err);
+            throw err;
+        } else {
+
+            if (typeof(nextFunc) == &#x27;function&#x27;) {
+                console.log(&#x27;chat save ok &#x27;);
+                nextFunc(parameter);
+            }
+        }
+    });
+};
+/**
+ * メッセージを登録する.
+ * 
+ * @author niikawa
+ * @method addMessage
+ * @param {Object} data data.roomId data.userId
+ */
+chatModel.prototype.addMessage = function(data) {
+    var Chat = this.db.model(collection);
+    Chat.findOne({ &quot;_id&quot; : data.roomId}, function(err, room){
+		var m = {user:{id:data.userId, name:data.userName}, msg:data.message, time:data.time};
+        room.messages.push(m);
+        room.save();
+    });
+};
+/**
+ * 個別メッセージを登録する.
+ * 
+ * @author niikawa
+ * @method addMyMessage
+ * @param {Object} data
+ */
+chatModel.prototype.addMyMessage = function(data) {
+    
+    var MyMsg = new myMsg(data);
+
+    MyMsg.save(function(err){
+        if (err) {
+            console.log(err);
+            throw err;
+        }
+    });
+};
+/**
+ * 部屋に入れるユーザーの変更を行う.
+ * 
+ * @author niikawa
+ * @method memberUpdate
+ * @param {Object} data
+ * @param {Function} callback
+ */
+chatModel.prototype.memberUpdate = function(data, callback) {
+
+    console.log(&#x27;-------chatModel member update----------------&#x27;);
+    console.log(data);
+    var Chat = this.db.model(collection);
+    Chat.findOne({ &quot;_id&quot; : data.roomId}, function(err, room){
+        room.users = data.users;
+        room.save();
+        callback(err, &#x27;&#x27;);
+    });
+};
+/**
+ * 指定期間内の部屋のメッセージを取得する.
+ * 
+ * @method getMessageById
+ * @author niikwa
+ * @param {Object} req 画面からのリクエスト
+ * @param callback
+ */
+chatModel.prototype.getMessageById = function(req, callback) {
+    
+    var Chat = this.db.model(collection);
+    
+    if (req.period === undefined) {
+        console.log(&#x27;get limit 50&#x27;);
+        console.log(req.roomId);
+        Chat.find({&#x27;_id&#x27;: req.roomId}, &#x27;messages&#x27;, callback).limit(1);
+
+    } else {
+        
+        
+    }
+};
+/**
+ * 自分の入れる部屋を取得する.
+ * 
+ * @method getMyRoom
+ * @author niikawa
+ * @param {Object} req 画面からのリクエスト
+ * @param {Function} callback
+ */
+chatModel.prototype.getMyRoom = function(req, callback) {
+
+    console.log(&#x27;-------chatModel getMyRoom----------------&#x27;);
+    
+    //コールバック内で使用するため参照を保持
+//    var nextFunc  = this.nextFunc;
+//    var parameter = this.parameter;
+    
+    var Chat = this.db.model(collection);
+
+    var id = req.session._id;
+    console.log(req.session);
+    Chat.find({ &quot;users._id&quot; : { $in:[id] } }, callback);
+};
+/**
+ * 自分の入れる部屋を取得する.
+ * 
+ * @method getMyRoomParts
+ * @author niikawa
+ * @param {Object} req 画面からのリクエスト
+ */
+chatModel.prototype.getMyRoomParts = function(req) {
+    
+    //コールバック内で使用するため参照を保持
+    var nextFunc  = this.nextFunc;
+    var parameter = this.parameter;
+    
+    var Chat = this.db.model(collection);
+
+    var id = req.session._id;
+    Chat.find({ &quot;users._id&quot; : { $in:[id] } }, function(err, room) {
+
+        if (err) {
+            console.log(err);
+            throw err;
+        }
+
+        if (typeof(nextFunc) == &#x27;function&#x27;) {
+
+            nextFunc(parameter, room);
+        } else {
+            return room;
+        }
+    });
+};
+/**
+ * 部屋を削除する.
+ * 
+ * @method removeById
+ * @author niikawa
+ * @param {String} id 削除対象のID
+ * @param {Function} callback
+ */
+chatModel.prototype.removeById = function(id,callback) {
+     
+};
+module.exports = chatModel;
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

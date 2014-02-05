@@ -1,15 +1,103 @@
-var async = require('async');
-var userModel = require('../model/userModel');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>routes/chat.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/model.chatModel.html">model.chatModel</a></li>
+            
+                <li><a href="../classes/.html"></a></li>
+            
+                <li><a href="../classes/DataTable.Api.html">DataTable.Api</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: routes/chat.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+var async = require(&#x27;async&#x27;);
+var userModel = require(&#x27;../model/userModel&#x27;);
 var model = new userModel();
-var chatModel = require('../model/chatModel');
+var chatModel = require(&#x27;../model/chatModel&#x27;);
 var chat = new chatModel();
-var fixedModel = require('../model/fixedModel');
-var fixed = new fixedModel();
 
 /**
  * chat modeule
- * @namespace routes
- * @modeule chat.js
  */
 /**
  * リクエストを受け取り、chat画面を描画する
@@ -21,40 +109,34 @@ var fixed = new fixedModel();
  */
 exports.index = function(req, res){
 
-    console.log('session');
+    console.log(&#x27;session&#x27;);
     console.log(req.session);
-    console.log('----------------chat index--------------');
     if (req.session.isLogin) {
         
-        async.series(
+        async.parallel(
             [function (callback) {
-                fixed.getMySectence(req.session._id, callback);
-            },function (callback) {
-                fixed.getSectence(callback);
-            },function (callback) {
                 chat.getMyRoom(req, callback);
-            },function(callback) {
+            },function (callback) {
                 model.getAll(req, callback);
             }]
             ,function(err, results) {
                 
-                console.log('-----------async end function-------------');
-                //if (err) throw err;
-                var rooms = results[2];
-                console.log('------rooms-------------');
-                console.log(rooms);
-                var name = '';
+                console.log(&#x27;-----------async end function-------------&#x27;);
+                console.log(results[0]);
+                var rooms = results[0];
+                var name = &#x27;&#x27;;
                 var users=[];
                 var messages=[];
                 if(req.body.room) {
-                    var roomLength = Array.isArray(rooms) ? rooms.length : 0;
-                    console.log('reqest room id');
+                    var roomLength = rooms.length;
+                    console.log(&#x27;reqest room id&#x27;);
                     console.log(req.body.room);
-                    for(var i=0; i<roomLength; i++) {
+                    for(var i=0; i&lt;roomLength; i++) {
+                        console.log(rooms[i]._id);
                         if (rooms[i]._id == req.body.room) {
 
-                            console.log('-------target room----------');
-                            console.log(rooms[i]._id);
+                            console.log(&#x27;-------target room----------&#x27;);
+                            console.log(rooms[i]);
                             
                             name = rooms[i].name;
                             users = rooms[i].users;
@@ -63,24 +145,19 @@ exports.index = function(req, res){
                         }
                     }
                 }
-                var allUsers = results[3];
-                console.log('------allUsers-------------');
-                console.log(allUsers);
-                
-                var allUsersNum = Array.isArray(allUsers) ? allUsers.length : 0;
-                for (var allUserIndex = 0; allUserIndex < allUsersNum; allUserIndex++) {
-                    allUsers[allUserIndex].status = getStatusClass(allUsers[allUserIndex].loginStatus);
+                var allUsers = results[1];
+                var allUsersNum = allUsers.length;
+                for (var allUserIndex = 0; allUserIndex &lt; allUsersNum; allUserIndex++) {
+                    allUsers[allUserIndex].status = getStatusClass(allUsers[allUserIndex].loginStatus)
                 }
-                
-                var fixed = results[0].concat(results[1]);
-                res.render('chat/index', {title: 'chat', userName:req.session.name, 
-                    rooms:rooms, targetRoomId:req.body.room, roomName:name, users:users, 
-                    messages:messages, allUsers:allUsers, fixed:fixed});
+                res.render(&#x27;chat/index&#x27;, {title: &#x27;chat&#x27;, userName:req.session.name, 
+                    rooms:rooms, targetRoomId:req.query.room, roomName:name, users:users, 
+                    messages:messages, allUsers:allUsers});
             });
 
     } else {
         
-        res.render('login/index', {title: 'LOGIN', errMsg:''});
+        res.render(&#x27;login/index&#x27;, {title: &#x27;LOGIN&#x27;, errMsg:&#x27;&#x27;});
     }
 };
 /**
@@ -101,19 +178,19 @@ exports.lobby = function(req, res){
             }]
             ,function(err, results) {
                 
-                console.log('----------lobby------');
+                console.log(&#x27;----------lobby------&#x27;);
                 console.log(results[0]);
                 /*
                 var allUsers = results[1];
                 var allUsersNum = allUsers.length;
-                for (var allUserIndex = 0; allUserIndex < allUsersNum; allUserIndex++) {
+                for (var allUserIndex = 0; allUserIndex &lt; allUsersNum; allUserIndex++) {
                     allUsers[allUserIndex].status = getStatusClass(allUsers[allUserIndex].loginStatus);
                 }
                 */
-                res.render('chat/lobby', {title: 'LOBBY', userName:req.session.name, rooms:results[0]});
+                res.render(&#x27;chat/lobby&#x27;, {title: &#x27;LOBBY&#x27;, userName:req.session.name, rooms:results[0]});
             });
     } else {
-        res.render('login/index', {title: 'LOGIN', errMsg:''});
+        res.render(&#x27;login/index&#x27;, {title: &#x27;LOGIN&#x27;, errMsg:&#x27;&#x27;});
     }
 };
 /**
@@ -125,11 +202,7 @@ exports.lobby = function(req, res){
  * @param {Object} res 画面へのレスポンス
  */
 exports.fixedSectence = function(req, res){
-    if (req.session.isLogin) {
-        res.render('chat/fixedSectence', {title: 'fixedSectence', userName:req.session.name});
-    } else {
-        res.render('login', {title: 'LOGIN', errMsg:''});
-    }
+    
 };
 /**
  * リクエストを受け取り、ログインを行う.
@@ -147,18 +220,20 @@ exports.login = function(req, res){
         }]
         ,function(err, results) {
             if (err) {
-                res.render('/login', {title: 'LOGIN', errMsg:'ごらぁぁぁ'});
+                res.render(&#x27;/login&#x27;, {title: &#x27;LOGIN&#x27;, errMsg:&#x27;ごらぁぁぁ&#x27;});
             }
-            console.log('-----------login------');
+            console.log(&#x27;-----------login------&#x27;);
             console.log(results);
 
             if (results.length === 0) {
-                res.redirect('/login');
+                res.redirect(&#x27;/login&#x27;);
             }
             req.session._id = results[0]._id;
             req.session.name = results[0].name;
             req.session.isLogin = true;
-            res.redirect('/chat/lobby');
+            console.log(&#x27;login session&#x27;);
+            console.log(req.session);
+            res.redirect(&#x27;/chat/lobby&#x27;);
         });
 };
 /**
@@ -173,7 +248,7 @@ exports.logout = function(req, res){
 
     model.updateStatus(req.session._id, 4);
     req.session.destroy();
-    res.redirect('/login');
+    res.redirect(&#x27;/login&#x27;);
 };
 /**
  * リクエストを受け取り、リクエストから部屋を作成する
@@ -187,7 +262,7 @@ exports.create = function(req, res){
     chat.setNextParam([res,req]);
     chat.setNextFunc(
         function(parameter){
-            parameter[0].send({msg:'ok!'});
+            parameter[0].send({msg:&#x27;ok!&#x27;});
         }
     );
     chat.save(req);
@@ -220,7 +295,9 @@ exports.getMyRoom = function(req, res) {
  */
 exports.getUserByRoomId = function(req, res) {
     
-    console.log('-----------getUserByRoomId-------------');
+    console.log(&#x27;-----------getUserByRoomId-------------&#x27;);
+    console.log(req.body);
+    
     if (req.body.roomId) {
 
         async.parallel(
@@ -237,14 +314,14 @@ exports.getUserByRoomId = function(req, res) {
                 var allUsers = results[1];
     
                 if (!room) {
-                    console.log(' room is not found:'+req.body.roomId);
+                    console.log(&#x27; room is not found:&#x27;+req.body.roomId);
                 }
                 
                 var roomUserNum = room.users.length;
                 var allUsersNum = allUsers.length;
-                for (var roomMemberIndex = 0; roomMemberIndex < roomUserNum; roomMemberIndex++)  {
+                for (var roomMemberIndex = 0; roomMemberIndex &lt; roomUserNum; roomMemberIndex++)  {
                     
-                    for (var allUserIndex = 0; allUserIndex < allUsersNum; allUserIndex++) {
+                    for (var allUserIndex = 0; allUserIndex &lt; allUsersNum; allUserIndex++) {
                         
                         if (room.users[roomMemberIndex]._id == allUsers[allUserIndex]._id) {
                             
@@ -260,7 +337,7 @@ exports.getUserByRoomId = function(req, res) {
             });
     
     }else{
-        res.send({users : ''});
+        res.send({users : &#x27;&#x27;});
     }
 };
 /**
@@ -270,8 +347,7 @@ exports.getUserByRoomId = function(req, res) {
  * @method memberUpdate
  * @param {Object} req 画面からのリクエスト
  * @param {Object} res 画面へのレスポンス
- */
-exports.memberUpdate = function(req, res) {
+ */exports.memberUpdate = function(req, res) {
     
     if (req.body.roomId) {
 
@@ -281,19 +357,13 @@ exports.memberUpdate = function(req, res) {
             }]
             ,function(err, results) {
                 
-                console.log('');
-                res.send({users : ''});
+                console.log(&#x27;&#x27;);
+                res.send({users : &#x27;&#x27;});
             });
     
     }else{
-        res.send({users : ''});
+        res.send({users : &#x27;&#x27;});
     }
-};
-exports.fixedSectenceSave = function(req, res) {
-    
-    fixed.save(req);
-    res.send({save : ''});
-//    res.redirect('/chat/lobby');
 };
 /**
  * パラメータに応じたステータスを表示するclass名を返却する
@@ -305,17 +375,36 @@ exports.fixedSectenceSave = function(req, res) {
 function getStatusClass (val) {
     
     if (val == 1) {
-        return 'fa fa-check-circle fa-fw';
+        return &#x27;fa fa-check-circle fa-fw&#x27;;
     } else if (val == 2) {
         
-        return 'fa fa-times fa-fw';
+        return &#x27;fa fa-times fa-fw&#x27;;
     } else if (val == 3) {
 
-        return 'fa fa-clock-o fa-fw';
+        return &#x27;fa fa-clock-o fa-fw&#x27;;
     } else if (val == 4) {
 
-        return 'fa fa-sign-out fa-fw';
+        return &#x27;fa fa-sign-out fa-fw&#x27;;
     } 
     //不明の場合はreturn home
-    return 'fa fa-sign-out fa-fw';
+    return &#x27;fa fa-sign-out fa-fw&#x27;;
 };
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

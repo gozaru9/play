@@ -10,16 +10,6 @@ var todoSchema = new mongoose.Schema({
   endDate: {type: Date, default: Date.now}  //終了日 YYYY-MM-DD
 });
 
-// middleware
-// save処理の前にフックをかけれる。RailsでいうFilterみたいな機能
-/*
-taskSchema.pre('save', function (next) {
-    
-    this.password = 
-        crypto.createHash('md5').update(this.password).digest("hex");
-    next();
-});
-*/
 // モデル化。model('モデル名', '定義したスキーマクラス')
 var myModel = mongoose.model('todo', todoSchema);
 
@@ -30,7 +20,7 @@ TodoModel.prototype.getAll = function(res,callback){
     Todo.find({},{'updated':0,  '__v':0},function(err, docs) {
         callback(res, docs);
     });
-}
+};
 
 TodoModel.prototype.save = function(req, res, callback){
     

@@ -7,32 +7,10 @@
                 ko.applyBindings(new chatCreateViewModel(data.items), document.getElementById("createChatDiv"));
             }
         });
-        
-        var chatViewModel = function(rooms) {
-            
-            var self = this;
-            
-            self.roomList = ko.observableArray();
-
-            var length = rooms.length;
-            
-            for (var index=0; index < length; index++) {
-                
-                rooms[index]['_id'] = '#'+ rooms[index]['_id'];
-                self.roomList.push(rooms[index]);
-            }
-
-            self.entryRoom = function(data, event) {
-                //実際は呼ばれないがイベントを発生させるため記述
-                //console.log('entryRoom');
-                //alert($(this).val());
-            }
-        }
 
         var chatCreateViewModel = function(items) {
     
             var self = this;
-            
             self.roomName = ko.observable();
             self.description = ko.observable();
             self.selectMember   = ko.observableArray(items);
