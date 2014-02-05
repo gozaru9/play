@@ -122,7 +122,24 @@ exports.lobby = function(req, res){
  */
 exports.fixedSectence = function(req, res){
     if (req.session.isLogin) {
-        res.render('chat/fixedSectence', {title: 'fixedSectence', userName:req.session.name});
+        
+        async.parallel(
+            [function (callback) {
+                
+                fixed.getSectence(callback);
+                
+            },function (callback) {
+                fixed.getMySectence(req.session._id, callback);
+            }]
+            ,function(err, results) {
+                
+                console.log(err);
+                if (err) throw err;
+                res.render('chat/fixedSectence', 
+                    {title: 'fixedSectence', userName:req.session.name, 
+                    mineFixed:results[1], openFixed:results[0]});
+            });
+        
     } else {
         res.render('login', {title: 'LOGIN', errMsg:''});
     }
@@ -254,7 +271,7 @@ exports.getUserByRoomId = function(req, res) {
                 }
                     console.log(room.users);
                 
-                res.send({users:room.users, messages:room.messages, allUsers:allUsers});
+                res.send({users:room.users, messages:room.messages, allUsers:allUsers,description:room.description});
             });
     
     }else{

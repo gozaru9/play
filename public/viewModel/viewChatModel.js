@@ -71,13 +71,11 @@
                     success: function(data) {
                         self.roomName('');
                         self.description('');
-                        console.log(chat);
                     	var socket = io.connect(location.hostname);
                     	socket.send({ cookie: document.cookie });
                         //選択されたメンバーに送信する
                     	socket.emit('create chat', chat);
                         self.selectedMember.removeAll();
-                        console.log(chat);
                         alert('部屋を作成しました。');
                     },
                 　　error: function(XMLHttpRequest, textStatus, errorThrown) {

@@ -32,7 +32,6 @@ var getMyRoom = function (isMyCreate, roomName) {
             for (var i=0; i < roomLength; i++) {
                 element += '<li name=' + rooms[i]._id + '><a name="roomSelectRadio" href="#">'+ rooms[i].name + '</a></li>';
             }
-            console.log(element);
             document.getElementById("roomListUl").innerHTML = element;
     　　},
     　　error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -76,6 +75,7 @@ var selectedRoom = function (mine) {
                 $('#roomUserList').append($("<li>").append(
                     $("<i>",{class: "fa fa-check-circle fa-fw"})).append(data.users[i].name));
             }
+            $('#roomInfomation').html(data.description);
             if (!msgAdd)return;
             var msgLength = data.messages.length;
             for (var j = 0; j < msgLength; j++) {
@@ -194,6 +194,7 @@ $(function() {
                     $('#roomUserList').append($("<li>",{name: data.users[i]._id}).append(
                         $("<i>",{class: data.users[i].status})).append(data.users[i].name));
                 }
+                $('#roomInfomation').html(data.description);
                 if (!msgAdd)return;
                 var msgLength = data.messages.length;
                 for (var j = 0; j < msgLength; j++) {
