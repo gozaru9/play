@@ -39,10 +39,8 @@ exports.index = function(req, res){
             ,function(err, results) {
                 
                 console.log('-----------async end function-------------');
-                //if (err) throw err;
+                console.log(results);
                 var rooms = results[2];
-                console.log('------rooms-------------');
-                console.log(rooms);
                 var name = '';
                 var users=[];
                 var messages=[];
@@ -64,18 +62,13 @@ exports.index = function(req, res){
                     }
                 }
                 var allUsers = results[3];
-                console.log('------allUsers-------------');
-                console.log(allUsers);
-                
                 var allUsersNum = Array.isArray(allUsers) ? allUsers.length : 0;
                 for (var allUserIndex = 0; allUserIndex < allUsersNum; allUserIndex++) {
                     allUsers[allUserIndex].status = getStatusClass(allUsers[allUserIndex].loginStatus);
                 }
-                
-                var fixed = results[0].concat(results[1]);
                 res.render('chat/index', {title: 'chat', userName:req.session.name, 
                     rooms:rooms, targetRoomId:req.body.room, roomName:name, users:users, 
-                    messages:messages, allUsers:allUsers, fixed:fixed});
+                    messages:messages, allUsers:allUsers});
             });
 
     } else {

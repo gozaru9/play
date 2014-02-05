@@ -50,12 +50,62 @@
                     </div>
                     <h2 class="page-header">my fixed sentence</h2>
                     <table class="table table-hover">
-                    
+                        <thead>
+                            <th>title</th>
+                            <th>contents</th>
+                            <th></th>
+                            <th></th>
+                        </thead>
+                        <tbody>
+                        <% maine.forEach(function(myFixed){ %>
+                            <tr>
+                                <td><%= myFixed.title %></td>
+                            </tr>
+                            <tr>
+                                <td><%= myFixed.contents %></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                            </tr>
+                        <% }) %>
+                        </tbody>
                     </table>
         
                     <h2 class="page-header">open sentence</h2>
                     <table class="table table-hover">
-                    
+                        <thead>
+                            <th>title</th>
+                            <th>contents</th>
+                            <th>createby</th>
+                            <th>created</th>
+                            <th>updateby</th>
+                            <th>updated</th>
+                        </thead>
+                        <tbody>
+                        <% open.forEach(function(openFixed){ %>
+                            <tr>
+                                <td><%= openFixed.title %></td>
+                            </tr>
+                            <tr>
+                                <td><%= openFixed.contents %></td>
+                            </tr>
+                            <tr>
+                                <td><%= openFixed.createBy %></td>
+                            </tr>
+                            <tr>
+                                <td><%= openFixed.created %></td>
+                            </tr>
+                            <tr>
+                                <td><%= openFixed.updateBy %></td>
+                            </tr>
+                            <tr>
+                                <td><%= openFixed.updated %></td>
+                            </tr>
+                        <% }) %>
+                        </tbody>
                     </table>
                 </div>
             </div>
