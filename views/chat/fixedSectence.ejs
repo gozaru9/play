@@ -2,9 +2,8 @@
 <html>
     <head>
         <%- include ../head.ejs %>
-        <link href="/font-awesome/css/font-awesome.css" rel="stylesheet">
-        <link href="/stylesheets/sticky-footer-navbar.css" rel="stylesheet">
-        <link href="/stylesheets/chatapp.css" rel="stylesheet">
+        <script type="text/javascript" src="/view-script/fixed.js"></script>
+        
     </head>
     <body>
     <div id="wrap">
@@ -61,8 +60,8 @@
                             <tr>
                                 <td><%= myFixed.title %></td>
                                 <td><%= myFixed.contents %></td>
-                                <td></td>
-                                <td></td>
+                                <td><button type="button" name="myFixedUpdateButton" value="<%= myFixed._id %>" class="btn btn-warning">update</button></td>
+                                <td><button type="button" name="myFixedDeleteButton" value="<%= myFixed._id %>" class="btn btn-danger">delete</button></td>
                             </tr>
                         <% }) %>
                         </tbody>

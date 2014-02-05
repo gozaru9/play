@@ -240,7 +240,6 @@ exports.getUserByRoomId = function(req, res) {
 
         async.parallel(
             [function (callback) {
-//                chat.getMessageById(req.body, callback);
                 chat.getById(req.body.roomId, callback);
             },function (callback) {
                 model.getAll(req, callback);
@@ -304,12 +303,48 @@ exports.memberUpdate = function(req, res) {
         res.send({users : ''});
     }
 };
+/**
+ * リクエストを受け取り、定型文を作成する
+ * 
+ * @author niikawa
+ * @method fixedSectenceSave
+ * @param {Object} req 画面からのリクエスト
+ * @param {Object} res 画面へのレスポンス
+ */
 exports.fixedSectenceSave = function(req, res) {
+    if (req.body._id) {
+        async.series(
+            [function(callback) {
+                fixed.save(req, callback);
+            }]
+            ,function(err, result) {
+                if (err) console.log('fixedSectenceSave err');
+                res.redirect('chat/fixedSectence');
+            }
+        );
+    } else {
+        res.redirect('chat/fixedSectence');
+    }
     
-    fixed.save(req);
-    res.send({save : ''});
-//    res.redirect('/chat/lobby');
 };
+/**
+ * リクエストを受け取り、定型文を削除する
+ * 
+ * @author niikawa
+ * @method fixedSectenceSave
+ * @param {Object} req 画面からのリクエスト
+ * @param {Object} res 画面へのレスポンス
+ */
+exports.fixedSectenceDelete = function(req, res) {
+    console.log('------fixedSectenceDelete--------');
+
+    if (req.body._id) {
+        fixed.remove(req.body._id);
+    }
+    res.redirect('chat/fixedSectence');
+    
+};
+
 /**
  * パラメータに応じたステータスを表示するclass名を返却する
  * 

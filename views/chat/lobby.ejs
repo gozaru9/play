@@ -2,9 +2,7 @@
 <html>
     <head>
         <%- include ../head.ejs %>
-        <link href="/font-awesome/css/font-awesome.css" rel="stylesheet">
-        <link href="/stylesheets/sticky-footer-navbar.css" rel="stylesheet">
-        <link href="/stylesheets/chatapp.css" rel="stylesheet">
+        <script type="text/javascript" src="/view-script/lobby.js"></script>
     </head>
     <body>
     <div id="wrap">
@@ -21,7 +19,7 @@
                 <% rooms.forEach(function(room){ %>
                 <div class="col-md-4">
                     <div class="panel panel-info">
-                        <div class="panel-heading"><a href="#" id=<%= room._id %> name="moveRoom"><%= room.name %></a></div>
+                        <div class="panel-heading"><a href="#" name="moveChat" id=<%= room._id %>><%= room.name %></a></div>
                         <div class="panel-body">
                             <em><%= room.description %></em>
                             </br><hr>
@@ -37,13 +35,4 @@
     <%- include ../chat/createRoom.ejs %>
     </div>
     </body>
-    <script>
-    $(function() {
-        $("a[name=moveRoom]").click(function() {
-            var data = {room :$(this).attr('id')};
-            createFormSubmitByParam('/chat', data);
-            return false;
-        });
-    });
-    </script>
 </html>

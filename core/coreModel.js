@@ -107,7 +107,7 @@ coreModel.prototype.update = function (req, callback) {
     target.findOne({_id:req.body._id},function(err, target){
     if(err || target === null){return;}
         //TODO コレクションのモデルを動的にここで判定できるのか？
-        target.save();
+        target.save(callback);
     });
 };
 /**
@@ -118,8 +118,14 @@ coreModel.prototype.update = function (req, callback) {
  * @param {Object} _id
  * @param {Function} callback
  */
-coreModel.prototype.remove = function(_id, callback){
-
+coreModel.prototype.remove = function(_id){
+    
+    var target = this.db.model(this.modelName);
+    target.findOne({'_id': _id},function(err,item){
+    if(err || item === null){return;}
+        console.log('-----remove item------');
+        item.remove();
+    });
 };
 
 //モジュール化

@@ -115,6 +115,7 @@ app.post('/chat/getMyRoom', chat.getMyRoom);
 app.post('/chat/getUserByRoomId', chat.getUserByRoomId);
 app.post('/chat/memberUpdate', chat.memberUpdate);
 app.post('/chat/fixedSectence/save', chat.fixedSectenceSave);
+app.post('/chat/fixedSectence/delete', chat.fixedSectenceDelete);
 
 var server = http.createServer(app).listen(app.get('port'), function(){
 console.log("Express server listening on port " + app.get('port'));

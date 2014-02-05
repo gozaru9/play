@@ -89,20 +89,7 @@ fixedModel.prototype.save = function(req, callback) {
     var Fixed = new myModel(req.body);
     Fixed.creatBy = req.session._id;
     Fixed.updateBy = req.session._id;
-
-    //コールバック内で使用するため参照を保持
-    var nextFunc  = this.nextFunc;
-    var parameter = this.parameter;
-    
-    Fixed.save(function(err) {
-        if (err) {
-            console.log('fixed save error');
-            throw err;
-        }
-        if (typeof(nextFunc) == 'function') {
-            nextFunc(parameter);
-        }
-    });
+    Fixed.save(callback);
 };
 
 /**
@@ -114,18 +101,6 @@ fixedModel.prototype.save = function(req, callback) {
  * @param {Function} callback
  */
 fixedModel.prototype.update = function(req) {
-
-};
-
-/**
- * 定型文を削除する.
- * 
- * @method remove
- * @author niikawa
- * @param {Object} req 画面からのリクエスト
- * @param {Function} callback
- */
-fixedModel.prototype.remove = function(req) {
 
 };
 
