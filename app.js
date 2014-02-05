@@ -123,6 +123,8 @@ console.log("Express server listening on port " + app.get('port'));
 var io=require('socket.io').listen(server);
 var connect = require('connect');
 io.configure(function () {
+    io.set("transports", ["xhr-polling"]); 
+    io.set("polling duration", 10);     
     io.set('authorization', function (handshakeData, callback) {
         if(handshakeData.headers.cookie) {
                 
