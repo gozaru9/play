@@ -1,3 +1,4 @@
+//------------------heroku用-----------------
 
 /**
  * Module dependencies.
@@ -106,14 +107,16 @@ app.get('/code', code.index);
 app.post('/code/regist', code.regist);
 
 //チャット
-app.get('/chat', chat.index);
+app.post('/chat', chat.index);
 app.post('/chat/login', chat.login);
 app.get('/chat/logout', chat.logout);
 app.get('/chat/lobby', chat.lobby);
+app.get('/chat/fixedSectence', chat.fixedSectence);
 app.post('/chat/create', chat.create);
 app.post('/chat/getMyRoom', chat.getMyRoom);
 app.post('/chat/getUserByRoomId', chat.getUserByRoomId);
 app.post('/chat/memberUpdate', chat.memberUpdate);
+app.post('/chat/fixedSectence/save', chat.fixedSectenceSave);
 
 var server = http.createServer(app).listen(app.get('port'), function(){
 console.log("Express server listening on port " + app.get('port'));
@@ -215,9 +218,13 @@ var chatRoom = io.sockets.on('connection', function (socket) {
         data.userId=socket.handshake.session._id;
         data.userName=socket.handshake.session.name;
         data.time=moment().format('YYYY-MM-DD hh:mm:ss');
-        chatRoom.in(data.roomId).emit('msg push', data);
+        chatRoom.in(data.roomId).emit('msg push', data, function(data) {
+            
+            console.log('---------------------------------');
+            console.log(data);
+        });
         
-        console.log(io.sockets.clients(data.roomId));
+//        console.log(io.sockets.clients(data.roomId));
         
         Chat.addMessage(data);
         
@@ -301,6 +308,7 @@ var chatRoom = io.sockets.on('connection', function (socket) {
     //接続が解除された時に実行する
     socket.on('disconnect', function() {
         clearInterval(sessionReloadIntervalID);
+        User.updateStatus(socket.handshake.session._id, 4);
         console.log('disconnected');
     });
 });
