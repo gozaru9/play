@@ -276,12 +276,13 @@ var chatRoom = io.sockets.on('connection', function (socket) {
     
     socket.on('create chat', function(chat) {
         
-        console.log('create chat');
+        console.log('-----------create chat------------');
+        console.log(chat.users.length);
+        console.log(chat.users);
         var memberLen = chat.users.length;
 
         for (var i=0; i < memberLen; i++) {
             User.getById(chat.users[i]._id, function(err, user) {
-                console.log('callback get by id');
                 if (err) console.log('create room message err:'+err);
                 if (user) {
                     console.log(user);

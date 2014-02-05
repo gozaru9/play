@@ -12,8 +12,6 @@ var roomNotification = function (roomName) {
     $("#messageInfo").delay(5000).slideToggle("slow");
 };
 var joinRoom = function (id) {
-    
-    console.log('call test functino!');
     socket.emit('join room', id);
 };
 var getMyRoom = function (isMyCreate, roomName) {

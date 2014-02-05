@@ -151,9 +151,11 @@ exports.login = function(req, res){
             if (results.length === 0) {
                 res.redirect('/login');
             }
+            
             req.session._id = results[0]._id;
             req.session.name = results[0].name;
             req.session.isLogin = true;
+            model.updateStatus(req.session._id, 1);
             res.redirect('/chat/lobby');
         });
 };

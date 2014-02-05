@@ -48,14 +48,18 @@
                 if (self.roomName().length === 0) {
                     return;
                 }
-                if (self.selectedMember().length === 0) {
+                var memberNum = self.selectedMember().length;
+                if (memberNum === 0) {
                     return;
                 }
-                
+                var users = [];
+                for (var i=0; i < memberNum; i++) {
+                    users[i] = self.selectedMember()[i];
+                }
                 var chat = {
                     name: self.roomName(),
                     description: self.description(),
-                    users: self.selectedMember(),
+                    users: users,
                 };
                 
                 $.ajax({
@@ -67,11 +71,13 @@
                     success: function(data) {
                         self.roomName('');
                         self.description('');
+                        console.log(chat);
                     	var socket = io.connect(location.hostname);
                     	socket.send({ cookie: document.cookie });
                         //選択されたメンバーに送信する
                     	socket.emit('create chat', chat);
                         self.selectedMember.removeAll();
+                        console.log(chat);
                         alert('部屋を作成しました。');
                     },
                 　　error: function(XMLHttpRequest, textStatus, errorThrown) {

@@ -14,6 +14,7 @@
             console.log(target);
             if (target !== 'undefined'){
                 var socket = io.connect(location.hostname);
+
                 //connect all room
                 <% rooms.forEach(function(room){ %>
                     joinRoom("<%= room._id %>");
