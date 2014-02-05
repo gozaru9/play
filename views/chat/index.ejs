@@ -13,7 +13,7 @@
             var target = "<%= targetRoomId %>";
             console.log(target);
             if (target !== 'undefined'){
-                var socket = io.connect('https://play-c9-gozaru9.c9.io');
+                var socket = io.connect(location.hostname);
                 //connect all room
                 <% rooms.forEach(function(room){ %>
                     joinRoom("<%= room._id %>");

@@ -1,7 +1,7 @@
 
 //パフォーマンスを考慮しappendはしない
 
-var socket = io.connect('https://play-c9-gozaru9.c9.io');
+var socket = io.connect(location.hostname);
 socket.send({ cookie: document.cookie });
 socket.on('connect', function() {
 	console.log('connected');

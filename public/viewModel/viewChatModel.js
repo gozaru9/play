@@ -67,7 +67,7 @@
                     success: function(data) {
                         self.roomName('');
                         self.description('');
-                    	var socket = io.connect('https://play-c9-gozaru9.c9.io');
+                    	var socket = io.connect(location.hostname);
                     	socket.send({ cookie: document.cookie });
                         //選択されたメンバーに送信する
                     	socket.emit('create chat', chat);

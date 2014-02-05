@@ -127,7 +127,7 @@ io.configure(function () {
     io.set("polling duration", 10);     
     io.set('authorization', function (handshakeData, callback) {
         if(handshakeData.headers.cookie) {
-                
+
             var cookie = require('cookie').parse(decodeURIComponent(handshakeData.headers.cookie));
             //cookie中の署名済みの値を元に戻す
             cookie = connect.utils.parseSignedCookies(cookie, app.get('secretKey'));
