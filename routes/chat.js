@@ -90,9 +90,8 @@ exports.index = function(req, res){
 exports.lobby = function(req, res){
 
     if (req.session.isLogin) {
-        async.parallel(
+        async.series(
             [function (callback) {
-                
                 chat.getMyRoom(req, callback);
             },function (callback) {
                 model.getAll(req, callback);
@@ -154,11 +153,9 @@ exports.fixedSectence = function(req, res){
  */
 exports.login = function(req, res){
     
-    async.waterfall(
-        [function (callback) {
-            model.login(req.body.mailAddress, req.body.password, callback);
-        }]
-        ,function(err, results) {
+    
+    model.login(req.body.mailAddress, req.body.password, 
+        function(err, results) {
             if (err) {
                 res.render('/login', {title: 'LOGIN', errMsg:'ごらぁぁぁ'});
             }
