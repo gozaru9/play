@@ -94,19 +94,19 @@ exports.lobby = function(req, res){
             [function (callback) {
                 
                 chat.getMyRoom(req, callback);
+            },function (callback) {
+                model.getAll(req, callback);
             }]
             ,function(err, results) {
                 
                 console.log('----------lobby------');
                 console.log(results[0]);
-                /*
                 var allUsers = results[1];
                 var allUsersNum = allUsers.length;
                 for (var allUserIndex = 0; allUserIndex < allUsersNum; allUserIndex++) {
                     allUsers[allUserIndex].status = getStatusClass(allUsers[allUserIndex].loginStatus);
                 }
-                */
-                res.render('chat/lobby', {title: 'LOBBY', userName:req.session.name, rooms:results[0]});
+                res.render('chat/lobby', {title: 'LOBBY', userName:req.session.name, rooms:results[0], allUsers: allUsers});
             });
     } else {
         res.render('login/index', {title: 'LOGIN', errMsg:''});
@@ -254,23 +254,9 @@ exports.getUserByRoomId = function(req, res) {
                     console.log(' room is not found:'+req.body.roomId);
                 }
                 
-                var roomUserNum = room.users.length;
-                var allUsersNum = allUsers.length;
-                for (var roomMemberIndex = 0; roomMemberIndex < roomUserNum; roomMemberIndex++)  {
-                    
-                    for (var allUserIndex = 0; allUserIndex < allUsersNum; allUserIndex++) {
-                        
-                        if (room.users[roomMemberIndex]._id == allUsers[allUserIndex]._id) {
-                            
-                            room.users[roomMemberIndex].status
-                                = getStatusClass(allUsers[allUserIndex].loginStatus);
-                            break;
-                        }
-                    }
-                }
-                    console.log(room.users);
-                
-                res.send({users:room.users, messages:room.messages, allUsers:allUsers,description:room.description});
+                craeteMemberStatus(room.users, allUsers);
+                res.send({users:room.users, messages:room.messages
+                    , allUsers:allUsers,description:room.description});
             });
     
     }else{
@@ -289,14 +275,18 @@ exports.memberUpdate = function(req, res) {
     
     if (req.body.roomId) {
 
-        async.parallel(
+        async.series(
             [function (callback) {
                 chat.memberUpdate(req.body, callback);
+            }, function (callback) {
+                chat.getById(req.body.roomId, callback);
+            },function (callback) {
+                model.getAll(req, callback);
             }]
             ,function(err, results) {
-                
-                console.log('');
-                res.send({users : ''});
+                var users = req.body.users;
+                craeteMemberStatus(users, results[2]);
+                res.send({users : users});
             });
     
     }else{
@@ -333,6 +323,7 @@ exports.fixedSectenceSave = function(req, res) {
  * @param {Object} res 画面へのレスポンス
  */
 exports.fixedSectenceUpdate = function(req, res) {
+    
     console.log('------fixedSectenceUpdate--------');
     if (req.body.id) {
         
@@ -361,6 +352,7 @@ exports.fixedSectenceUpdate = function(req, res) {
  * @param {Object} res 画面へのレスポンス
  */
 exports.fixedSectenceDelete = function(req, res) {
+    
     console.log('------fixedSectenceDelete--------');
     if (req.body._id) {
         fixed.remove(req.body._id);
@@ -390,7 +382,6 @@ exports.getFixedById = function(req, res) {
         );
     }
 };
-
 /**
  * パラメータに応じたステータスを表示するclass名を返却する
  * 
@@ -414,4 +405,32 @@ function getStatusClass (val) {
     } 
     //不明の場合はreturn home
     return 'fa fa-sign-out fa-fw';
-};
+}
+/**
+ * 部屋のメンバーのステータスを設定する
+ * 
+ * @author niikawa
+ * @method craeteMemberStatus
+ * @param {Array} roomMember 部屋に属するメンバー
+ * @param {Array} allUsers 全ユーザー
+ */
+function craeteMemberStatus(roomMember, allUsers) {
+    console.log('-------craeteMemberStatus---------');
+    console.log(roomMember);
+    
+    var roomUserNum = roomMember.length;
+    var allUsersNum = allUsers.length;
+    for (var roomMemberIndex = 0; roomMemberIndex < roomUserNum; roomMemberIndex++)  {
+        
+        for (var allUserIndex = 0; allUserIndex < allUsersNum; allUserIndex++) {
+            
+            if (roomMember[roomMemberIndex]._id == allUsers[allUserIndex]._id) {
+                
+                roomMember[roomMemberIndex].status
+                    = getStatusClass(allUsers[allUserIndex].loginStatus);
+                break;
+            }
+        }
+    }
+    return roomMember;
+}

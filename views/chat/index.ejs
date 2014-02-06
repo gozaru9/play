@@ -4,7 +4,8 @@
         <%- include ../head.ejs %>
         <script type="text/javascript" src="/socket.io/socket.io.js"></script>
         <script type="text/javascript" src="/javascripts/client.js"></script>
-        
+        <script type="text/javascript" src="/view-script/chat.js"></script>
+
         <script>
         $(function() {
             var target = "<%= targetRoomId %>";
@@ -36,10 +37,13 @@
                             
                             $('#roomUserList').children().remove();
                             var length = data.users.length;
+                            var toElement = '';
                             for (var i = 0; i < length; i++) {
                                 $('#roomUserList').append($("<li>",{name: data.users[i]._id}).append(
                                     $("<i>",{class: data.users[i].status})).append(data.users[i].name));
+                                toElement += '<li><a name="toTarget" href="#">'+data.users[i].name+'</a></li>';
                             }
+                            document.getElementById("toUl").innerHTML = toElement;
                             var msgLength = data.messages.length;
                             for (var j = 0; j < msgLength; j++) {
                                 $('#'+target).append($('<ul class="chat"><li class="left clearfix"><!--<span class="chat-img pull-left"><img src="img/ff.gif" alt="User Avatar" class="img-circle" /></span>--><div class="chat-body clearfix"><div class="header"><strong class="primary-font">'+data.messages[j].user.name+'</strong><small class="pull-right text-muted"><i class="fa fa-clock-o fa-fw"></i>'+data.messages[j].time+'</small><p>'+nl2br(escapeHTML(data.messages[j].msg))+'</p></div></li></ul></div>'));
@@ -112,7 +116,11 @@
                                     <% }) %>
                                     </ul>
                                 </div>                                        
-                            
+                                <div id="toDiv" class="btn-group">
+                                    <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">TO <span class="caret"></span></button>
+                                    <ul id="toUl" class="dropdown-menu">
+                                    </ul>
+                                </div>                                        
                                 <div class="send-message-box">
                                 <p>
                                     <div class="input-area">

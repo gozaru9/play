@@ -7,9 +7,16 @@ socket.on('connect', function() {
 	console.log('connected');
 });
 var roomNotification = function (roomName) {
+    $().toastmessage('showToast', {
+        text     : roomName+'に招待されました',
+        sticky   : true,
+        type     : 'notice'
+    });    
+/*    
     $('#msgRoom').text(roomName);
     $('#messageInfo').slideToggle("slow");
     $("#messageInfo").delay(5000).slideToggle("slow");
+    */
 };
 var joinRoom = function (id) {
     socket.emit('join room', id);
@@ -71,10 +78,13 @@ var selectedRoom = function (mine) {
         success: function(data) {
             $('#roomUserList').children().remove();
             var length = data.users.length;
+            var toElement = '';
             for (var i = 0; i < length; i++) {
                 $('#roomUserList').append($("<li>").append(
                     $("<i>",{class: "fa fa-check-circle fa-fw"})).append(data.users[i].name));
+                toElement += '<li><a name="toTarget" href="#">'+data.users[i].name+'</a></li>';
             }
+            document.getElementById("toUl").innerHTML = toElement;
             $('#roomInfomation').html(data.description);
             if (!msgAdd)return;
             var msgLength = data.messages.length;
@@ -186,14 +196,17 @@ $(function() {
             data: ({roomId:id}),
             cache: false,
             success: function(data) {
-                console.log(data);
                 $('#roomUserList').children().remove();
                 var length = data.users.length;
+                var toElement = '';
                 for (var i = 0; i < length; i++) {
                     console.log(data.users[i].name);
                     $('#roomUserList').append($("<li>",{name: data.users[i]._id}).append(
                         $("<i>",{class: data.users[i].status})).append(data.users[i].name));
+                    toElement += '<li><a name="toTarget" href="#">'+data.users[i].name+'</a></li>';
                 }
+                document.getElementById("toUl").innerHTML = toElement;
+
                 $('#roomInfomation').html(data.description);
                 if (!msgAdd)return;
                 var msgLength = data.messages.length;
@@ -313,8 +326,6 @@ $(function() {
 		//ここはオブジェクト生成にする
         $('#'+data.roomId).append($('<ul class="chat"><li class="left clearfix"><!--<span class="chat-img pull-left"><img src="img/ff.gif" alt="User Avatar" class="img-circle" /></span>--><div class="chat-body clearfix"><div name="reseveMessage" class="header"><strong class="primary-font">'+data.userName+'</strong><small class="pull-right text-muted"><i class="fa fa-clock-o fa-fw"></i>'+data.time+'</small><p>'+nl2br(escapeHTML(data.message))+'</p></div></li></ul></div>'));
 		var target = $('#roomList').find(".active").attr("name");
-		console.log(target); 
-		console.log(data.roomId); 
 		if (target != data.roomId) {
             var num = $('span[name='+data.roomId+']').html();
             if (num === undefined) {
@@ -369,7 +380,6 @@ $(function() {
 	});
 	//ユーザーの追加/変更
 	$('#memberEditButton').click(function(){
-   
         var id = $(this).val();
         $('#selectEditMember').children().remove();
         $('#selectedEditMember').children().remove();
@@ -394,13 +404,5 @@ $(function() {
         　　    console.log(textStatus);
         　　},
         });
-	});
-	//定型文
-	$('a[name="fixedSectences"]').click(function(){
-        var val = $(this).attr('href');
-        $('#message').val($(val).val());
-        $('#fixedSectencesDiv').removeClass("open");
-        $('#message').focus();
-        return false;
 	});
 });

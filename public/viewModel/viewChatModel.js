@@ -7,9 +7,8 @@
                 ko.applyBindings(new chatCreateViewModel(data.items), document.getElementById("createChatDiv"));
             }
         });
-
         var chatCreateViewModel = function(items) {
-    
+            
             var self = this;
             self.roomName = ko.observable();
             self.description = ko.observable();
@@ -40,6 +39,7 @@
             }
             //選択済みメンバーの全削除
             self.removeAll = function(){
+                console.log('view model remove all');
                 self.selectedMember.removeAll();
             }
             //チャット作成
@@ -73,9 +73,9 @@
                         self.description('');
                     	var socket = io.connect(location.hostname);
                     	socket.send({ cookie: document.cookie });
-                        //選択されたメンバーに送信する
                     	socket.emit('create chat', chat);
                         self.selectedMember.removeAll();
+                        $('#chatCreateButton').attr("disabled", "disabled");
                         alert('部屋を作成しました。');
                     },
                 　　error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -83,5 +83,5 @@
                 　　    console.log(textStatus);
                 　　},
                 });
-            }
+            };
         };
