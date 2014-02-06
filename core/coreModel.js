@@ -75,7 +75,8 @@ coreModel.prototype.getAll = function(res,callback){
  * @param {Function} callback
  */
 coreModel.prototype.getById = function(id, callback){
-    
+    console.log('-----------get by id ----------');
+    console.log(this.modelName+':'+id);
     var target = this.db.model(this.modelName);
     target.findOne({'_id':id}, function(err, docs){
         callback(err, docs);

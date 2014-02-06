@@ -100,8 +100,23 @@ fixedModel.prototype.save = function(req, callback) {
  * @param {Object} req 画面からのリクエスト
  * @param {Function} callback
  */
-fixedModel.prototype.update = function(req) {
-
+fixedModel.prototype.update = function(data, callback) {
+    console.log('----- fixed model update----');
+    console.log(data);
+    
+    var Fixed = this.db.model(collection);
+    Fixed.findOne({ "_id" : data.id}, function(err, target){
+        
+        console.log(target);
+        
+        target.updateBy = data.updateBy;
+        target.updated = moment().format('YYYY-MM-DD hh:mm:ss');
+        target.isOpen = data.isOpen;
+        target.title = data.title;
+        target.contents = data.contents;
+        target.save();
+        callback(err, '');
+    });
 };
 
 module.exports = fixedModel;

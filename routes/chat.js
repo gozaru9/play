@@ -328,7 +328,35 @@ exports.fixedSectenceSave = function(req, res) {
  * リクエストを受け取り、定型文を削除する
  * 
  * @author niikawa
- * @method fixedSectenceSave
+ * @method fixedSectenceUpdate
+ * @param {Object} req 画面からのリクエスト
+ * @param {Object} res 画面へのレスポンス
+ */
+exports.fixedSectenceUpdate = function(req, res) {
+    console.log('------fixedSectenceUpdate--------');
+    if (req.body.id) {
+        
+        async.series(
+            [function(callback) {
+                var data = req.body;
+                data.updateBy = req.session._id;
+                fixed.update(data, callback);
+            }]
+            ,function(err, result) {
+                if (err) console.log('fixedSectenceUpdate err');
+                res.redirect('chat/fixedSectence');
+            }
+        );
+        
+    } else {
+        res.redirect('chat/fixedSectence');
+    }
+};
+/**
+ * リクエストを受け取り、定型文を削除する
+ * 
+ * @author niikawa
+ * @method fixedSectenceDelete
  * @param {Object} req 画面からのリクエスト
  * @param {Object} res 画面へのレスポンス
  */
@@ -338,6 +366,29 @@ exports.fixedSectenceDelete = function(req, res) {
         fixed.remove(req.body._id);
     }
     res.redirect('chat/fixedSectence');
+};
+/**
+ * リクエストを受け取り、IDに合致した定型文を取得する（ajax）
+ * 
+ * @author niikawa
+ * @method getFixedById
+ * @param {Object} req 画面からのリクエスト
+ * @param {Object} res 画面へのレスポンス
+ */
+exports.getFixedById = function(req, res) {
+    
+    if (req.body.fixedId) {
+        
+        async.series(
+            [function(callback) {
+                fixed.getById(req.body.fixedId, callback);
+            }]
+            ,function(err, result) {
+                console.log(result[0]);
+                res.send({target: result[0]});
+            }
+        );
+    }
 };
 
 /**
