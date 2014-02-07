@@ -239,7 +239,9 @@ $(function() {
             message: $('#message').val(),
             roomId: target,
             toTarget:toList,
+            toNameList: $('#toUser').text().trim().substring(1).split('×'),
             roomName:$('#roomName').html(),
+            
         };
 		socket.emit('msg send', data);
         $('#message').val('');
@@ -325,7 +327,13 @@ $(function() {
 	//サーバーが受け取ったメッセージを返して実行する
 	socket.on('msg push', function (data) {
 		//ここはオブジェクト生成にする
-        $('#'+data.roomId).append($('<ul class="chat"><li class="left clearfix"><!--<span class="chat-img pull-left"><img src="img/ff.gif" alt="User Avatar" class="img-circle" /></span>--><div class="chat-body clearfix"><div name="reseveMessage" class="header"><strong class="primary-font">'+data.userName+'</strong><small class="pull-right text-muted"><i class="fa fa-clock-o fa-fw"></i>'+data.time+'</small><p>'+nl2br(escapeHTML(data.message))+'</p></div></li></ul></div>'));
+		console.log(data.toNameList);
+		if (data.toNameList[0] === '') {
+            $('#'+data.roomId).append($('<ul class="chat"><li class="left clearfix"><!--<span class="chat-img pull-left"><img src="img/ff.gif" alt="User Avatar" class="img-circle" /></span>--><div class="chat-body clearfix"><div name="reseveMessage" class="header"><strong class="primary-font">'+data.userName+'</strong><small class="pull-right text-muted"><i class="fa fa-clock-o fa-fw"></i>'+data.time+'</small><p>'+nl2br(escapeHTML(data.message))+'</p></div></li></ul></div>'));
+		}else {
+            $('#'+data.roomId).append(
+                $('<ul class="chat"><li class="left clearfix"><!--<span class="chat-img pull-left"><img src="img/ff.gif" alt="User Avatar" class="img-circle" /></span>--><div class="chat-body clearfix"><div name="reseveMessage" class="header"><strong class="primary-font">'+data.userName+'</strong><small class="pull-right text-muted"><i class="fa fa-clock-o fa-fw"></i>'+data.time+'</small><p><span class="label label-success text-center">TO</span>'+' &nbsp;'+data.toNameList.join()+'</p><p>'+nl2br(escapeHTML(data.message))+'</p></div></li></ul></div>'));
+		}
 		var target = $('div[name=roomList]').find(".active").attr("name");
 		if (target != data.roomId) {
             var num = $('span[name='+data.roomId+']').html();
@@ -340,7 +348,6 @@ $(function() {
 		var my = $('#cryptoId').val();
 		$('div[name=roomList]').find(".active").attr("name");
 		var roomName = $('li[name='+data.roomId+']').text();
-		console.log(roomName);
 		for (var toTargetIndex=0; toTargetIndex < toNum; toTargetIndex++) {
 		    if (my == data.toTarget[toTargetIndex]) {
                 $().toastmessage('showToast', {
