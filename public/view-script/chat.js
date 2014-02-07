@@ -134,8 +134,8 @@ $(function() {
         $('#toDiv').removeClass("open");
         var element = '<div class="to-user to-user-dismissable">'
                     + '<button type="button" class="close" data-dismiss="to-user" aria-hidden="true">&times;</button>'
-                    + $(this).text() + '</div>'
-                    + '<input type="hidden" name="toList" value='+$(this).attr('href')+'>';
+                    + '<input type="hidden" name="toList" value='+$(this).attr('href')+'>'                    
+                    + $(this).text() + '</div>';
         $('#toUser').append(element);
         return false;
 	});
