@@ -174,7 +174,6 @@ var userModel = require('./model/userModel');
 var Chat = new chatModel();
 var User = new userModel();
 var moment = require('moment');
-//io.of('/chat').on
 var chatRoom = io.sockets.on('connection', function (socket) {
     
     console.log('sessionID ', socket.handshake.sessionID);
@@ -187,12 +186,9 @@ var chatRoom = io.sockets.on('connection', function (socket) {
             socket.handshake.session.touch().save();
         });
     }, 60 * 2 * 1000);
-
-    //クライアント側からのイベントを受け取る。
+    //個別メッセージ
     socket.on('individual send', function (data) {
         
-        console.log('individual send!!');
-        console.log(data);
         //io.sockets.manager.roomClients[socket.id]
         data.userId=socket.handshake.session._id;
         data.userName=socket.handshake.session.name;
@@ -214,24 +210,17 @@ var chatRoom = io.sockets.on('connection', function (socket) {
             socket.emit('individual my push', data);
         });
     });
-    
+    //部屋メッセージ
     socket.on('msg send', function (data) {
         
-        //io.sockets.manager.roomClients[socket.id]
         data.userId=socket.handshake.session._id;
         data.userName=socket.handshake.session.name;
         data.time=moment().format('YYYY-MM-DD hh:mm:ss');
-        chatRoom.in(data.roomId).emit('msg push', data, function(data) {
-            
-            console.log('---------------------------------');
-            console.log(data);
-        });
-        
-//        console.log(io.sockets.clients(data.roomId));
-        
+        chatRoom.in(data.roomId).emit('msg push', data);
+
         Chat.addMessage(data);
-        
     });
+    //全体メッセージ
     socket.on('all send', function (msg) {
 
         //イベントを実行した方に実行する
@@ -239,6 +228,7 @@ var chatRoom = io.sockets.on('connection', function (socket) {
         //イベントを実行した方以外に実行する
         socket.broadcast.emit('all push', msg);
     });
+    //ステータス変更
     socket.on('status change', function (values) {
         
         var msg = '';
@@ -271,17 +261,15 @@ var chatRoom = io.sockets.on('connection', function (socket) {
         //イベントを実行した方以外に実行する
         socket.broadcast.emit('status changed', data);
     });
-    
+    //対象の部屋とのコネクション接続
     socket.on('join room', function(roomId) {
         
         socket.join(roomId);
     });
-    
+    //部屋作成時の通知
     socket.on('create chat', function(chat) {
         
         console.log('-----------create chat------------');
-        console.log(chat.users.length);
-        console.log(chat.users);
         var memberLen = chat.users.length;
 
         for (var i=0; i < memberLen; i++) {
@@ -302,7 +290,7 @@ var chatRoom = io.sockets.on('connection', function (socket) {
             });
         }
     });
-    
+    //部屋とのコネクションを切る
     socket.on('leave room', function(roomId) {
         
         console.log('leave room');

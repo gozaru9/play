@@ -49,6 +49,26 @@ table {
   overflow: auto;
   height: 100px;
 }
+.to-user {
+  padding: 7px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: #31708f;
+  background-color: #d9edf7;
+  border-color: #bce8f1;
+  width:100px;
+}
+.to-user-dismissable {
+  padding-right: 15px;
+}
+
+.to-user-dismissable .close {
+  position: relative;
+  top: -2px;
+  right: -11px;
+  color: inherit;
+}
+
 /*     Header
 /* ------------------------------------- */
 #header {

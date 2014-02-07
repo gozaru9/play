@@ -69,7 +69,7 @@ exports.index = function(req, res){
                 
                 var fixed = results[0].concat(results[1]);
                 
-                res.render('chat/index', {title: 'chat', userName:req.session.name, 
+                res.render('chat/index', {title: 'chat', userName:req.session.name, _id:req.session._id,
                     rooms:rooms, targetRoomId:req.body.room, roomName:name, users:users, 
                     messages:messages, allUsers:allUsers, fixed:fixed});
             });
@@ -105,9 +105,12 @@ exports.lobby = function(req, res){
                 for (var allUserIndex = 0; allUserIndex < allUsersNum; allUserIndex++) {
                     allUsers[allUserIndex].status = getStatusClass(allUsers[allUserIndex].loginStatus);
                 }
-                res.render('chat/lobby', {title: 'LOBBY', userName:req.session.name, rooms:results[0], allUsers: allUsers});
+                res.render('chat/lobby', 
+                    {title: 'LOBBY', userName:req.session.name, _id:req.session._id,rooms:results[0], allUsers: allUsers});
             });
     } else {
+        console.log('lobby session isLogin false');
+        console.log(req.session);
         res.render('login/index', {title: 'LOGIN', errMsg:''});
     }
 };
@@ -136,7 +139,7 @@ exports.fixedSectence = function(req, res){
                 if (err) throw err;
                 res.render('chat/fixedSectence', 
                     {title: 'fixedSectence', userName:req.session.name, 
-                    mineFixed:results[1], openFixed:results[0]});
+                    _id:req.session._id, mineFixed:results[1], openFixed:results[0]});
             });
         
     } else {
@@ -160,7 +163,9 @@ exports.login = function(req, res){
                 res.render('/login', {title: 'LOGIN', errMsg:'ごらぁぁぁ'});
             }
             console.log('-----------login------');
-            console.log(results);
+            console.log(results[0]);
+            console.log(results[0]._id);
+            console.log(results[0]._name);
 
             if (results.length === 0) {
                 res.redirect('/login');

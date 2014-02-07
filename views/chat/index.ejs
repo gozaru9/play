@@ -41,7 +41,8 @@
                             for (var i = 0; i < length; i++) {
                                 $('#roomUserList').append($("<li>",{name: data.users[i]._id}).append(
                                     $("<i>",{class: data.users[i].status})).append(data.users[i].name));
-                                toElement += '<li><a name="toTarget" href="#">'+data.users[i].name+'</a></li>';
+                                toElement += '<li><a name="toTarget" href='+data.users[i]._id+'>'+data.users[i].name+'</a></li>';
+                                
                             }
                             document.getElementById("toUl").innerHTML = toElement;
                             var msgLength = data.messages.length;
@@ -67,18 +68,7 @@
     <body>
     <div id="wrap">
         <%- include ../header.ejs %>
-
-        <div id="messageInfo" class="toggleMessage" style="display: none;">
-            <div class="panel panel-info">
-                <div class="panel-heading">部屋に招待されました</div>
-                <div class="panel-body">
-                    <span id="msgRoom"></span>
-                </div>
-            </div>
-        </div>
-    
         <div id="individualMessageInfo"></div>
-        
         <div class="chat-container">
             <div class="row">
                 <div class="col-md-12">
@@ -107,27 +97,31 @@
                                 <div id="contentsAll" class="panel-body active"></div>
                             </div>
                             <div class="panel-footer">
-                                <div id="fixedSectencesDiv" class="btn-group">
-                                    <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">定型文 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu">
-                                    <% fixed.forEach(function(contents){ %>
-                                        <li><a name="fixedSectences" href="#<%= contents._id %>"><%= contents.title %></a></li>
-                                        <input type="hidden" id="<%= contents._id %>" value="<%= contents.contents %>">
-                                    <% }) %>
-                                    </ul>
-                                </div>                                        
-                                <div id="toDiv" class="btn-group">
-                                    <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">TO <span class="caret"></span></button>
-                                    <ul id="toUl" class="dropdown-menu">
-                                    </ul>
-                                </div>                                        
-                                <div class="send-message-box">
-                                <p>
-                                    <div class="input-area">
-                                          <textarea id="message" class="form-control" rows="3" placeholder="メッセージを入力してください"></textarea>
+                                <div id="sendMenu" class="row">
+                                    <div id="fixedSectencesDiv" class="btn-group col-md-1">
+                                        <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">定型文 <span class="caret"></span></button>
+                                        <ul class="dropdown-menu">
+                                        <% fixed.forEach(function(contents){ %>
+                                            <li><a name="fixedSectences" href="#<%= contents._id %>"><%= contents.title %></a></li>
+                                            <input type="hidden" id="<%= contents._id %>" value="<%= contents.contents %>">
+                                        <% }) %>
+                                        </ul>
+                                    </div>                  
+                                    <div id="toDiv" class="btn-group col-md-1">
+                                        <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">TO <span class="caret"></span></button>
+                                        <ul id="toUl" class="dropdown-menu"></ul>
                                     </div>
-                                </p>
-                                <button type="button" id="sendButton" class="btn btn-success btn-lg">Send Message</button>
+                                    <div id="toUser" class="col-md-10">
+                                    </div>
+                                </div> 
+
+                                <div class="send-message-box">
+                                    <p>
+                                        <div class="input-area">
+                                            <textarea id="message" class="form-control" rows="3" placeholder="メッセージを入力してください"></textarea>
+                                        </div>
+                                    </p>
+                                    <button type="button" id="sendButton" class="btn btn-success btn-lg">Send Message</button>
                                 </div>
                             </div>
                         </div>
@@ -155,7 +149,7 @@
                         <div class="page-header">
                             <h4>Other Room Information</h4>
                         </div>
-                        <div id="roomList">
+                        <div name="roomList">
                             <ul id="roomListUl" class="nav nav-pills nav-stacked">
                             <% rooms.forEach(function(room){ %>
                               <li name=<%= room._id %> class="">

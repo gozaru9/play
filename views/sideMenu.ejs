@@ -5,15 +5,28 @@
 <br>
 <br>
 
-<div id="individual" class="list-group">
-<% allUsers.forEach(function(user){ %>
-  <a href="#" name=<%= user._id %> class="list-group-item">
-    <li name="<%= user._id %>" class="list-unstyled">
-        <i class="<%= user.status %>"></i><%= user.name %>
-    </li>
-</a>
-<% }) %>
-</div>
+    <div id="individual" class="list-group visible-lg">
+    <% allUsers.forEach(function(user){ %>
+      <a href="#" name=<%= user._id %> class="list-group-item">
+        <li name="<%= user._id %>" class="list-unstyled">
+            <i class="<%= user.status %>"></i><%= user.name %>
+        </li>
+    </a>
+    <% }) %>
+    </div>
+    <div class="visible-md visible-sm">
+        <div name="roomList">
+            <ul id="roomListUl" class="nav nav-pills nav-stacked">
+            <% rooms.forEach(function(room){ %>
+              <li name=<%= room._id %> class="">
+                <a name="roomSelectRadio" href="#">
+                  <%= room.name %>
+                </a>
+              </li>
+            <% }) %>
+            </ul>                        
+        </div>
+    </div>
 
 </div>
 <script>

@@ -26,3 +26,79 @@ function getScrolBottom(element) {
 //    return $(element).scrollTop() + $(element).height();
     return 10000;
 }
+
++ function ($) { "use strict";
+
+  var dismiss = '[data-dismiss="to-user"]'
+  var ToUser   = function (el) {
+    $(el).on('click', dismiss, this.close)
+  }
+
+  ToUser.prototype.close = function (e) {
+    var $this    = $(this)
+    var selector = $this.attr('data-target')
+
+    if (!selector) {
+      selector = $this.attr('href')
+      selector = selector && selector.replace(/.*(?=#[^\s]*$)/, '') // strip for ie7
+    }
+
+    var $parent = $(selector)
+
+    if (e) e.preventDefault()
+
+    if (!$parent.length) {
+      $parent = $this.hasClass('to-user') ? $this : $this.parent()
+    }
+
+    $parent.trigger(e = $.Event('close.bs.to-user'))
+
+    if (e.isDefaultPrevented()) return
+
+    $parent.removeClass('in')
+
+    function removeElement() {
+      $parent.trigger('closed.bs.to-user').remove()
+    }
+
+    $.support.transition && $parent.hasClass('fade') ?
+      $parent
+        .one($.support.transition.end, removeElement)
+        .emulateTransitionEnd(150) :
+      removeElement()
+  }
+
+
+  // ALERT PLUGIN DEFINITION
+  // =======================
+
+  var old = $.fn.touser
+
+  $.fn.touser = function (option) {
+    return this.each(function () {
+      var $this = $(this)
+      var data  = $this.data('bs.to-user')
+
+      if (!data) $this.data('bs.to-user', (data = new ToUser(this)))
+      if (typeof option == 'string') data[option].call($this)
+    })
+  }
+
+  $.fn.alert.Constructor = ToUser
+
+
+  // ALERT NO CONFLICT
+  // =================
+
+  $.fn.alert.noConflict = function () {
+    $.fn.alert = old
+    return this
+  }
+
+
+  // ALERT DATA-API
+  // ==============
+
+  $(document).on('click.bs.to-user.data-api', dismiss, ToUser.prototype.close)
+
+}(jQuery);

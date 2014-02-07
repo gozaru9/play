@@ -128,4 +128,15 @@ $(function() {
         $('#message').focus();
         return false;
 	});
+    /* to**/
+    $('#toDiv').delegate('a', 'click', function() {
+        
+        $('#toDiv').removeClass("open");
+        var element = '<div class="to-user to-user-dismissable">'
+                    + '<button type="button" class="close" data-dismiss="to-user" aria-hidden="true">&times;</button>'
+                    + $(this).text() + '</div>'
+                    + '<input type="hidden" name="toList" value='+$(this).attr('href')+'>';
+        $('#toUser').append(element);
+        return false;
+	});
 });
