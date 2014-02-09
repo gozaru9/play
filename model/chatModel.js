@@ -1,6 +1,7 @@
 var util = require('util');
 var Core = require('../core/coreModel.js');
 var mongoose = require('mongoose');
+var moment =require('moment');
 /**
  * chat modelで使用するコレクション名.
  * 
@@ -14,9 +15,17 @@ var collection = 'chats';
  * 
  * @property collection2
  * @type {String}
- * @default "chat"
+ * @default "messages"
  */
-var collection2 = 'mymessages';
+var collection2 = 'messages';
+/**
+ * 部屋とメッセージを保持するコレクション.
+ * 
+ * @property collection2
+ * @type {String}
+ * @default "messages"
+ */
+var collection3 = 'mymessages';
 /**
  * 部屋とメッセージを保持するコレクション.
  * 
@@ -28,8 +37,24 @@ var chatSchema = new mongoose.Schema({
   updated: {type: Date, default: Date.now},
   name: String,
   description: String,
-  messages: {type:Array},
-  users: {type:Array}
+  users: {type:Array},
+  messages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'messages' }]
+});
+/**
+ * 部屋のメッセージを保持するコレクション.
+ * 
+ * @property messagesSchema
+ * @type {Object}
+ */
+var messagesSchema = new mongoose.Schema({
+  created: {type: Date, default: moment().format('YYYY-MM-DD hh:mm:ss')},
+  updated: {type: Date, default: moment().format('YYYY-MM-DD hh:mm:ss')},
+  creatBy: {type: String},
+  updateBy: {type: String},
+  user: {_id: Object, name: String},
+  to: {ids: Array, names: Array},
+  time: {type: String, default: moment().format('YYYY-MM-DD hh:mm:ss')},
+  message: {type:String},
 });
 /**
  * 自分自身へ送信されたメッセージを保持するコレクション.
@@ -57,7 +82,8 @@ chatSchema.pre('save', function (next) {
 // モデル化。model('モデル名', '定義したスキーマクラス')
 
 var myModel = mongoose.model(collection, chatSchema);
-var myMsg = mongoose.model(collection2, myMessageSchema);
+var messgeModel = mongoose.model(collection2, messagesSchema);
+var myMsg = mongoose.model(collection3, myMessageSchema);
 
 /**
  * Chat Model Class.
@@ -87,7 +113,7 @@ util.inherits(chatModel, Core);
  * @method save
  * @param {Object} req 画面からのリクエスト
  */
-chatModel.prototype.save = function(req){
+chatModel.prototype.save = function(req) {
     
     var chat = new myModel(req.body);
     console.log('-------chat seve----------------');
@@ -120,8 +146,13 @@ chatModel.prototype.save = function(req){
 chatModel.prototype.addMessage = function(data) {
     var Chat = this.db.model(collection);
     Chat.findOne({ "_id" : data.roomId}, function(err, room){
-		var m = {user:{id:data.userId, name:data.userName}, msg:data.message, time:data.time};
-        room.messages.push(m);
+        var message = new messgeModel();
+        message.user = {_id:data.userId, name:data.userName};
+        message.to = {ids: data.toTarget, names:data.toNameList};
+        message.time = data.time;
+        message.message = data.message;
+        message.save();
+        room.messages.push(message);
         room.save();
     });
 };
@@ -173,7 +204,6 @@ chatModel.prototype.memberUpdate = function(data, callback) {
 chatModel.prototype.getMessageById = function(req, callback) {
     
     var Chat = this.db.model(collection);
-    
     if (req.period === undefined) {
         console.log('get limit 50');
         console.log(req.roomId);
@@ -181,8 +211,23 @@ chatModel.prototype.getMessageById = function(req, callback) {
 
     } else {
         
-        
+        Chat.findOne({'_id': req.roomId}, callback).populate('messages', 'time', {$gte: '2014-02-08 00:00:00'});
     }
+};
+/**
+ * IDに合致する情報を取得する.
+ * 
+ * @method getById
+ * @author niikawa
+ * @param {Object} id Chat._id
+ * @param {Function} callback
+ */
+chatModel.prototype.getById = function(id, callback) {
+    var Chat = this.db.model(collection);
+    console.log('chat model get by id');
+    console.log(id);
+    
+    Chat.findOne({'_id': id}, callback).populate('messages');
 };
 /**
  * 自分の入れる部屋を取得する.
@@ -203,7 +248,7 @@ chatModel.prototype.getMyRoom = function(req, callback) {
     var Chat = this.db.model(collection);
 
     var id = req.session._id;
-    Chat.find({ "users._id" : { $in:[id] } }, callback);
+    Chat.find({ "users._id" : { $in:[id] } }, callback).populate('messages');
 };
 /**
  * 自分の入れる部屋を取得する.
@@ -234,7 +279,7 @@ chatModel.prototype.getMyRoomParts = function(req) {
         } else {
             return room;
         }
-    });
+    }).populate('messages');
 };
 /**
  * 部屋を削除する.

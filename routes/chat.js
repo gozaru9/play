@@ -39,7 +39,6 @@ exports.index = function(req, res){
             ,function(err, results) {
                 
                 console.log('-----------async end function-------------');
-                console.log(results);
                 var rooms = results[2];
                 var name = '';
                 var users=[];
@@ -53,6 +52,7 @@ exports.index = function(req, res){
 
                             console.log('-------target room----------');
                             console.log(rooms[i]._id);
+                            console.log(rooms[i].messages);
                             
                             name = rooms[i].name;
                             users = rooms[i].users;
@@ -99,7 +99,7 @@ exports.lobby = function(req, res){
             ,function(err, results) {
                 
                 console.log('----------lobby------');
-                console.log(results[0]);
+                console.log(results);
                 var allUsers = results[1];
                 var allUsersNum = allUsers.length;
                 for (var allUserIndex = 0; allUserIndex < allUsersNum; allUserIndex++) {
@@ -240,7 +240,7 @@ exports.getUserByRoomId = function(req, res) {
     console.log('-----------getUserByRoomId-------------');
     if (req.body.roomId) {
 
-        async.parallel(
+        async.series(
             [function (callback) {
                 chat.getById(req.body.roomId, callback);
             },function (callback) {
@@ -248,7 +248,7 @@ exports.getUserByRoomId = function(req, res) {
             }]
             ,function(err, results) {
                 
-                console.log(results);
+                console.log(results[0]);
                 var room = results[0];
                 var allUsers = results[1];
     

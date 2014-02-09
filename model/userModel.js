@@ -2,7 +2,7 @@ var util = require('util');
 var Core = require('../core/coreModel.js');
 var mongoose = require('mongoose');
 var crypto = require('crypto');
-var collection = 'm_user';
+var collection = 'users';
 
 // ModelのSchema Class定義する
 var usersSchema = new mongoose.Schema({
@@ -48,7 +48,7 @@ util.inherits(userModel, Core);
  * */
 userModel.prototype.login = function(mailAddress, password, callback){
 
-    var User = this.db.model('m_user');
+    var User = this.db.model(collection);
     var cryptoPass = 
         crypto.createHash('md5').update(password).digest("hex");
     console.log(mailAddress);
@@ -135,7 +135,7 @@ userModel.prototype.updateStatus = function(userId, status) {
  * */
 userModel.prototype.updateById = function(req) {
 
-     var User = mongoose.model('m_user');
+     var User = mongoose.model(collection);
     User.findOne({_id:req.body.id},function(err,target){
     if(err || target === null){return;}
     
@@ -160,7 +160,7 @@ userModel.prototype.updateById = function(req) {
  * */
 userModel.prototype.removeById = function(res, id,callback) {
      
-    var User = mongoose.model('m_user');
+    var User = mongoose.model(collection);
     User.findOne({_id:id},function(err,target){
     if(err || target === null){return;}
         target.remove();

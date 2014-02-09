@@ -42,19 +42,25 @@
                                 $('#roomUserList').append($("<li>",{name: data.users[i]._id}).append(
                                     $("<i>",{class: data.users[i].status})).append(data.users[i].name));
                                 toElement += '<li><a name="toTarget" href='+data.users[i]._id+'>'+data.users[i].name+'</a></li>';
-                                
                             }
                             document.getElementById("toUl").innerHTML = toElement;
                             var msgLength = data.messages.length;
+                            console.log('msgLength:'+msgLength);
                             for (var j = 0; j < msgLength; j++) {
-                                $('#'+target).append($('<ul class="chat"><li class="left clearfix"><!--<span class="chat-img pull-left"><img src="img/ff.gif" alt="User Avatar" class="img-circle" /></span>--><div class="chat-body clearfix"><div class="header"><strong class="primary-font">'+data.messages[j].user.name+'</strong><small class="pull-right text-muted"><i class="fa fa-clock-o fa-fw"></i>'+data.messages[j].time+'</small><p>'+nl2br(escapeHTML(data.messages[j].msg))+'</p></div></li></ul></div>'));
+                            console.log(data.messages[j].user.name);
+                                $('#'+target).append($('<ul class="chat"><li class="left clearfix"><!--<span class="chat-img pull-left"><img src="img/ff.gif" alt="User Avatar" class="img-circle" /></span>--><div class="chat-body clearfix"><div class="header"><strong class="primary-font">'+data.messages[j].user.name+'</strong><small class="pull-right text-muted"><i class="fa fa-clock-o fa-fw"></i>'+data.messages[j].time+'</small><p>'+nl2br(escapeHTML(data.messages[j].message))+'</p></div></li></ul></div>'));
                             }
                             $('#roomInfomation').html(data.description);
                             $('#'+target).animate({ scrollTop: getScrolBottom($('#'+target))}, 'slow');
                     　　},
                     　　error: function(XMLHttpRequest, textStatus, errorThrown) {
-                    　　    console.log(XMLHttpRequest);
-                    　　    console.log(textStatus);
+                            $().toastmessage('showToast', {
+                                text     : 'データの取得に失敗しました',
+                                sticky   : true,
+                                type     : 'error'
+                            });
+                            console.log(XMLHttpRequest);
+                            console.log(textStatus);
                     　　},
                     });
                     return;
