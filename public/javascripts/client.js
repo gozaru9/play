@@ -6,7 +6,7 @@ socket.on('connect', function() {
 });
 var roomNotification = function (roomName) {
     $().toastmessage('showToast', {
-        text     : roomName+'に招待されました',
+        text     : '['+roomName+']<br>に招待されました',
         sticky   : true,
         type     : 'notice'
     });    
@@ -38,6 +38,8 @@ var getMyRoom = function (isMyCreate, roomName) {
                 element += '<li name=' + rooms[i]._id + '><a name="roomSelectRadio" href="#">'+ rooms[i].name + '</a></li>';
             }
             document.getElementById("roomListUl").innerHTML = element;
+            var activeRoom = $('#roomContents').find(".active").attr("id");
+            $('li[name='+activeRoom+']').addClass('active');
     　　},
     　　error: function(XMLHttpRequest, textStatus, errorThrown) {
             $().toastmessage('showToast', {
@@ -113,6 +115,7 @@ $(function() {
         $('#roomName').html($(this).text());
         $('#memberEditButton').val(id);
         $('#sendButton').val(id);
+        $('#sendButton').removeAttr("disabled");
         var target = $('#roomContents').find(".active").attr("id");
         $('#'+target).hide(500);
         $('#'+target).removeClass("active");

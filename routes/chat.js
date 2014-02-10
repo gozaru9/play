@@ -418,7 +418,8 @@ exports.memberUpdateBySocket = function(data, callback) {
                 
                 //ステータスの設定
                 craeteMemberStatus(users, results[2]);
-                var target = {roomId: data.roomId, users: users, deleteUsers: deleteUsers, addUsers: addUsers};
+                var target = {roomId: data.roomId, roomName: results[0].name,
+                    users: users, deleteUsers: deleteUsers, addUsers: addUsers};
                 callback(false ,target);
                 //res.send({roomId: data.roomId, users: users, deleteUsers: deleteUsers, addUsers: addUsers});
             });

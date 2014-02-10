@@ -312,19 +312,20 @@ var chatRoom = io.sockets.on('connection', function (socket) {
         //追加/削除されたメンバーにのみ通知する
         chat.memberUpdateBySocket(data, function(err, target) {
             
+            var sendData= {roomId: data.roomId, roomName:target.roomName};
             //削除通知を行う
             for (var delKey in target.deleteUsers) {
                 
-                io.sockets.socket(target.deleteUsers[delKey].socketId).emit('member delete', data.roomId);
+                io.sockets.socket(target.deleteUsers[delKey].socketId).emit('member delete', sendData);
             }
             //追加通知を行う
             for (var addKey in target.addUsers) {
                 
-                io.sockets.socket(target.addUsers[addKey].socketId).emit('member add', data.roomId);
+                io.sockets.socket(target.addUsers[addKey].socketId).emit('member add', sendData);
             }
             //
-            var sendData = {roomId: data.roomId, users: data.users};
-            chatRoom.in(data.roomId).emit('member edit complete', sendData);
+            var roomSendData = {roomId: data.roomId, roomName: target.roomName, users: data.users};
+            chatRoom.in(data.roomId).emit('member edit complete', roomSendData);
         });
     });
     //部屋とのコネクションを切る

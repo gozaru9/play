@@ -108,8 +108,11 @@ $(function() {
     });
     socket.on('member delete', function (data) {
         socket.emit('leave room', data.roomId);
+        if (data.roomId == $('#roomContents').find(".active").attr("id")) {
+            $('#sendButton').attr("disabled", "disabled");
+        }
         $().toastmessage('showToast', {
-            text     : 'メンバーから外れました',
+            text     : '['+data.roomName+']<br>のメンバーから外れました',
             sticky   : true,
             type     : 'warning'
         });
@@ -121,7 +124,7 @@ $(function() {
             createMemberList(data.users);
         }
         $().toastmessage('showToast', {
-            text     : $('#roomName').text()+'<br>'+'のメンバーが変更されました',
+            text     : '['+data.roomName+']<br>'+'のメンバーが変更されました',
             sticky   : true,
             type     : 'success'
         });
