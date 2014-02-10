@@ -179,13 +179,26 @@ var chatRoom = io.sockets.on('connection', function (socket) {
     console.log('sessionID ', socket.handshake.sessionID);
     //ユーザーとsocketを紐づけておく
     User.updateSoketId(socket.handshake.session._id, socket.id);
-    
     //Expressのセッションを定期的に更新する
     var sessionReloadIntervalID = setInterval(function() {
         socket.handshake.session.reload(function() {
             socket.handshake.session.touch().save();
+            
         });
     }, 60 * 2 * 1000);
+    //ログイン通知
+    socket.on('login notice', function() {
+        if (socket.handshake.session.loginNotice) {
+            //全ユーザーにログインしたことを通知
+            var targetUser = socket.handshake.session._id;
+            var data = {
+                statusValue: 'fa fa-check-circle fa-fw',
+                target: targetUser,
+                name: socket.handshake.session.name
+            };
+            socket.broadcast.emit('login push', data);
+        }
+    });
     //対象の部屋とのコネクション接続
     socket.on('join room', function(roomId) {
         
@@ -254,9 +267,9 @@ var chatRoom = io.sockets.on('connection', function (socket) {
 
         var targetUser = socket.handshake.session._id;
         var data = {
-            status: values.status,
             statusValue: msg,
-            target: targetUser
+            target: targetUser,
+            sendLogin:false
         };
         
         //イベントを実行した方に実行する
@@ -301,14 +314,20 @@ var chatRoom = io.sockets.on('connection', function (socket) {
     socket.on('leave room', function(roomId) {
         
         console.log('leave room');
-        console.log(roomId);
         socket.leave(roomId);
     });
     //接続が解除された時に実行する
     socket.on('disconnect', function() {
-        clearInterval(sessionReloadIntervalID);
         User.updateStatus(socket.handshake.session._id, 4);
-        console.log('disconnected');
+        var targetUser = socket.handshake.session._id;
+        var data = {
+            statusValue: 'fa fa-sign-out fa-fw',
+            target: targetUser
+        };
+        console.log('-----------------------disconnect-----------------------');
+        socket.emit('user disconnect', data);
+        socket.broadcast.emit('user disconnect', data);
+        clearInterval(sessionReloadIntervalID);
     });
 });
 

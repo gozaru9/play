@@ -90,6 +90,10 @@ exports.index = function(req, res){
 exports.lobby = function(req, res){
 
     if (req.session.isLogin) {
+        //ログイン通知をするかの条件を設定
+        if (req.query.notice !== undefined) {
+            req.session.loginNotice = false;
+        }
         async.series(
             [function (callback) {
                 chat.getMyRoom(req, callback);
@@ -98,8 +102,6 @@ exports.lobby = function(req, res){
             }]
             ,function(err, results) {
                 
-                console.log('----------lobby------');
-                console.log(results);
                 var allUsers = results[1];
                 var allUsersNum = allUsers.length;
                 for (var allUserIndex = 0; allUserIndex < allUsersNum; allUserIndex++) {
@@ -174,6 +176,7 @@ exports.login = function(req, res){
             req.session._id = results[0]._id;
             req.session.name = results[0].name;
             req.session.isLogin = true;
+            req.session.loginNotice = true;
             model.updateStatus(req.session._id, 1);
             res.redirect('/chat/lobby');
         });

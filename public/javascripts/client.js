@@ -13,6 +13,11 @@ var roomNotification = function (roomName) {
 var joinRoom = function (id) {
     socket.emit('join room', id);
 };
+var changeStatus = function(data) {
+    //ユーザーエリアのステータス名称を変更
+    $('li[name='+data.target+']').children().removeClass();
+    $('li[name='+data.target+']').children().addClass(data.statusValue);
+};
 var getMyRoom = function (isMyCreate, roomName) {
         
     $.ajax({
@@ -43,7 +48,8 @@ var getMyRoom = function (isMyCreate, roomName) {
             console.log(textStatus);
     　　},
     });
-};$(function() {
+};
+$(function() {
     
 	(function clock() {
         var now = new Date();
@@ -312,12 +318,17 @@ var getMyRoom = function (isMyCreate, roomName) {
         var msg = {status:$(this).attr('id')};
         socket.emit('status change', msg);
     });
-    
+	socket.on('login push', function(data){
+        $().toastmessage('showToast', {
+            text     : data.name+'<br>'+'さんがログインしました',
+            sticky   : false,
+            type     : 'notice'
+        });
+        changeStatus(data);
+    });
     //ステータス変更通知
-	socket.on('status changed', function(msg){
-        //ユーザーエリアのステータス名称を変更
-        $('li[name='+msg.target+']').children().removeClass();
-        $('li[name='+msg.target+']').children().addClass(msg.statusValue);
+	socket.on('status changed', function(data){
+	    changeStatus(data);
         return false;
 	});
 	//招待された部屋の通知
@@ -327,6 +338,10 @@ var getMyRoom = function (isMyCreate, roomName) {
 	//ルーム作成完了
 	socket.on('create chat complete', function(msg) {
         getMyRoom(true, msg);
+	});
+	//disconecct
+	socket.on('user disconnect', function(data) {
+	   console.log(data); 
 	});
 	//メッセージマウスオーバー
 	$('div[name=reseveMessage]').mouseover(function(){

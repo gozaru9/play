@@ -5,4 +5,7 @@ $(function() {
         createFormSubmitByParam('/chat', data);
         return false;
     });
+    
+    socket.emit('login notice');
+
 });
