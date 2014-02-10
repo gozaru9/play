@@ -269,7 +269,7 @@ exports.getUserByRoomId = function(req, res) {
     }
 };
 /**
- * リクエストを受け取り、部屋のメンバー構成を更新する
+ * リクエストを受け取り、部屋のメンバー構成を更新する(ajax版)
  * 
  * @author niikawa
  * @method memberUpdate
@@ -281,21 +281,150 @@ exports.memberUpdate = function(req, res) {
     if (req.body.roomId) {
 
         async.series(
-            [function (callback) {
-                chat.memberUpdate(req.body, callback);
-            }, function (callback) {
+            [function(callback) {
+                //差分チェックのため更新前のユーザー情報を保持する
                 chat.getById(req.body.roomId, callback);
             },function (callback) {
-                model.getAll(req, callback);
+                //メンバーの更新
+                chat.memberUpdate(req.body, callback);
+            },function (callback) {
+                //画面表示用にステータスが必要なため全ユーザーの最新状態を取得
+                model.getAll(req.body, callback);
             }]
             ,function(err, results) {
                 var users = req.body.users;
+                var beforeUsers = results[0];
+                var allUsers = results[2];
+                
+                console.log('----------------member update users----------');
+                console.log(users);
+                console.log('----------------member update beforeUsers----------');
+                console.log(beforeUsers);
+
+                var userNum = users.length;
+                //差分チェック用に連想配列にする
+                var usersList = {};
+                for (var index = 0; index < userNum; index++) {
+                    usersList[users[index]._id] = users[index];
+                }
+                //削除されたメンバーを抽出
+                var beforeNum = beforeUsers.length;
+                var deleteUsers = {};
+                for (index = 0; index < beforeNum; index++) {
+                    if ( !(beforeUsers[index]._id in usersList) ) {
+                        //deleteUsers.push(beforeUsers[index]);
+                        deleteUsers[beforeUsers[index]._id] = beforeUsers[index];
+                    }
+                }
+                //追加されたメンバーを抽出
+                var beforeUsersList = {};
+                for (index = 0; index < beforeNum; index++) {
+                    beforeUsersList[beforeUsers[index]._id] = beforeUsers[index];
+                }
+                var addUsers = {};
+                for (index = 0; index < userNum; index++) {
+                    if ( !(users[index]._id in beforeUsersList) ) {
+                        //addUsers.push(users[index]);
+                        addUsers[users[index]._id] = users[index];
+                    }
+                }
+                //socketIdを設定
+                var allNum = results[2].length;
+                for (index = 0; index < allNum; index++) {
+                    if ( (allUsers[index]._id in deleteUsers) ) {
+                        deleteUsers[allUsers[index]._id].socketId = allUsers[index].socketId;
+                        
+                    } else if ( (allUsers[index]._id in addUsers) ) {
+                        addUsers[allUsers[index]._id].socketId = allUsers[index].socketId;
+                    } 
+                }
+                
+                //ステータスの設定
                 craeteMemberStatus(users, results[2]);
-                res.send({users : users});
+                res.send({roomId: data.roomId, users: users, deleteUsers: deleteUsers, addUsers: addUsers});
             });
     
     }else{
-        res.send({users : ''});
+        res.send({roomId: '', users: '', deleteUsers: '', addUsers: ''});
+    }
+};
+
+/**
+ * リクエストを受け取り、部屋のメンバー構成を更新する(socketIo版)
+ * 
+ * @author niikawa
+ * @method memberUpdateBySocket
+ * @param {Object} data 
+ * @param {Function} callback 
+ */
+exports.memberUpdateBySocket = function(data, callback) {
+    
+    if (data.roomId) {
+
+        async.series(
+            [function(callback) {
+                //差分チェックのため更新前のユーザー情報を保持する
+                chat.getById(data.roomId, callback);
+            },function (callback) {
+                //メンバーの更新
+                chat.memberUpdate(data, callback);
+            },function (callback) {
+                //画面表示用にステータスが必要なため全ユーザーの最新状態を取得
+                model.getAll(data, callback);
+            }]
+            ,function(err, results) {
+                var users = data.users;
+                var beforeUsers = results[0].users;
+                var allUsers = results[2];
+
+                var userNum = users.length;
+                //差分チェック用に連想配列にする
+                var usersList = {};
+                for (var index = 0; index < userNum; index++) {
+                    usersList[users[index]._id] = users[index];
+                }
+                //削除されたメンバーを抽出
+                var beforeNum = beforeUsers.length;
+                var deleteUsers = {};
+                for (index = 0; index < beforeNum; index++) {
+                    if ( !(beforeUsers[index]._id in usersList) ) {
+                        //deleteUsers.push(beforeUsers[index]);
+                        deleteUsers[beforeUsers[index]._id] = beforeUsers[index];
+                    }
+                }
+                //追加されたメンバーを抽出
+                var beforeUsersList = {};
+                for (index = 0; index < beforeNum; index++) {
+                    beforeUsersList[beforeUsers[index]._id] = beforeUsers[index];
+                }
+
+                var addUsers = {};
+                for (index = 0; index < userNum; index++) {
+                    if ( !(users[index]._id in beforeUsersList) ) {
+                        addUsers[users[index]._id] = users[index];
+                    }
+                }
+                //socketIdを設定
+                var allNum = results[2].length;
+                for (index = 0; index < allNum; index++) {
+                    
+                    if ( (allUsers[index]._id in deleteUsers) ) {
+                        deleteUsers[allUsers[index]._id].socketId = allUsers[index].socketId;
+                        
+                    } else if ( (allUsers[index]._id in addUsers) ) {
+                        addUsers[allUsers[index]._id].socketId = allUsers[index].socketId;
+                    } 
+                }
+                
+                //ステータスの設定
+                craeteMemberStatus(users, results[2]);
+                var target = {roomId: data.roomId, users: users, deleteUsers: deleteUsers, addUsers: addUsers};
+                callback(false ,target);
+                //res.send({roomId: data.roomId, users: users, deleteUsers: deleteUsers, addUsers: addUsers});
+            });
+    
+    }else{
+        callback(true ,null);
     }
 };
 /**

@@ -178,7 +178,7 @@ var chatRoom = io.sockets.on('connection', function (socket) {
     
     console.log('sessionID ', socket.handshake.sessionID);
     //ユーザーとsocketを紐づけておく
-    User.updateSoketId(socket.handshake.session._id, socket.id);
+    User.updateSocketId(socket.handshake.session._id, socket.id);
     //Expressのセッションを定期的に更新する
     var sessionReloadIntervalID = setInterval(function() {
         socket.handshake.session.reload(function() {
@@ -285,13 +285,10 @@ var chatRoom = io.sockets.on('connection', function (socket) {
             socket.emit('beforeday push', push);
         });
     });
-    
     //部屋作成時の通知
     socket.on('create chat', function(chat) {
         
-        console.log('-----------create chat------------');
         var memberLen = chat.users.length;
-
         for (var i=0; i < memberLen; i++) {
             User.getById(chat.users[i]._id, function(err, user) {
                 if (err) console.log('create room message err:'+err);
@@ -310,13 +307,33 @@ var chatRoom = io.sockets.on('connection', function (socket) {
             });
         }
     });
+    //メンバー変更時の通知
+    socket.on('member edit', function(data) {
+        //追加/削除されたメンバーにのみ通知する
+        chat.memberUpdateBySocket(data, function(err, target) {
+            
+            //削除通知を行う
+            for (var delKey in target.deleteUsers) {
+                
+                io.sockets.socket(target.deleteUsers[delKey].socketId).emit('member delete', data.roomId);
+            }
+            //追加通知を行う
+            for (var addKey in target.addUsers) {
+                
+                io.sockets.socket(target.addUsers[addKey].socketId).emit('member add', data.roomId);
+            }
+            //
+            var sendData = {roomId: data.roomId, users: data.users};
+            chatRoom.in(data.roomId).emit('member edit complete', sendData);
+        });
+    });
     //部屋とのコネクションを切る
     socket.on('leave room', function(roomId) {
         
         console.log('leave room');
         socket.leave(roomId);
     });
-    
+    //ログアウト/ブラウザクローズ
     socket.on('logout unload', function(){
         User.updateStatus(socket.handshake.session._id, 4);
         var targetUser = socket.handshake.session._id;

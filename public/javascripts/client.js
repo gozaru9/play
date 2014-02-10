@@ -1,3 +1,4 @@
+//共通的な通知処理を記述する
 var socket = io.connect(location.hostname);
 socket.send({ cookie: document.cookie });
 socket.on('connect', function() {
@@ -401,7 +402,6 @@ $(function() {
 	});
 	//ログアウト
 	$('#logout').click(function(){
-	    
         socket.emit('logout unload');
 	});
 	//ブラウザクローズ

@@ -20,15 +20,15 @@ var memberEditCompleteButtonCheck = function (){
         $('#memberEditCompleteButton').attr("disabled", "disabled");
     }
 };
-var createMemberList = function(data) {
+var createMemberList = function(users) {
     $('#roomUserList').children().remove();
-    var length = data.users.length;
+    var length = users.length;
     var toElement = '';
     for (var i = 0; i < length; i++) {
-        console.log(data.users[i].name);
-        $('#roomUserList').append($("<li>",{name: data.users[i]._id}).append(
-            $("<i>",{class: data.users[i].status})).append(data.users[i].name));
-        toElement += '<li><a name="toTarget" href="#">'+data.users[i].name+'</a></li>';
+        console.log(users[i].name);
+        $('#roomUserList').append($("<li>",{name: users[i]._id}).append(
+            $("<i>",{class: users[i].status})).append(users[i].name));
+        toElement += '<li><a name="toTarget" href="#">'+users[i].name+'</a></li>';
     }
     document.getElementById("toUl").innerHTML = toElement;
 }
@@ -99,33 +99,31 @@ $(function() {
         if (users.length === 0) return false;
         var roomId = $('#memberEditButton').val();
         var editMember = {roomId:roomId, users:users};
-        $.ajax({
-            type: 'POST',
-            url: '/chat/memberUpdate',
-            dataType: 'json',
-            data: editMember,
-            cache: false,
-            success: function(data) {
-                console.log(data);
-                socket.send({ cookie: document.cookie });
-                //選択されたメンバーに送信する
-                socket.emit('member edit', users);
-                createMemberList(data);
-                $().toastmessage('showToast', {
-                    text     : $('#roomName').text()+'<br>'+'のメンバーを変更しました',
-                    sticky   : true,
-                    type     : 'success'
-                });
-            },
-        　　error: function(XMLHttpRequest, textStatus, errorThrown) {
-                $().toastmessage('showToast', {
-                    text     : $('#roomName').text()+'<br>'+'のメンバーが変更できませんでした',
-                    sticky   : true,
-                    type     : 'error'
-                });
-        　　    console.log(XMLHttpRequest);
-        　　    console.log(textStatus);
-        　　},
+        socket.emit('member edit', editMember);
+    });
+    
+    socket.on('member add', function (data) {
+        socket.emit('join room', data.roomId);
+        getMyRoom(false, data.roomName);
+    });
+    socket.on('member delete', function (data) {
+        socket.emit('leave room', data.roomId);
+        $().toastmessage('showToast', {
+            text     : 'メンバーから外れました',
+            sticky   : true,
+            type     : 'warning'
+        });
+        getMyRoom(true);
+    });
+    socket.on('member edit complete', function (data) {
+        if (data.roomId == $('#roomContents').find(".active").attr("id")) {
+            
+            createMemberList(data.users);
+        }
+        $().toastmessage('showToast', {
+            text     : $('#roomName').text()+'<br>'+'のメンバーが変更されました',
+            sticky   : true,
+            type     : 'success'
         });
     });
     /* fixed sentence**/

@@ -13,7 +13,7 @@ var usersSchema = new mongoose.Schema({
   password: String,
   loginStatus: {type: Number, default: 1},
   lastLoginTime: {type: Date, default: Date.now},
-  soketId:String
+  socketId:String
 });
 
 // middleware
@@ -91,18 +91,18 @@ userModel.prototype.save = function(req){
  * @param userId
  * @aram socketId
  * */
-userModel.prototype.updateSoketId = function (userId, socketId) {
+userModel.prototype.updateSocketId = function (userId, socketId) {
     
-    console.log('----------------update soketid----------------');
+    console.log('----------------update socketId----------------');
     console.log(userId + ':'+ socketId);
 
     var User = mongoose.model(collection);
     User.findOne({_id:userId},function(err, target){
         if (err) {
-            console.log('update soketId error:'+userId);
+            console.log('update socketId error:'+userId);
         } else {
             console.log(target);
-            target.soketId = socketId;
+            target.socketId = socketId;
             target.save();
         }
     });
@@ -119,7 +119,7 @@ userModel.prototype.updateStatus = function(userId, status) {
     var User = mongoose.model(collection);
     User.findOne({_id:userId},function(err, target){
         if (err) {
-            console.log('update soketId error:'+userId);
+            console.log('update status error:'+userId);
         } else {
             console.log(target);
             target.loginStatus = status;
