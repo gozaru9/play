@@ -31,6 +31,7 @@ var getMyRoom = function (isMyCreate, roomName) {
                 roomNotification(roomName);
             }
             $('#roomListUl').children().remove();
+            $('#roomListUlSide').children().remove();
             var roomLength = data.rooms.length;
             var rooms = data.rooms;
             var element = '';
@@ -38,6 +39,7 @@ var getMyRoom = function (isMyCreate, roomName) {
                 element += '<li name=' + rooms[i]._id + '><a name="roomSelectRadio" href="#">'+ rooms[i].name + '</a></li>';
             }
             document.getElementById("roomListUl").innerHTML = element;
+            document.getElementById("roomListUlSide").innerHTML = element;
             var activeRoom = $('#roomContents').find(".active").attr("id");
             $('li[name='+activeRoom+']').addClass('active');
     　　},
@@ -106,7 +108,7 @@ $(function() {
     });
     
     //部屋の選択
-	$('div[name=roomList]').delegate('a[name=roomSelectRadio]', 'click', function() {
+	$('div[name*=roomList]').delegate('a[name=roomSelectRadio]', 'click', function() {
 
         $('li').removeClass("active");
         $(this).parent('li').addClass('active');
@@ -286,7 +288,7 @@ $(function() {
             $('#'+data.roomId).append(
                 $('<ul class="chat"><li class="left clearfix"><!--<span class="chat-img pull-left"><img src="img/ff.gif" alt="User Avatar" class="img-circle" /></span>--><div class="chat-body clearfix"><div name="reseveMessage" class="header"><strong class="primary-font">'+data.userName+'</strong><small class="pull-right text-muted"><i class="fa fa-clock-o fa-fw"></i>'+data.time+'</small><p><span class="label label-success text-center">TO</span>'+' &nbsp;'+data.toNameList.join()+'</p><p>'+nl2br(escapeHTML(data.message))+'</p></div></li></ul></div>'));
 		}
-		var target = $('div[name=roomList]').find(".active").attr("name");
+		var target = $('div[name*=roomList]').find(".active").attr("name");
 		if (target != data.roomId) {
             var num = $('span[name='+data.roomId+']').html();
             if (num === undefined) {
@@ -298,7 +300,7 @@ $(function() {
 		}
 		var toNum = data.toTarget.length;
 		var my = $('#cryptoId').val();
-		$('div[name=roomList]').find(".active").attr("name");
+		$('div[name*=roomList]').find(".active").attr("name");
 		var roomName = $('li[name='+data.roomId+']').text();
 		for (var toTargetIndex=0; toTargetIndex < toNum; toTargetIndex++) {
 		    if (my == data.toTarget[toTargetIndex]) {

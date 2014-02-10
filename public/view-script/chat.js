@@ -123,11 +123,14 @@ $(function() {
             
             createMemberList(data.users);
         }
-        $().toastmessage('showToast', {
-            text     : '['+data.roomName+']<br>'+'のメンバーが変更されました',
-            sticky   : true,
-            type     : 'success'
-        });
+        console.log($('li[name='+data.roomId+']').text());
+        if($('li[name='+data.roomId+']').text() != '') {
+            $().toastmessage('showToast', {
+                text     : '['+data.roomName+']<br>'+'のメンバーが変更されました',
+                sticky   : true,
+                type     : 'success'
+            });
+        }
     });
     /* fixed sentence**/
 	$('a[name="fixedSectences"]').click(function(){
