@@ -316,17 +316,19 @@ var chatRoom = io.sockets.on('connection', function (socket) {
         console.log('leave room');
         socket.leave(roomId);
     });
-    //接続が解除された時に実行する
-    socket.on('disconnect', function() {
+    
+    socket.on('logout unload', function(){
         User.updateStatus(socket.handshake.session._id, 4);
         var targetUser = socket.handshake.session._id;
         var data = {
             statusValue: 'fa fa-sign-out fa-fw',
             target: targetUser
         };
-        console.log('-----------------------disconnect-----------------------');
-        socket.emit('user disconnect', data);
-        socket.broadcast.emit('user disconnect', data);
+        socket.broadcast.emit('status changed', data);
+    });
+    //接続が解除された時に実行する
+    socket.on('disconnect', function() {
+        User.updateStatus(socket.handshake.session._id, 4);
         clearInterval(sessionReloadIntervalID);
     });
 });

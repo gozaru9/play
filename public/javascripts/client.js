@@ -339,10 +339,6 @@ $(function() {
 	socket.on('create chat complete', function(msg) {
         getMyRoom(true, msg);
 	});
-	//disconecct
-	socket.on('user disconnect', function(data) {
-	   console.log(data); 
-	});
 	//メッセージマウスオーバー
 	$('div[name=reseveMessage]').mouseover(function(){
 
@@ -403,4 +399,13 @@ $(function() {
             },
         });
 	});
+	//ログアウト
+	$('#logout').click(function(){
+	    
+        socket.emit('logout unload');
+	});
+	//ブラウザクローズ
+    $(window).on("beforeunload",function(e) {
+        socket.emit('logout unload');
+    });
 });
