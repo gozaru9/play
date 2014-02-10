@@ -186,6 +186,11 @@ var chatRoom = io.sockets.on('connection', function (socket) {
             socket.handshake.session.touch().save();
         });
     }, 60 * 2 * 1000);
+    //対象の部屋とのコネクション接続
+    socket.on('join room', function(roomId) {
+        
+        socket.join(roomId);
+    });
     //個別メッセージ
     socket.on('individual send', function (data) {
         
@@ -196,8 +201,6 @@ var chatRoom = io.sockets.on('connection', function (socket) {
         
         User.getById(data.target, function(err, user) {
             
-            console.log('get user');
-            console.log(user);
             data.targetId = user._id;
             data.targetName = user.name;
             
@@ -261,11 +264,15 @@ var chatRoom = io.sockets.on('connection', function (socket) {
         //イベントを実行した方以外に実行する
         socket.broadcast.emit('status changed', data);
     });
-    //対象の部屋とのコネクション接続
-    socket.on('join room', function(roomId) {
+    //過去のメッセージを取得
+    socket.on('get beforeday', function(data) {
         
-        socket.join(roomId);
+        Chat.getMessageById(data, function(err, roomInfo) {
+            var push = {roomId: data.roomId, messages: roomInfo.messages};
+            socket.emit('beforeday push', push);
+        });
     });
+    
     //部屋作成時の通知
     socket.on('create chat', function(chat) {
         

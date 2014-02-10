@@ -74,8 +74,11 @@ $(function() {
                 });
             },
         　　error: function(XMLHttpRequest, textStatus, errorThrown) {
-        　　    console.log(XMLHttpRequest);
-        　　    console.log(textStatus);
+                $().toastmessage('showToast', {
+                    text     : chat.name+'を作成できませんでした',
+                    sticky   : true,
+                    type     : 'error'
+                });
         　　},
         });
     });
@@ -109,12 +112,17 @@ $(function() {
                 socket.emit('member edit', users);
                 createMemberList(data);
                 $().toastmessage('showToast', {
-                    text     : $('#roomName').text()+'メンバーを変更しました',
+                    text     : $('#roomName').text()+'<br>'+'のメンバーを変更しました',
                     sticky   : true,
                     type     : 'success'
                 });
             },
         　　error: function(XMLHttpRequest, textStatus, errorThrown) {
+                $().toastmessage('showToast', {
+                    text     : $('#roomName').text()+'<br>'+'のメンバーが変更できませんでした',
+                    sticky   : true,
+                    type     : 'error'
+                });
         　　    console.log(XMLHttpRequest);
         　　    console.log(textStatus);
         　　},

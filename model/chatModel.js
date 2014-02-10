@@ -198,21 +198,32 @@ chatModel.prototype.memberUpdate = function(data, callback) {
  * 
  * @method getMessageById
  * @author niikwa
- * @param {Object} req 画面からのリクエスト
- * @param callback
+ * @param {Object} data data.roomId data.statsu
  */
-chatModel.prototype.getMessageById = function(req, callback) {
-    
-    var Chat = this.db.model(collection);
-    if (req.period === undefined) {
-        console.log('get limit 50');
-        console.log(req.roomId);
-        Chat.find({'_id': req.roomId}, 'messages', callback).limit(1);
-
-    } else {
+chatModel.prototype.getMessageById = function(data, callback) {
+    var format = 'YYYY-MM-DD 00:00:00';
+    var before = moment().format(format);
+    //1日前
+    if (data.status === 'beforedayStatus1') {
+        before = moment().subtract('days', 1).format(format);
         
-        Chat.findOne({'_id': req.roomId}, callback).populate('messages', 'time', {$gte: '2014-02-08 00:00:00'});
+    //7日前
+    } else if (data.status === 'beforedayStatus2') {
+        before = moment().subtract('days', 7).format(format);
+        
+    //60日前
+    } else if (data.status === 'beforedayStatus3') {
+        before = moment().subtract('days', 60).format(format);
+        
+    //3ヶ月日前
+    } else if (data.status === 'beforedayStatus4') {
+        before = moment().subtract('months', 3).format(format);
     }
+    console.log('---------getMessageById----------');
+    console.log(before);
+    var Chat = this.db.model(collection);
+    Chat.findOne({'_id': data.roomId}, callback).populate(
+        'messages', null , { 'created': { $gte: before } }, { sort: { 'created': 1 } });
 };
 /**
  * IDに合致する情報を取得する.
@@ -224,10 +235,8 @@ chatModel.prototype.getMessageById = function(req, callback) {
  */
 chatModel.prototype.getById = function(id, callback) {
     var Chat = this.db.model(collection);
-    console.log('chat model get by id');
-    console.log(id);
-    
-    Chat.findOne({'_id': id}, callback).populate('messages');
+    Chat.findOne({'_id': id}, callback).populate(
+        'messages', null , { 'created': { $gte: moment().format('YYYY-MM-DD 00:00:00') } }, { sort: { 'created': 1 } });
 };
 /**
  * 自分の入れる部屋を取得する.
