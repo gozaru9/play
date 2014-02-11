@@ -86,7 +86,8 @@ $(function() {
         hour = ('0' + hour).slice(-2);
         min = ('0' + min).slice(-2);
         sec = ('0' + sec).slice(-2);
-        var ymd = now.getFullYear() + '/' + now.getMonth()+1 +'/'+now.getDate();
+        var month = now.getMonth()+1;
+        var ymd = now.getFullYear() + '/' + month +'/'+now.getDate();
         $('#today').html(ymd + ' ' + hour + ':' + min + ':' + sec);
         setTimeout(clock, 1000);
 	})();
