@@ -1,10 +1,13 @@
 var async = require('async');
+var moment =require('moment');
 var userModel = require('../model/userModel');
 var model = new userModel();
 var chatModel = require('../model/chatModel');
 var chat = new chatModel();
 var fixedModel = require('../model/fixedModel');
 var fixed = new fixedModel();
+var unReadModel = require('../model/unReadModel');
+var unRead = new unReadModel();
 
 /**
  * chat modeule
@@ -40,38 +43,40 @@ exports.index = function(req, res){
                 
                 console.log('-----------async end function-------------');
                 var rooms = results[2];
-                var name = '';
-                var users=[];
-                var messages=[];
-                if(req.body.room) {
-                    var roomLength = Array.isArray(rooms) ? rooms.length : 0;
-                    console.log('reqest room id');
-                    console.log(req.body.room);
-                    for(var i=0; i<roomLength; i++) {
-                        if (rooms[i]._id == req.body.room) {
-
-                            console.log('-------target room----------');
-                            console.log(rooms[i]._id);
-                            console.log(rooms[i].messages);
-                            
-                            name = rooms[i].name;
-                            users = rooms[i].users;
-                            messages = rooms[i].messages;
-                            break;
+                var allUsers = results[3];
+                unRead.getUnReadByUserId(req.session._id, function(err, target) {
+                    var name = '';
+                    var users=[];
+                    var messages=[];
+                    
+                    setUnReadNum(rooms, target, req.session.beforeLogoutTime);
+                    
+                    if(req.body.room) {
+                        var roomLength = Array.isArray(rooms) ? rooms.length : 0;
+                        for(var i=0; i<roomLength; i++) {
+                            if (rooms[i]._id == req.body.room) {
+    
+                                console.log('-------target room----------');
+                                console.log(rooms[i]._id);
+                                name = rooms[i].name;
+                                users = rooms[i].users;
+                                messages = rooms[i].messages;
+                                break;
+                            }
                         }
                     }
-                }
-                var allUsers = results[3];
-                var allUsersNum = Array.isArray(allUsers) ? allUsers.length : 0;
-                for (var allUserIndex = 0; allUserIndex < allUsersNum; allUserIndex++) {
-                    allUsers[allUserIndex].status = getStatusClass(allUsers[allUserIndex].loginStatus);
-                }
-                
-                var fixed = results[0].concat(results[1]);
-                
-                res.render('chat/index', {title: 'chat', userName:req.session.name, _id:req.session._id,
-                    rooms:rooms, targetRoomId:req.body.room, roomName:name, users:users, 
-                    messages:messages, allUsers:allUsers, fixed:fixed});
+                    
+                    var allUsersNum = Array.isArray(allUsers) ? allUsers.length : 0;
+                    for (var allUserIndex = 0; allUserIndex < allUsersNum; allUserIndex++) {
+                        allUsers[allUserIndex].status = getStatusClass(allUsers[allUserIndex].loginStatus);
+                    }
+                    
+                    var fixed = results[0].concat(results[1]);
+                    
+                    res.render('chat/index', {title: 'chat', userName:req.session.name, _id:req.session._id,
+                        rooms:rooms, targetRoomId:req.body.room, roomName:name, users:users, 
+                        messages:messages, allUsers:allUsers, fixed:fixed});
+                });
             });
 
     } else {
@@ -99,17 +104,25 @@ exports.lobby = function(req, res){
                 chat.getMyRoom(req, callback);
             },function (callback) {
                 model.getAll(req, callback);
+            },function(callback) {
+                unRead.getUnReadByUserId(req.session._id, callback);
             }]
             ,function(err, results) {
                 
-                var allUsers = results[1];
-                var allUsersNum = allUsers.length;
-                for (var allUserIndex = 0; allUserIndex < allUsersNum; allUserIndex++) {
-                    allUsers[allUserIndex].status = getStatusClass(allUsers[allUserIndex].loginStatus);
-                }
-                res.render('chat/lobby', 
-                    {title: 'LOBBY', userName:req.session.name, _id:req.session._id,rooms:results[0], allUsers: allUsers});
-            });
+                unRead.getUnReadByUserId(req.session._id, function(err, target) {
+                    
+                    var rooms = results[0];
+                    setUnReadNum(rooms, target, req.session.beforeLogoutTime);
+                    var allUsers = results[1];
+                    var allUsersNum = allUsers.length;
+                    for (var allUserIndex = 0; allUserIndex < allUsersNum; allUserIndex++) {
+                        allUsers[allUserIndex].status = getStatusClass(allUsers[allUserIndex].loginStatus);
+                    }
+                    res.render('chat/lobby', 
+                        {title: 'LOBBY', userName: req.session.name,
+                            _id:req.session._id, rooms:rooms, allUsers: allUsers});
+                });
+        });
     } else {
         console.log('lobby session isLogin false');
         console.log(req.session);
@@ -158,7 +171,6 @@ exports.fixedSectence = function(req, res){
  */
 exports.login = function(req, res){
     
-    
     model.login(req.body.mailAddress, req.body.password, 
         function(err, results) {
             if (err) {
@@ -166,8 +178,6 @@ exports.login = function(req, res){
             }
             console.log('-----------login------');
             console.log(results[0]);
-            console.log(results[0]._id);
-            console.log(results[0]._name);
 
             if (results.length === 0) {
                 res.redirect('/login');
@@ -177,6 +187,7 @@ exports.login = function(req, res){
             req.session.name = results[0].name;
             req.session.isLogin = true;
             req.session.loginNotice = true;
+            req.session.beforeLogoutTime = results[0].logoutTime;
             model.updateStatus(req.session._id, 1);
             res.redirect('/chat/lobby');
         });
@@ -191,7 +202,7 @@ exports.login = function(req, res){
  */
 exports.logout = function(req, res){
 
-    model.updateStatus(req.session._id, 4);
+    model.logout(req.session._id);
     req.session.destroy();
     res.redirect('/login');
 };
@@ -295,11 +306,6 @@ exports.memberUpdate = function(req, res) {
                 var users = req.body.users;
                 var beforeUsers = results[0];
                 var allUsers = results[2];
-                
-                console.log('----------------member update users----------');
-                console.log(users);
-                console.log('----------------member update beforeUsers----------');
-                console.log(beforeUsers);
 
                 var userNum = users.length;
                 //差分チェック用に連想配列にする
@@ -341,7 +347,7 @@ exports.memberUpdate = function(req, res) {
                 
                 //ステータスの設定
                 craeteMemberStatus(users, results[2]);
-                res.send({roomId: data.roomId, users: users, deleteUsers: deleteUsers, addUsers: addUsers});
+                res.send({roomId: req.body.roomId, users: users, deleteUsers: deleteUsers, addUsers: addUsers});
             });
     
     }else{
@@ -426,6 +432,22 @@ exports.memberUpdateBySocket = function(data, callback) {
     }else{
         callback(true ,null);
     }
+};
+/**
+ * 未読数を更新する(ajax)
+ * 
+ * @author niikawa
+ * @method updateUnRead
+ * @param {Object} req 画面からのリクエスト
+ * @param {Object} res 画面へのレスポンス
+ */
+exports.updateUnRead = function(req,res) {
+    var data = req.body;
+    data.userId = req.session._id;
+    unRead.updateUnRead(data, function(err, result) {
+        
+        res.send({msg:'ok!'});
+    });
 };
 /**
  * リクエストを受け取り、定型文を作成する
@@ -568,3 +590,61 @@ function craeteMemberStatus(roomMember, allUsers) {
     }
     return roomMember;
 }
+/**
+ * 未読数をマージする
+ * 
+ * @author niikawa
+ * @method setUnReadNum
+ * @param {Array} rooms
+ * @param {Array} unReads
+ * @param {Date} beforeLogoutTime
+ */
+function setUnReadNum(rooms, unReads, beforeLogoutTime) {
+    console.log('----------set unread num params---------------'); 
+
+    var length = unReads.length;
+    var roomNum = rooms.length;
+    var index = 0;
+    if (roomNum === 0) return;
+    if (length === 0) {
+        for (index = 0; index < roomNum; index++) {
+            rooms[index].unReadNum = 0;
+        }
+    } else {
+        
+        var unreadList = {};
+        for (index = 0; index < length; index++) {
+            unreadList[unReads[index].roomId] = unReads[index];
+        }
+        for (index = 0; index < roomNum; index++) {
+            if (rooms[index]._id in unreadList) {
+                rooms[index].unReadNum = unreadList[rooms[index]._id].number;
+            } else {
+                rooms[index].unReadNum = 0;
+            }
+        }
+    }
+    
+    //前回ログアウト後に通知されたメッセージ数を取得し未読数に加算する
+    //TODO ここのロジックは変えたい
+    var logoutTime = moment(beforeLogoutTime);
+    
+    for (index = 0; index < roomNum; index++) {
+        
+        var messagesNum = rooms[index].messages.length;
+        var unReadNum = 0;
+        if (messagesNum <= 0) continue;
+        for (messagesNum; messagesNum !== 0;messagesNum--) {
+            
+            var messageTime = moment(rooms[index].messages[messagesNum-1].time);
+            if (messageTime.isAfter(logoutTime)) {
+                unReadNum++;
+            } else {
+                break;
+            }
+        }
+        rooms[index].unReadNum += unReadNum;
+    }
+    return;
+ }
+ 

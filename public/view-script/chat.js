@@ -110,6 +110,7 @@ $(function() {
         socket.emit('leave room', data.roomId);
         if (data.roomId == $('#roomContents').find(".active").attr("id")) {
             $('#sendButton').attr("disabled", "disabled");
+            $('#sendButton').val('');
         }
         $().toastmessage('showToast', {
             text     : '['+data.roomName+']<br>のメンバーから外れました',

@@ -80,11 +80,9 @@ chatSchema.pre('save', function (next) {
 });
 
 // モデル化。model('モデル名', '定義したスキーマクラス')
-
 var myModel = mongoose.model(collection, chatSchema);
 var messgeModel = mongoose.model(collection2, messagesSchema);
 var myMsg = mongoose.model(collection3, myMessageSchema);
-
 /**
  * Chat Model Class.
  *
@@ -257,7 +255,7 @@ chatModel.prototype.getMyRoom = function(req, callback) {
     var Chat = this.db.model(collection);
 
     var id = req.session._id;
-    Chat.find({ "users._id" : { $in:[id] } }, callback).populate('messages');
+    Chat.find({ "users._id" : { $in:[id] } }, callback).populate('messages', null, null, { sort: { 'created': 1 } });
 };
 /**
  * 自分の入れる部屋を取得する.

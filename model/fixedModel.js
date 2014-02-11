@@ -38,7 +38,7 @@ var myModel = mongoose.model(collection, fixedSectenceSchema);
  * @constructor
  * @extends Core
  */
-var fixedModel = function chatModel() {
+var fixedModel = function fixedModel() {
     
     this.nextFunc = '';
     this.parameter = '';
@@ -102,8 +102,6 @@ fixedModel.prototype.save = function(req, callback) {
  */
 fixedModel.prototype.update = function(data, callback) {
     console.log('----- fixed model update----');
-    console.log(data);
-    
     var Fixed = this.db.model(collection);
     Fixed.findOne({ "_id" : data.id}, function(err, target){
         

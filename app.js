@@ -118,6 +118,7 @@ app.post('/chat/fixedSectence/save', chat.fixedSectenceSave);
 app.post('/chat/fixedSectence/update', chat.fixedSectenceUpdate);
 app.post('/chat/fixedSectence/delete', chat.fixedSectenceDelete);
 app.post('/chat/getFixedById', chat.getFixedById);
+app.post('/chat/updateUnRead', chat.updateUnRead);
 
 var server = http.createServer(app).listen(app.get('port'), function(){
 console.log("Express server listening on port " + app.get('port'));
@@ -127,7 +128,7 @@ var io=require('socket.io').listen(server);
 var connect = require('connect');
 io.configure(function () {
     io.set("transports", ["xhr-polling"]); 
-    io.set("polling duration", 10);     
+    io.set("polling duration", 10);
     io.set('authorization', function (handshakeData, callback) {
         if(handshakeData.headers.cookie) {
 
@@ -336,7 +337,7 @@ var chatRoom = io.sockets.on('connection', function (socket) {
     });
     //ログアウト/ブラウザクローズ
     socket.on('logout unload', function(){
-        User.updateStatus(socket.handshake.session._id, 4);
+        User.logout(socket.handshake.session._id);
         var targetUser = socket.handshake.session._id;
         var data = {
             statusValue: 'fa fa-sign-out fa-fw',
@@ -346,7 +347,6 @@ var chatRoom = io.sockets.on('connection', function (socket) {
     });
     //接続が解除された時に実行する
     socket.on('disconnect', function() {
-        User.updateStatus(socket.handshake.session._id, 4);
         clearInterval(sessionReloadIntervalID);
     });
 });

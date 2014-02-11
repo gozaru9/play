@@ -23,7 +23,9 @@
                 <% rooms.forEach(function(room){ %>
                 <div class="col-md-4">
                     <div class="panel panel-info">
-                        <div class="panel-heading"><a href="#" name="moveChat" id=<%= room._id %>><%= room.name %></a></div>
+                        <div class="panel-heading"><a href="#" name="moveChat" id=<%= room._id %>><%= room.name %></a>
+                            <span class="badge pull-right"><%= room.unReadNum %></span>
+                        </div>
                         <div class="panel-body">
                             <em><%= room.description %></em>
                             </br><hr>

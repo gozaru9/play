@@ -3,6 +3,7 @@ var Core = require('../core/coreModel.js');
 var mongoose = require('mongoose');
 var crypto = require('crypto');
 var collection = 'users';
+var moment =require('moment');
 
 // ModelのSchema Class定義する
 var usersSchema = new mongoose.Schema({
@@ -13,6 +14,7 @@ var usersSchema = new mongoose.Schema({
   password: String,
   loginStatus: {type: Number, default: 1},
   lastLoginTime: {type: Date, default: Date.now},
+  logoutTime: {type: Date},
   socketId:String
 });
 
@@ -31,8 +33,6 @@ var userModel = function userModel() {
     this.nextFunc = '';
     this.parameter = '';
     Core.call(this, collection);
-    
-    
 };
 
 //coreModelを継承する
@@ -123,6 +123,19 @@ userModel.prototype.updateStatus = function(userId, status) {
         } else {
             console.log(target);
             target.loginStatus = status;
+            target.save();
+        }
+    });
+};
+userModel.prototype.logout = function(id) {
+    
+    var User = mongoose.model(collection);
+    User.findOne({_id:id},function(err, target){
+        if (err) {
+            console.log('logout error:'+id);
+        } else {
+            target.loginStatus = 4;
+            target.logoutTime = moment();
             target.save();
         }
     });
