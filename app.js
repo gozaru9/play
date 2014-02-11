@@ -223,7 +223,7 @@ var chatRoom = io.sockets.on('connection', function (socket) {
                    messages: data.message, time: data.time};
             Chat.addMyMessage(individualData);
             
-            io.sockets.socket(user.soketId).emit('individual push', data);
+            io.sockets.socket(user.socketId).emit('individual push', data);
             socket.emit('individual my push', data);
         });
     });
@@ -289,6 +289,7 @@ var chatRoom = io.sockets.on('connection', function (socket) {
     //部屋作成時の通知
     socket.on('create chat', function(chat) {
         
+        console.log('create chat----------------------');
         var memberLen = chat.users.length;
         for (var i=0; i < memberLen; i++) {
             User.getById(chat.users[i]._id, function(err, user) {
@@ -296,11 +297,11 @@ var chatRoom = io.sockets.on('connection', function (socket) {
                 if (user) {
                     console.log(user);
                     //コメクションが確立しているかつ自分自身以外のユーザーに送信
-                    if (user.soketId !== '' && user.soketId !== socket.id)  {
-                        io.sockets.socket(user.soketId).emit('create chat msg', chat.name);
+                    if (user.socketId !== '' && user.socketId !== socket.id)  {
+                        io.sockets.socket(user.socketId).emit('create chat msg', chat.name);
                     }
-                    if (user.soketId === socket.id) {
-                        io.sockets.socket(user.soketId).emit('create chat complete', '');
+                    if (user.socketId === socket.id) {
+                        io.sockets.socket(user.socketId).emit('create chat complete', '');
                     }
                 } else {
                     console.log('create room message target user is not found');
