@@ -5,7 +5,7 @@
 <br>
 <br>
 
-    <div id="individual" class="list-group visible-lg">
+    <div id="individual" class="list-group visible-lg visible-md">
     <% allUsers.forEach(function(user){ %>
       <a href="#" name=<%= user._id %> class="list-group-item">
         <li name="<%= user._id %>" class="list-unstyled">
@@ -14,7 +14,7 @@
     </a>
     <% }) %>
     </div>
-    <div class="visible-md visible-sm">
+    <div class="visible-xs visible-sm">
         <div name="roomListSide">
             <ul id="roomListUlSide" class="nav nav-pills nav-stacked">
             <% rooms.forEach(function(room){ %>

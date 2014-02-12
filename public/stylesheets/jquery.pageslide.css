@@ -19,7 +19,7 @@
     color: #FFF;
     */
     color: #333;
-    -webkit-box-shadow: inset 0 0 5px 5px #222;
-    -moz-shadow: inset 0 0 5px 5px #F0F8FF;
-    box-shadow: inset 0 0 5px 5px #F0F8FF;
+    -webkit-box-shadow: inset 0 0 5px 5px #FFF;
+    -moz-shadow: inset 0 0 5px 5px #FFF;
+    box-shadow: inset 0 0 5px 5px #FFF;
 }
