@@ -4,6 +4,7 @@ var clearRoomItem = function() {
     $('#roomDescription').val('');
     $('#chatCreateButton').attr("disabled", "disabled");
     $("select[name=selectedMember]").children().remove();
+    $("select[name=selectMember] option").attr("selected",false);
 };
 var ceateButtonCheck = function() {
     if ( $('#createRoomName').val().trim().length !== 0 
