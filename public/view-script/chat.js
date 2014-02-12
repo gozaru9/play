@@ -34,6 +34,8 @@ var createMemberList = function(users) {
     document.getElementById("toUl").innerHTML = toElement;
 };
 $(function() {
+    $('#hederMenu').children().removeClass('active');
+    $('#lobbyView').addClass('active');
     /* chat **/
 	//サーバーが受け取ったメッセージを返して実行する
 	socket.on('msg push', function (data) {

@@ -1,4 +1,7 @@
 $(function() {
+    $('#hederMenu').children().removeClass('active');
+    $('#fixedView').addClass('active');
+    
     $('button[name=myFixedUpdateButton]').click(function() {
         if ($(this).val()) {
             $('#fixedCreateFormLabel').text('定型文を更新します');
