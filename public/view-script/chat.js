@@ -31,8 +31,45 @@ var createMemberList = function(users) {
         toElement += '<li><a name="toTarget" href="#">'+users[i].name+'</a></li>';
     }
     document.getElementById("toUl").innerHTML = toElement;
-}
+};
 $(function() {
+    /* chat **/
+	//サーバーが受け取ったメッセージを返して実行する
+	socket.on('msg push', function (data) {
+		if (data.toNameList[0] === '') {
+            $('#'+data.roomId).append($('<ul class="chat"><li class="left clearfix"><!--<span class="chat-img pull-left"><img src="img/ff.gif" alt="User Avatar" class="img-circle" /></span>--><div class="chat-body clearfix"><div name="reseveMessage" class="header"><strong class="primary-font">'+data.userName+'</strong><small class="pull-right text-muted"><i class="fa fa-clock-o fa-fw"></i>'+data.time+'</small><p>'+nl2br(escapeHTML(data.message))+'</p></div></li></ul></div>'));
+		}else {
+            $('#'+data.roomId).append(
+                $('<ul class="chat"><li class="left clearfix"><!--<span class="chat-img pull-left"><img src="img/ff.gif" alt="User Avatar" class="img-circle" /></span>--><div class="chat-body clearfix"><div name="reseveMessage" class="header"><strong class="primary-font">'+data.userName+'</strong><small class="pull-right text-muted"><i class="fa fa-clock-o fa-fw"></i>'+data.time+'</small><p><span class="label label-success text-center">TO</span>'+' &nbsp;'+data.toNameList.join()+'</p><p>'+nl2br(escapeHTML(data.message))+'</p></div></li></ul></div>'));
+		}
+		var target = $('div[name*=roomList]').find(".active").attr("name");
+		if (target != data.roomId) {
+            var num = $('span[name='+data.roomId+']').html();
+            var unReadNum = 1;
+            if (num === undefined) {
+                $('li[name='+data.roomId+']').children().append($('<span>',{class:"badge pull-right",name: data.roomId}).text(unReadNum));
+            } else {
+                unReadNum = Number(num)+1;
+                $('span[name='+data.roomId+']').text(unReadNum);
+            }
+            updateUnReadNum(data.roomId, unReadNum);
+		}
+		var toNum = data.toTarget.length;
+		var my = $('#cryptoId').val();
+		$('div[name*=roomList]').find(".active").attr("name");
+		var roomName = $('li[name='+data.roomId+']').text();
+		for (var toTargetIndex=0; toTargetIndex < toNum; toTargetIndex++) {
+		    if (my == data.toTarget[toTargetIndex]) {
+                $().toastmessage('showToast', {
+                    text     : '['+data.roomName+']<br>'+'にTOで指定されたメッセージがあります',
+                    sticky   : true,
+                    type     : 'notice'
+                });
+		    }
+		}
+        $('#'+data.roomId).animate({ scrollTop: getScrolBottom($('#'+data.roomId))}, 'slow');
+	});
+    
     /* create room **/
     $('#createChatDiv').focusout(function() {
         ceateButtonCheck();

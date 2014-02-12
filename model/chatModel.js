@@ -47,13 +47,13 @@ var chatSchema = new mongoose.Schema({
  * @type {Object}
  */
 var messagesSchema = new mongoose.Schema({
-  created: {type: Date, default: moment().format('YYYY-MM-DD hh:mm:ss')},
-  updated: {type: Date, default: moment().format('YYYY-MM-DD hh:mm:ss')},
+  created: {type: Date, default: moment().format('YYYY-MM-DD HH:mm:ss')},
+  updated: {type: Date, default: moment().format('YYYY-MM-DD HH:mm:ss')},
   creatBy: {type: String},
   updateBy: {type: String},
   user: {_id: Object, name: String},
   to: {ids: Array, names: Array},
-  time: {type: String, default: moment().format('YYYY-MM-DD hh:mm:ss')},
+  time: {type: String, default: moment().format('YYYY-MM-DD HH:mm:ss')},
   message: {type:String},
 });
 /**

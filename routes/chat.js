@@ -48,9 +48,8 @@ exports.index = function(req, res){
                     var name = '';
                     var users=[];
                     var messages=[];
-                    
-                    setUnReadNum(rooms, target, req.session.beforeLogoutTime);
-                    
+                    var now = moment().format('YYYY-MM-DD HH:mm:ss');
+                    setUnReadNum(req.session._id, rooms, target, now, req.body.room);
                     if(req.body.room) {
                         var roomLength = Array.isArray(rooms) ? rooms.length : 0;
                         for(var i=0; i<roomLength; i++) {
@@ -61,11 +60,12 @@ exports.index = function(req, res){
                                 name = rooms[i].name;
                                 users = rooms[i].users;
                                 messages = rooms[i].messages;
+                                //選択したルームの未読数を0にする
+
                                 break;
                             }
                         }
                     }
-                    
                     var allUsersNum = Array.isArray(allUsers) ? allUsers.length : 0;
                     for (var allUserIndex = 0; allUserIndex < allUsersNum; allUserIndex++) {
                         allUsers[allUserIndex].status = getStatusClass(allUsers[allUserIndex].loginStatus);
@@ -98,6 +98,9 @@ exports.lobby = function(req, res){
         //ログイン通知をするかの条件を設定
         if (req.query.notice !== undefined) {
             req.session.loginNotice = false;
+            //loginからの遷移ではない場合
+            req.session.unreadjudgmentTime = moment().format('YYYY-MM-DD HH:mm:ss');
+            console.log(req.session.unreadjudgmentTime);
         }
         async.series(
             [function (callback) {
@@ -112,7 +115,8 @@ exports.lobby = function(req, res){
                 unRead.getUnReadByUserId(req.session._id, function(err, target) {
                     
                     var rooms = results[0];
-                    setUnReadNum(rooms, target, req.session.beforeLogoutTime);
+                    setUnReadNum(req.session._id, rooms, target, req.session.unreadjudgmentTime);
+                    
                     var allUsers = results[1];
                     var allUsersNum = allUsers.length;
                     for (var allUserIndex = 0; allUserIndex < allUsersNum; allUserIndex++) {
@@ -187,7 +191,7 @@ exports.login = function(req, res){
             req.session.name = results[0].name;
             req.session.isLogin = true;
             req.session.loginNotice = true;
-            req.session.beforeLogoutTime = results[0].logoutTime;
+            req.session.unreadjudgmentTime = results[0].unreadjudgmentTime;
             model.updateStatus(req.session._id, 1);
             res.redirect('/chat/lobby');
         });
@@ -595,11 +599,13 @@ function craeteMemberStatus(roomMember, allUsers) {
  * 
  * @author niikawa
  * @method setUnReadNum
+ * @param {String} userId
  * @param {Array} rooms
  * @param {Array} unReads
- * @param {Date} beforeLogoutTime
+ * @param {Date} unreadjudgmentTime
+ * @param {String} unReadOffRoomId
  */
-function setUnReadNum(rooms, unReads, beforeLogoutTime) {
+function setUnReadNum(userId, rooms, unReads, unreadjudgmentTime, unReadOffRoomId) {
     console.log('----------set unread num params---------------'); 
 
     var length = unReads.length;
@@ -627,8 +633,12 @@ function setUnReadNum(rooms, unReads, beforeLogoutTime) {
     
     //前回ログアウト後に通知されたメッセージ数を取得し未読数に加算する
     //TODO ここのロジックは変えたい
-    var logoutTime = moment(beforeLogoutTime);
-    
+    var judgmentTime = '';
+    if (unreadjudgmentTime === null) {
+        judgmentTime = moment();
+    } else {
+        judgmentTime = moment(unreadjudgmentTime);
+    }
     for (index = 0; index < roomNum; index++) {
         
         var messagesNum = rooms[index].messages.length;
@@ -637,13 +647,23 @@ function setUnReadNum(rooms, unReads, beforeLogoutTime) {
         for (messagesNum; messagesNum !== 0;messagesNum--) {
             
             var messageTime = moment(rooms[index].messages[messagesNum-1].time);
-            if (messageTime.isAfter(logoutTime)) {
+            if (messageTime.isAfter(judgmentTime)) {
                 unReadNum++;
             } else {
                 break;
             }
         }
-        rooms[index].unReadNum += unReadNum;
+        console.log('room name :'+ rooms[index].name);
+        console.log('add unread num :'+ unReadNum);
+        console.log('unread num :'+ rooms[index].unReadNum);
+        //未読最新数に更新する
+        if (unReadOffRoomId == rooms[index]._id) {
+            rooms[index].unReadNum = 0;
+        } else {
+            rooms[index].unReadNum += unReadNum;
+        }
+        var data = {userId: userId, roomId: rooms[index]._id, unReadNum: rooms[index].unReadNum};
+        unRead.updateUnRead(data, null);
     }
     return;
  }

@@ -211,7 +211,7 @@ var chatRoom = io.sockets.on('connection', function (socket) {
         //io.sockets.manager.roomClients[socket.id]
         data.userId=socket.handshake.session._id;
         data.userName=socket.handshake.session.name;
-        data.time=moment().format('YYYY-MM-DD hh:mm:ss');
+        data.time=moment().format('YYYY-MM-DD HH:mm:ss');
         
         User.getById(data.target, function(err, user) {
             
@@ -232,9 +232,9 @@ var chatRoom = io.sockets.on('connection', function (socket) {
         
         data.userId=socket.handshake.session._id;
         data.userName=socket.handshake.session.name;
-        data.time=moment().format('YYYY-MM-DD hh:mm:ss');
+        data.time=moment().format('YYYY-MM-DD HH:mm:ss');
         chatRoom.in(data.roomId).emit('msg push', data);
-
+        socket.broadcast.emit('msg push lobby', data);
         Chat.addMessage(data);
     });
     //全体メッセージ

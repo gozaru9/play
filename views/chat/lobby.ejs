@@ -4,8 +4,8 @@
         <%- include ../head.ejs %>
         <script type="text/javascript" src="/socket.io/socket.io.js"></script>
         <script type="text/javascript" src="/javascripts/client.js"></script>
-        <script type="text/javascript" src="/view-script/lobby.js"></script>
         <script type="text/javascript" src="/view-script/chat.js"></script>
+        <script type="text/javascript" src="/view-script/lobby.js"></script>
     </head>
     <body>
     <div id="wrap">
@@ -24,7 +24,7 @@
                 <div class="col-md-4">
                     <div class="panel panel-info">
                         <div class="panel-heading"><a href="#" name="moveChat" id=<%= room._id %>><%= room.name %></a>
-                            <span class="badge pull-right"><%= room.unReadNum %></span>
+                            <span name="<%= room._id %>" class="badge pull-right"><%= room.unReadNum %></span>
                         </div>
                         <div class="panel-body">
                             <em><%= room.description %></em>

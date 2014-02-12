@@ -17,8 +17,8 @@ var collection = 'unRead';
  * @type {Object}
  */
 var unReadSchema = new mongoose.Schema({
-  created: {type: Date, default: moment().format('YYYY-MM-DD hh:mm:ss')},
-  updated: {type: Date, default: moment().format('YYYY-MM-DD hh:mm:ss')},
+  created: {type: Date, default: moment().format('YYYY-MM-DD HH:mm:ss')},
+  updated: {type: Date, default: moment().format('YYYY-MM-DD HH:mm:ss')},
   roomId: {type: Object},
   userId: {type: Object},
   number: {type:Number},
@@ -75,25 +75,27 @@ unReadModel.prototype.getUnReadByUserId = function(id, callback) {
 unReadModel.prototype.updateUnRead = function(data, callback) {
     
     var UnRead = this.db.model(collection);
-    UnRead.findOne({ "userId" : data.userId, 'roomId': data.roomId}, function(err, target){
+    UnRead.findOne({ "userId" : data.userId.toString(), 'roomId': data.roomId.toString()}, function(err, target){
         console.log('----------unRead model updateUnRead------');
         console.log(target);
         if (target === null) {
             
             var saveUnRead = new myModel();
-            saveUnRead.roomId = data.roomId;
-            saveUnRead.userId = data.userId;
+            saveUnRead.roomId = data.roomId.toString();
+            saveUnRead.userId = data.userId.toString();
             saveUnRead.number = data.unReadNum;
             saveUnRead.save();
             
         } else {
             
-            target.updated = moment().format('YYYY-MM-DD hh:mm:ss');
+            target.updated = moment().format('YYYY-MM-DD HH:mm:ss');
             target.number = data.unReadNum;
             target.save();
         }
-
-        callback(err, '');
+        if (callback !== null) {
+            
+            callback(err, '');
+        }
     });
     
 };

@@ -14,7 +14,7 @@ var usersSchema = new mongoose.Schema({
   password: String,
   loginStatus: {type: Number, default: 1},
   lastLoginTime: {type: Date, default: Date.now},
-  logoutTime: {type: Date},
+  unreadjudgmentTime: {type: String},
   socketId:String
 });
 
@@ -135,7 +135,7 @@ userModel.prototype.logout = function(id) {
             console.log('logout error:'+id);
         } else {
             target.loginStatus = 4;
-            target.logoutTime = moment();
+            target.unreadjudgmentTime = moment().format('YYYY-MM-DD HH:mm:ss');
             target.save();
         }
     });
