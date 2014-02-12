@@ -42,6 +42,12 @@ var getMyRoom = function (isMyCreate, roomName) {
             document.getElementById("roomListUlSide").innerHTML = element;
             var activeRoom = $('#roomContents').find(".active").attr("id");
             $('li[name='+activeRoom+']').addClass('active');
+            //サイドパネルが開いていた場合、要素が更新されないため強制的に開閉する
+            if ($('#pageslide').is(':visible')) {
+                $('#pageslide').css("right", "auto","left", "-250px");
+                $('body').css("margin-left", "0px");
+                $('#pageslide').hide(500);
+            }
     　　},
     　　error: function(XMLHttpRequest, textStatus, errorThrown) {
             $().toastmessage('showToast', {
@@ -132,9 +138,9 @@ $(function() {
     //部屋の選択
 	$('div[name*=roomList]').delegate('a[name=roomSelectRadio]', 'click', function() {
 
-        $('li').removeClass("active");
-        $(this).parent('li').addClass('active');
         var id = $(this).parent().attr('name');
+        $('li').removeClass("active");
+        $('li[name='+id+']').addClass('active');
         $(this).children().remove();
         $('#roomName').html($(this).text());
         $('#memberEditButton').val(id);

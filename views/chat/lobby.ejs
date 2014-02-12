@@ -11,14 +11,10 @@
     <div id="wrap">
         <%- include ../header.ejs %>
         <div class="chat-container">
-        <%- include ../chat/createRoom.ejs %>
             <div class="row">
                 <div class="col-md-12">
                     <div class="page-header">
                     <h1>Lobby</h1>
-                    <div class="create-room">
-                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#createRoomForm">Create Room</button>
-                    </div>
                 </div>
                 <% rooms.forEach(function(room){ %>
                 <div class="col-md-4">
@@ -39,6 +35,12 @@
             </div>
         </div>
     </div>
-    <%- include ../sideMenu.ejs %>
+    <%- include ../chat/individualMessage.ejs %>
+    <%- include ../chat/allSendMessage.ejs %>
+    <%- include ../chat/sendMessage.ejs %>
+    <%- include ../chat/createRoom.ejs %>
+    <%- include ../chat/profile.ejs %>
+    <%- include ../chat/setting.ejs %>
+    <%- include ../sideMenuLobby.ejs %>
     </body>
 </html>

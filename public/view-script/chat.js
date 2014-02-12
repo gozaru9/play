@@ -105,14 +105,14 @@ $(function() {
                 socket.emit('create chat', chat);
                 clearRoomItem();
                 $().toastmessage('showToast', {
-                    text     : chat.name+'を作成しました',
+                    text     : '['+chat.name+']<br>を作成しました',
                     sticky   : true,
                     type     : 'success'
                 });
             },
         　　error: function(XMLHttpRequest, textStatus, errorThrown) {
                 $().toastmessage('showToast', {
-                    text     : chat.name+'を作成できませんでした',
+                    text     : '['+chat.name+']<br>を作成できませんでした',
                     sticky   : true,
                     type     : 'error'
                 });

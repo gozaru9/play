@@ -21,6 +21,9 @@
               <li name=<%= room._id %> class="">
                 <a name="roomSelectRadio" href="#">
                   <%= room.name %>
+                  <% if (room.unReadNum != 0) { %>
+                  <span name="<%= room._id %>" class="badge pull-right"><%= room.unReadNum %></span>
+                  <% } %>
                 </a>
               </li>
             <% }) %>
