@@ -4,7 +4,6 @@
         <%- include ../head.ejs %>
         <script type="text/javascript" src="/socket.io/socket.io.js"></script>
         <script type="text/javascript" src="/javascripts/client.js"></script>
-        <script type="text/javascript" src="/view-script/chat.js"></script>
         <script type="text/javascript" src="/view-script/lobby.js"></script>
     </head>
     <body>
@@ -16,10 +15,11 @@
                     <div class="page-header">
                     <h1>Lobby</h1>
                 </div>
+                <div id="myLoomLst" >
                 <% rooms.forEach(function(room){ %>
                 <div class="col-md-4">
                     <div class="panel panel-info">
-                        <div class="panel-heading"><a href="#" name="moveChat" id=<%= room._id %>><%= room.name %></a>
+                        <div class="panel-heading"><a href="#" id=<%= room._id %>><%= room.name %></a>
                             <span name="<%= room._id %>" class="badge pull-right"><%= room.unReadNum %></span>
                         </div>
                         <div class="panel-body">
@@ -32,6 +32,7 @@
                     </div>
                 </div>
                 <% }) %>
+                </div>
             </div>
         </div>
     </div>

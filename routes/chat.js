@@ -237,13 +237,22 @@ exports.create = function(req, res){
  */
 exports.getMyRoom = function(req, res) {
     
-    chat.setNextParam([res,req]);
-    chat.setNextFunc(
-        function(parameter, room){
-            parameter[0].send({rooms:room});
-        }
-    );
-    chat.getMyRoomParts(req);
+    async.waterfall(
+        [function (callback) {
+            chat.getMyRoom(req, callback);
+        },function(rooms, callback) {
+            unRead.getUnReadByUserId(req.session._id, function(err, target) {
+                callback(null, rooms, target);
+            });
+        }, function(rooms, unRead, callback) {
+            
+            setUnReadNum(req.session._id, rooms, unRead, req.session.unreadjudgmentTime);
+            callback(null,rooms);
+        }]
+        ,function(err, roomList) {
+            
+            res.send({rooms:roomList});
+        });
 };
 /**
  * リクエストを受け取り、ユーザーの入れる部屋を取得する(ajax版)
@@ -666,5 +675,4 @@ function setUnReadNum(userId, rooms, unReads, unreadjudgmentTime, unReadOffRoomI
         unRead.updateUnRead(data, null);
     }
     return;
- }
- 
+}

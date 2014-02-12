@@ -299,9 +299,11 @@ var chatRoom = io.sockets.on('connection', function (socket) {
                     //コメクションが確立しているかつ自分自身以外のユーザーに送信
                     if (user.socketId !== '' && user.socketId !== socket.id)  {
                         io.sockets.socket(user.socketId).emit('create chat msg', chat.name);
+                        io.sockets.socket(user.socketId).emit('create chat msg lobby', chat.name);
                     }
                     if (user.socketId === socket.id) {
                         io.sockets.socket(user.socketId).emit('create chat complete', '');
+                        io.sockets.socket(user.socketId).emit('create chat complate lobby', '');
                     }
                 } else {
                     console.log('create room message target user is not found');
@@ -319,11 +321,13 @@ var chatRoom = io.sockets.on('connection', function (socket) {
             for (var delKey in target.deleteUsers) {
                 
                 io.sockets.socket(target.deleteUsers[delKey].socketId).emit('member delete', sendData);
+                io.sockets.socket(target.deleteUsers[delKey].socketId).emit('member delete lobby', sendData);
             }
             //追加通知を行う
             for (var addKey in target.addUsers) {
                 
                 io.sockets.socket(target.addUsers[addKey].socketId).emit('member add', sendData);
+                io.sockets.socket(target.addUsers[addKey].socketId).emit('member add lobby', sendData);
             }
             //
             var roomSendData = {roomId: data.roomId, roomName: target.roomName, users: data.users};
