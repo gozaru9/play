@@ -157,6 +157,12 @@ table {
 
 /* CHAT
 /*--------------------------------*/
+.user-area {
+    margin-left:.6em;
+    margin-bottom:.6em;
+    float : left;
+    
+}
 .user-name {
   padding: .2em .6em .3em;
   font-weight: bold;
@@ -164,7 +170,7 @@ table {
   text-align: center;
   white-space: nowrap;
   vertical-align: baseline;
-  border-radius: .45em;
+  border-radius: .55em;
   background-color: #4CAE4C;
   -moz-box-sizing: border-box;
 }
