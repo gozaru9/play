@@ -7,7 +7,7 @@ var http = require('http');
 var path = require('path');
 var app = express();
 var Session = express.session.Session;
-var fs = require("fs"); // ファイルの読書き
+//var fs = require("fs"); // ファイルの読書き
 
 //各画面の定義
 var routes = require('./routes');
