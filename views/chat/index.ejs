@@ -116,11 +116,15 @@
                                         <% }) %>
                                         </ul>
                                     </div>                  
+                                    <div id="tagDiv" class="btn-group col-md-1">
+                                        <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">タグ <span class="caret"></span></button>
+                                        <ul id="tagUl" class="dropdown-menu"></ul>
+                                    </div>
                                     <div id="toDiv" class="btn-group col-md-1">
                                         <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">TO <span class="caret"></span></button>
                                         <ul id="toUl" class="dropdown-menu"></ul>
                                     </div>
-                                    <div id="toUser" class="col-md-10">
+                                    <div id="toUser" class="col-md-9">
                                     </div>
                                 </div> 
 
@@ -160,6 +164,11 @@
                         </div>
                         <div name="roomList">
                             <ul id="roomListUl" class="nav nav-pills nav-stacked">
+                              <li name="myRoom" class="">
+                                <a name="roomSelectRadio" href="#">
+                                  MY ROOM
+                                </a>
+                              </li>
                             <% rooms.forEach(function(room){ %>
                               <li name=<%= room._id %> class="">
                                 <a name="roomSelectRadio" href="#">

@@ -105,8 +105,6 @@ fixedModel.prototype.update = function(data, callback) {
     var Fixed = this.db.model(collection);
     Fixed.findOne({ "_id" : data.id}, function(err, target){
         
-        console.log(target);
-        
         target.updateBy = data.updateBy;
         target.updated = moment().format('YYYY-MM-DD hh:mm:ss');
         target.isOpen = data.isOpen;

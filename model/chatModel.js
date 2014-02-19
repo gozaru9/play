@@ -66,10 +66,9 @@ var myMessageSchema = new mongoose.Schema({
   created: {type: Date, default: Date.now},
   updated: {type: Date, default: Date.now},
   roomId:{type: String, default: ''},
-  sender:{type: String},
   recipient:{type: String},//受信者
-  messages: {type:String},
-  time: {type:String}
+  readFlag:{type: Boolean},//既読や未読を設定する予定
+  messages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'messages' }],
 });
 
 // middleware
@@ -143,6 +142,7 @@ chatModel.prototype.save = function(req) {
  */
 chatModel.prototype.addMessage = function(data) {
     var Chat = this.db.model(collection);
+    var My = this.db.model(collection3);
     Chat.findOne({ "_id" : data.roomId}, function(err, room){
         var message = new messgeModel();
         message.user = {_id:data.userId, name:data.userName};
@@ -152,6 +152,32 @@ chatModel.prototype.addMessage = function(data) {
         message.save();
         room.messages.push(message);
         room.save();
+        console.log('-----------------add mesage----------------');
+        console.log(data.toTarget);
+        data.toTarget.forEach(function(id){
+
+            console.log('-------target id -----------');
+            console.log(id);
+            
+            My.findOne({'recipient': id}, function(err, item) {
+                console.log(item);
+
+                if (item === null || item.length === 0) {
+                    console.log('target is not found');
+                    var MySave = new myMsg();
+                    MySave.recipient = id;
+                    MySave.readFlag = false;
+                    MySave.messages.push(message);
+                    MySave.save();
+                    
+                } else {
+                    
+                    item.readFlag = false;
+                    item.messages.push(message);
+                    item.save();
+                }
+            });
+        });
     });
 };
 /**
@@ -287,6 +313,20 @@ chatModel.prototype.getMyRoomParts = function(req) {
             return room;
         }
     }).populate('messages');
+};
+/**
+ * 自分あてのＴＯメッセージを取得する.
+ * 
+ * @method getMyMessages
+ * @author niikawa
+ * @param {String} id 削除対象のID
+ * @param {Function} callback
+ */
+chatModel.prototype.getMyMessages = function(id,callback) {
+     console.log('-------------get my messages ------------');
+    var My = this.db.model(collection3);
+    My.findOne({'recipient': id}, callback).populate('messages', null, null, { sort: { 'created': 1 } });
+     
 };
 /**
  * 部屋を削除する.

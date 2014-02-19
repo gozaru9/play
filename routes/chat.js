@@ -29,6 +29,7 @@ exports.index = function(req, res){
     console.log('----------------chat index--------------');
     if (req.session.isLogin) {
         
+        var isMyRoom = req.body.room === 'myRoom';
         async.series(
             [function (callback) {
                 fixed.getMySectence(req.session._id, callback);
@@ -37,13 +38,19 @@ exports.index = function(req, res){
             },function (callback) {
                 chat.getMyRoom(req, callback);
             },function(callback) {
+                if (req.body.room === 'myRoom') {
+                    chat.getMyMessages(req.session._id, callback);
+                } else {
+                    callback();
+                }
+            },function(callback) {
                 model.getAll(req, callback);
             }]
             ,function(err, results) {
                 
                 console.log('-----------async end function-------------');
                 var rooms = results[2];
-                var allUsers = results[3];
+                var allUsers = results[results.length-1];
                 unRead.getUnReadByUserId(req.session._id, function(err, target) {
                     var name = '';
                     var users=[];
@@ -51,18 +58,30 @@ exports.index = function(req, res){
                     var now = moment().format('YYYY-MM-DD HH:mm:ss');
                     setUnReadNum(req.session._id, rooms, target, now, req.body.room);
                     if(req.body.room) {
-                        var roomLength = Array.isArray(rooms) ? rooms.length : 0;
-                        for(var i=0; i<roomLength; i++) {
-                            if (rooms[i]._id == req.body.room) {
+                        
+                        if (isMyRoom) {
+                            
+                            console.log(results[3]);
+                            
+                            name = 'MY ROOM';
+                            users = results[3].users;
+                            messages = results[3].messages;
+                            console.log('myroom messages-------------------------------');
+                            console.log(results[3].messages);
+                            
+                        } else {
+                            
+                            var roomLength = Array.isArray(rooms) ? rooms.length : 0;
+                            for(var i=0; i<roomLength; i++) {
+                                if (rooms[i]._id == req.body.room) {
+        
+                                    name = rooms[i].name;
+                                    users = rooms[i].users;
+                                    messages = rooms[i].messages;
+                                    //選択したルームの未読数を0にする
     
-                                console.log('-------target room----------');
-                                console.log(rooms[i]._id);
-                                name = rooms[i].name;
-                                users = rooms[i].users;
-                                messages = rooms[i].messages;
-                                //選択したルームの未読数を0にする
-
-                                break;
+                                    break;
+                                }
                             }
                         }
                     }
@@ -72,7 +91,7 @@ exports.index = function(req, res){
                     }
                     
                     var fixed = results[0].concat(results[1]);
-                    
+                    console.log('---------------render start--------------------');
                     res.render('chat/index', {title: 'chat', userName:req.session.name, _id:req.session._id,
                         rooms:rooms, targetRoomId:req.body.room, roomName:name, users:users, 
                         messages:messages, allUsers:allUsers, fixed:fixed});
@@ -269,7 +288,13 @@ exports.getUserByRoomId = function(req, res) {
 
         async.series(
             [function (callback) {
-                chat.getById(req.body.roomId, callback);
+                if (req.body.roomId === 'myRoom') {
+                    
+                    chat.getMyMessages(req.session._id, callback);
+                } else {
+                    
+                    chat.getById(req.body.roomId, callback);
+                }
             },function (callback) {
                 model.getAll(req, callback);
             }]
@@ -282,9 +307,14 @@ exports.getUserByRoomId = function(req, res) {
                 if (!room) {
                     console.log(' room is not found:'+req.body.roomId);
                 }
-                
-                craeteMemberStatus(room.users, allUsers);
-                res.send({users:room.users, messages:room.messages
+                var users = [];
+                if (req.body.roomId === 'myRoom') {
+                    users[0] = {'_id': req.session._id, 'name':req.session.name};
+                } else {
+                    users = room.users;
+                }
+                craeteMemberStatus(users, allUsers);
+                res.send({users:users, messages:room.messages
                     , allUsers:allUsers,description:room.description});
             });
     
@@ -674,5 +704,7 @@ function setUnReadNum(userId, rooms, unReads, unreadjudgmentTime, unReadOffRoomI
         var data = {userId: userId, roomId: rooms[index]._id, unReadNum: rooms[index].unReadNum};
         unRead.updateUnRead(data, null);
     }
+    console.log('----------set unread num params end---------------'); 
+    
     return;
 }
