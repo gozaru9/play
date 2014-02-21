@@ -31,8 +31,8 @@ var createMessageElement = function(roomId, data) {
     }
     var sender = (data.userName) ? data.userName : data.user.name;
     $('#'+roomId).append(
-//        $('<ul class="chat">'+tagsElement3+'<li class="left clearfix"><!--<span class="chat-img pull-left"><img src="img/ff.gif" alt="User Avatar" class="img-circle" /></span>--><div class="chat-body clearfix"><div name="reseveMessage" class="header"><strong class="primary-font">'
-        $('<ul class="chat"><li class="clearfix"><!--<span class="chat-img pull-left"><img src="img/ff.gif" alt="User Avatar" class="img-circle" /></span>--><div class="chat-body clearfix"><div name="reseveMessage" class="header"><strong class="primary-font">'
+//        $('<ul  class="chat">'+tagsElement3+'<li class="left clearfix"><!--<span class="chat-img pull-left"><img src="img/ff.gif" alt="User Avatar" class="img-circle" /></span>--><div class="chat-body clearfix"><div name="reseveMessage" class="header"><strong class="primary-font">'
+        $('<ul name="message" class="chat"><li class="clearfix"><!--<span class="chat-img pull-left"><img src="img/ff.gif" alt="User Avatar" class="img-circle" /></span>--><div class="chat-body clearfix"><div name="reseveMessage" class="header"><strong class="primary-font">'
         +sender+'</strong><small class="pull-right text-muted"><i class="fa fa-clock-o fa-fw"></i>'+data.time+'</small>'
         +tagsElement+namesElement+'<p>'+nl2br(escapeHTML(data.message))+'</p></div></li></ul></div>'));
 };
@@ -99,7 +99,14 @@ $(function() {
         $('#today').html(ymd + ' ' + hour + ':' + min + ':' + sec);
         setTimeout(clock, 1000);
 	})();
+	//メッセージマウスオーバー
+	$('div[name=reseveMessage]').mouseover(function(){
+	    console.log('over message');
 
+	});
+	$('div[name=reseveMessage]').mouseout(function(){
+console.log('out message');
+	});
 	//サーバーが受け取ったメッセージを返して実行する
 	socket.on('msg push', function (data) {
 	    
@@ -163,7 +170,6 @@ $(function() {
             },
         });
 	});
-    
     //部屋の選択
 	$('div[name*=roomList]').delegate('a[name=roomSelectRadio]', 'click', function() {
 
@@ -249,9 +255,6 @@ $(function() {
         var tag = [];
         if ($('#targetTag').val()) {
             tag.push({_id:$('#targetTag').val(), name:$('#selectTag').text().trim().substring(1).split('×'), color: $('#targetTagColor').val()})
-/*            tag._id = $('#targetTag').val();
-            tag.name = $('#selectTag').text().trim().substring(1).split('×');
-            tag.color = $('#targetTagColor').val();*/
         }
         var data = {
             message: $('#message').val(),
@@ -345,9 +348,7 @@ $(function() {
         var isSelect = false;
         var toTarget = $('input[name=toList]:hidden').get();
         toTarget.forEach(function(target){
-            console.log('選択ずみＩＤ：'+target.value);
             if (target.value === $(this).attr('href')) {
-                console.log('がってん');
                 isSelect = true; return false;
             }
         });

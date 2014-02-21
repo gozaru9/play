@@ -255,13 +255,6 @@ $(function() {
 	    changeStatus(data);
         return false;
 	});
-	//メッセージマウスオーバー
-	$('div[name=reseveMessage]').mouseover(function(){
-
-	});
-	$('div[name=reseveMessage]').mouseout(function(){
-
-	});
 	//ログアウト
 	$('#logout').click(function(){
         socket.emit('logout unload');

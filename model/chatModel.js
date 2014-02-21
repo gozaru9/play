@@ -1,5 +1,6 @@
 var util = require('util');
 var Core = require('../core/coreModel.js');
+var monitorModel = require('./monitorModel.js');
 var mongoose = require('mongoose');
 var moment =require('moment');
 /**
@@ -145,6 +146,7 @@ chatModel.prototype.addMessage = function(data) {
     var Chat = this.db.model(collection);
     var My = this.db.model(collection3);
     var Tag = this.db.model('tags');
+    
     Chat.findOne({ "_id" : data.roomId}, function(err, room){
         var message = new messgeModel();
         message.user = {_id:data.userId, name:data.userName};
@@ -153,37 +155,40 @@ chatModel.prototype.addMessage = function(data) {
         message.message = data.message;
         
         //タグは任意のため設定されているかを判定
-        if (data.tag.length !== 0) {
-            var tagId = data.tag[0]._id;
-            Tag.findOne({'_id': tagId}, function(err, item){
-                
-                if (null !== item) {
-                    message.tag.push(item);
-                }
-                message.save();
-                room.messages.push(message);
-                room.save();
-                data.toTarget.forEach(function(id){
-                    My.findOne({'recipient': id}, function(err, item) {
-        
-                        if (item === null || item.length === 0) {
-                            console.log('target is not found');
-                            var MySave = new myMsg();
-                            MySave.recipient = id;
-                            MySave.readFlag = false;
-                            MySave.messages.push(message);
-                            MySave.save();
-                            
-                        } else {
-                            
-                            item.readFlag = false;
-                            item.messages.push(message);
-                            item.save();
-                        }
-                    });
+        var tagId = (data.tag.length !== 0) ? data.tag[0]._id : '1';
+        Tag.findOne({'_id': tagId}, function(err, item){
+            if (item) message.tag.push(item);
+            message.save();
+
+            //監視対象のタグの場合は専用のコレクションに格納
+            if (item && item.isMonitor ) {
+                var monitor = new monitorModel();
+                monitor.save(data.userId, message, data.toTarget);
+            }
+            
+            room.messages.push(message);
+            room.save();
+            //TOに指定されているメンバーの固有メッセージ保持コレクションに登録
+            data.toTarget.forEach(function(id){
+                My.findOne({'recipient': id}, function(err, item) {
+    
+                    if (item === null || item.length === 0) {
+                        console.log('target is not found');
+                        var MySave = new myMsg();
+                        MySave.recipient = id;
+                        MySave.readFlag = false;
+                        MySave.messages.push(message);
+                        MySave.save();
+                        
+                    } else {
+                        
+                        item.readFlag = false;
+                        item.messages.push(message);
+                        item.save();
+                    }
                 });
             });
-        }
+        });
     });
 };
 /**
