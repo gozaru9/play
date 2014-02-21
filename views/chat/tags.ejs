@@ -21,6 +21,7 @@
                     <table class="table table-hover">
                         <thead>
                             <th>name</th>
+                            <th>監視対象</th>
                             <th>color</th>
                             <th></th>
                             <th></th>
@@ -29,6 +30,7 @@
                         <% tags.forEach(function(tag){ %>
                             <tr>
                                 <td><%= tag.name %></td>
+                                <td><% if (tag.isMonitor != 0) { %>○<% } else { %>×<% } %></td>
                                 <td><button type="button" class="btn btn-default" style="background-color:<%= tag.color %>"><%= tag.color %></button></td>
                                 <td><button data-toggle="modal" data-target="#tagsCreateForm" type="button" name="tagsUpdateButton" value="<%= tag._id %>" class="btn btn-warning">update</button></td>
                                 <td><button type="button" name="tagsDeleteButton" value="<%= tag._id %>" class="btn btn-danger">delete</button></td>

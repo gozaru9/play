@@ -40,6 +40,7 @@ $(function() {
                             $('#name').val(data.target.name);
                             $('#selectColor').val(data.target.color);
                             $('#completeButton').val(data.target._id);
+                            $('#isMonitor').attr('checked', data.target.isMonitor);
                         }
                 　　},
                 　　error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -52,13 +53,19 @@ $(function() {
     $('#completeButton').click(function(){
         if ( $('#name').val().trim().length === 0 ) return;
         var data = {id:$('#completeButton').val(),
-                    name :$('#name').val().trim(), 
+                    name :$('#name').val().trim(),
+                    isMonitor:$('#isMonitor').val(),
                     color:$('#selectColor').val()};
         if ( $('#completeButton').val()) {
             createFormSubmitByParam('/tags/update',data);
         } else {
             createFormSubmitByParam('/tags/regist',data);
         }
+    });
+    $('button[name=close]').click(function() {
+        $('#name').val('');
+        $('#isMonitor').attr('checked', false);
+        $('#selectColor').val('');
     });
     $('button[name=tagsDeleteButton]').click(function() {
         var data = {_id:$(this).val()};

@@ -23,6 +23,7 @@ var tagsSectenceSchema = new mongoose.Schema({
   updateBy: {type: String},
   name: {type: String},
   color: {type: String},
+  isMonitor: {type: Boolean, default:false},
 });
 
 // モデル化。model('モデル名', '定義したスキーマクラス')
@@ -91,6 +92,7 @@ tagsModel.prototype.update = function(data, callback) {
             target.updated = moment().format('YYYY-MM-DD hh:mm:ss');
             target.name = data.name;
             target.color = data.color;
+            target.isMonitor = data.isMonitor;
             target.save();
             callback(error, '');
         }

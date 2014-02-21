@@ -153,36 +153,37 @@ chatModel.prototype.addMessage = function(data) {
         message.message = data.message;
         
         //タグは任意のため設定されているかを判定
-        var tagId = data.tag._id;
-        Tag.findOne({'_id': tagId}, function(err, item){
-            
-            if (null !== item) {
-                message.tag.push(item);
-            }
-            message.save();
-            room.messages.push(message);
-            room.save();
-            data.toTarget.forEach(function(id){
-                My.findOne({'recipient': id}, function(err, item) {
-    
-                    if (item === null || item.length === 0) {
-                        console.log('target is not found');
-                        var MySave = new myMsg();
-                        MySave.recipient = id;
-                        MySave.readFlag = false;
-                        MySave.messages.push(message);
-                        MySave.save();
-                        
-                    } else {
-                        
-                        item.readFlag = false;
-                        item.messages.push(message);
-                        item.save();
-                    }
+        if (data.tag.length !== 0) {
+            var tagId = data.tag[0]._id;
+            Tag.findOne({'_id': tagId}, function(err, item){
+                
+                if (null !== item) {
+                    message.tag.push(item);
+                }
+                message.save();
+                room.messages.push(message);
+                room.save();
+                data.toTarget.forEach(function(id){
+                    My.findOne({'recipient': id}, function(err, item) {
+        
+                        if (item === null || item.length === 0) {
+                            console.log('target is not found');
+                            var MySave = new myMsg();
+                            MySave.recipient = id;
+                            MySave.readFlag = false;
+                            MySave.messages.push(message);
+                            MySave.save();
+                            
+                        } else {
+                            
+                            item.readFlag = false;
+                            item.messages.push(message);
+                            item.save();
+                        }
+                    });
                 });
             });
-            
-        });
+        }
     });
 };
 /**

@@ -25,10 +25,8 @@ var createMessageElement = function(roomId, data) {
     if (names !==  '') namesElement = '<p><span class="label label-success text-center">TO</span>'+' &nbsp;'+names+'</p>';
     var tagsElement = '';
     if (data.tag) {
-        console.log('タグ情報発見');
-        var tag = Array.isArray(data.tag) ? data.tag[0] : data.tag;
-        if (tag.name) {
-            tagsElement = '<p><span class="tag text-center" style="background-color:'+tag.color+'">'+tag.name+'</span><span class="pull-right glyphicon glyphicon-ok"></span></p>';
+        if (data.tag.length !== 0) {
+            tagsElement = '<p><span class="tag text-center" style="background-color:'+data.tag[0].color+'">'+data.tag[0].name+'</span><span class="pull-right glyphicon glyphicon-ok"></span></p>';
         }
     }
     var sender = (data.userName) ? data.userName : data.user.name;
@@ -248,12 +246,12 @@ $(function() {
         for (var toIndex=0; toIndex < toNum; toIndex++) {
             toList.push(toTarget[toIndex].value);
         }
-        console.log($('#targetTag').val());
-        var tag = {};
+        var tag = [];
         if ($('#targetTag').val()) {
-            tag._id = $('#targetTag').val();
+            tag.push({_id:$('#targetTag').val(), name:$('#selectTag').text().trim().substring(1).split('×'), color: $('#targetTagColor').val()})
+/*            tag._id = $('#targetTag').val();
             tag.name = $('#selectTag').text().trim().substring(1).split('×');
-            tag.color = $('#targetTagColor').val();
+            tag.color = $('#targetTagColor').val();*/
         }
         var data = {
             message: $('#message').val(),
