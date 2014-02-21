@@ -32,7 +32,8 @@ exports.index = function(req, res){
     
     model.getAll(res,
         function(res,docs){
-            res.render('account/index', { title: 'Express', items : docs});
+            res.render('account/index', 
+            { title: 'ユーザー管理', items : docs, _id: req.session._id, userName:req.session.name});
         }
     );
 };

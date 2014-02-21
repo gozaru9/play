@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+    <head>
+        <%- include ../head.ejs %>
+        <script type="text/javascript" src="/javascripts/plugins/spectrum/spectrum.js"></script>
+        <link rel='stylesheet' href="/javascripts/plugins/spectrum/spectrum.css" rel="stylesheet">
+        <script type="text/javascript" src="/view-script/tags.js"></script>
+    </head>
+    <body>
+    <div id="wrap">
+        <%- include ../header.ejs %>
+        <%- include tagsCreate.ejs %>
+        
+        <div class="chat-container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-header">
+                        <button data-toggle="modal" data-target="#tagsCreateForm" type="button" id="tagsCreateButton" class="btn btn-info">create new</button>
+                    </div>
+                    <h2 class="page-header">tags</h2>
+                    <table class="table table-hover">
+                        <thead>
+                            <th>name</th>
+                            <th>color</th>
+                            <th></th>
+                            <th></th>
+                        </thead>
+                        <tbody>
+                        <% tags.forEach(function(tag){ %>
+                            <tr>
+                                <td><%= tag.name %></td>
+                                <td><button type="button" class="btn btn-default" style="background-color:<%= tag.color %>"><%= tag.color %></button></td>
+                                <td><button data-toggle="modal" data-target="#tagsCreateForm" type="button" name="tagsUpdateButton" value="<%= tag._id %>" class="btn btn-warning">update</button></td>
+                                <td><button type="button" name="tagsDeleteButton" value="<%= tag._id %>" class="btn btn-danger">delete</button></td>
+                            </tr>
+                        <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    </body>
+</html>
+    

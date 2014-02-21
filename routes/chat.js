@@ -8,6 +8,8 @@ var fixedModel = require('../model/fixedModel');
 var fixed = new fixedModel();
 var unReadModel = require('../model/unReadModel');
 var unRead = new unReadModel();
+var tagsModel = require('../model/tagsModel');
+var tags = new tagsModel();
 
 /**
  * chat modeule
@@ -30,21 +32,35 @@ exports.index = function(req, res){
     if (req.session.isLogin) {
         
         var isMyRoom = req.body.room === 'myRoom';
-        async.series(
+        //parallelだとデータを取得できない。。。。
+        async.parallel(
             [function (callback) {
+                //固有定型文取得
                 fixed.getMySectence(req.session._id, callback);
+                
             },function (callback) {
+                //公開定型文取得
                 fixed.getSectence(callback);
+                
             },function (callback) {
+                //自分の入れるルーム取得
                 chat.getMyRoom(req, callback);
+                
             },function(callback) {
                 if (req.body.room === 'myRoom') {
+                    //Toメッセージ用メッセージ取得
                     chat.getMyMessages(req.session._id, callback);
                 } else {
                     callback();
                 }
+                
+            }, function(callback) {
+                //タグ取得
+                tags.getAllSync(callback);
+                
             },function(callback) {
-                model.getAll(req, callback);
+                //全ユーザー情報取得
+                model.getAllSync(callback);
             }]
             ,function(err, results) {
                 
@@ -94,7 +110,7 @@ exports.index = function(req, res){
                     console.log('---------------render start--------------------');
                     res.render('chat/index', {title: 'chat', userName:req.session.name, _id:req.session._id,
                         rooms:rooms, targetRoomId:req.body.room, roomName:name, users:users, 
-                        messages:messages, allUsers:allUsers, fixed:fixed});
+                        messages:messages, allUsers:allUsers, fixed:fixed, tags:results[4]});
                 });
             });
 
@@ -212,6 +228,10 @@ exports.login = function(req, res){
             req.session.loginNotice = true;
             req.session.unreadjudgmentTime = results[0].unreadjudgmentTime;
             model.updateStatus(req.session._id, 1);
+            
+            console.log('-----------login set session------');
+            console.log(req.session);
+            
             res.redirect('/chat/lobby');
         });
 };

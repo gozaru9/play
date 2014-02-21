@@ -18,6 +18,26 @@ var createMemberList = function(users) {
     }
     document.getElementById("toUl").innerHTML = toElement;
 };
+var createMessageElement = function(roomId, data) {
+    //TODO リファクタリング
+    var names = (data.toNameList) ? data.toNameList.join() : data.to.names.join();
+    var namesElement = '';
+    if (names !==  '') namesElement = '<p><span class="label label-success text-center">TO</span>'+' &nbsp;'+names+'</p>';
+    var tagsElement = '';
+    if (data.tag) {
+        console.log('タグ情報発見');
+        var tag = Array.isArray(data.tag) ? data.tag[0] : data.tag;
+        if (tag.name) {
+            tagsElement = '<p><span class="tag text-center" style="background-color:'+tag.color+'">'+tag.name+'</span><span class="pull-right glyphicon glyphicon-ok"></span></p>';
+        }
+    }
+    var sender = (data.userName) ? data.userName : data.user.name;
+    $('#'+roomId).append(
+//        $('<ul class="chat">'+tagsElement3+'<li class="left clearfix"><!--<span class="chat-img pull-left"><img src="img/ff.gif" alt="User Avatar" class="img-circle" /></span>--><div class="chat-body clearfix"><div name="reseveMessage" class="header"><strong class="primary-font">'
+        $('<ul class="chat"><li class="clearfix"><!--<span class="chat-img pull-left"><img src="img/ff.gif" alt="User Avatar" class="img-circle" /></span>--><div class="chat-body clearfix"><div name="reseveMessage" class="header"><strong class="primary-font">'
+        +sender+'</strong><small class="pull-right text-muted"><i class="fa fa-clock-o fa-fw"></i>'+data.time+'</small>'
+        +tagsElement+namesElement+'<p>'+nl2br(escapeHTML(data.message))+'</p></div></li></ul></div>'));
+};
 var getMyRoom = function (isMyCreate, roomName) {
         
     $.ajax({
@@ -41,7 +61,6 @@ var getMyRoom = function (isMyCreate, roomName) {
                     element += '<li name=' + rooms[i]._id + '><a name="roomSelectRadio" href="#">'+ rooms[i].name + '</a></li>';
                 }
             }
-            
             document.getElementById("roomListUl").innerHTML += element;
             document.getElementById("roomListUlSide").innerHTML += element;
             var activeRoom = $('#roomContents').find(".active").attr("id");
@@ -85,15 +104,8 @@ $(function() {
 
 	//サーバーが受け取ったメッセージを返して実行する
 	socket.on('msg push', function (data) {
-		if (data.toNameList[0] === '') {
-            $('#'+data.roomId).append($('<ul class="chat"><li class="left clearfix"><!--<span class="chat-img pull-left"><img src="img/ff.gif" alt="User Avatar" class="img-circle" /></span>--><div class="chat-body clearfix"><div name="reseveMessage" class="header"><strong class="primary-font">'+data.userName+'</strong><small class="pull-right text-muted"><i class="fa fa-clock-o fa-fw"></i>'+data.time+'</small><p>'+nl2br(escapeHTML(data.message))+'</p></div></li></ul></div>'));
-		}else {
-            $('#'+data.roomId).append(
-                $('<ul class="chat"><li class="left clearfix"><!--<span class="chat-img pull-left"><img src="img/ff.gif" alt="User Avatar" class="img-circle" /></span>--><div class="chat-body clearfix"><div name="reseveMessage" class="header"><strong class="primary-font">'+data.userName+'</strong><small class="pull-right text-muted"><i class="fa fa-clock-o fa-fw"></i>'+data.time+'</small><p><span class="label label-success text-center">TO</span>'+' &nbsp;'+data.toNameList.join()+'</p><p>'+nl2br(escapeHTML(data.message))+'</p></div></li></ul></div>'));
-            $('#myRoom').append(
-                $('<ul class="chat"><li class="left clearfix"><!--<span class="chat-img pull-left"><img src="img/ff.gif" alt="User Avatar" class="img-circle" /></span>--><div class="chat-body clearfix"><div name="reseveMessage" class="header"><strong class="primary-font">'+data.userName+'</strong><small class="pull-right text-muted"><i class="fa fa-clock-o fa-fw"></i>'+data.time+'</small><p><span class="label label-success text-center">TO</span>'+' &nbsp;'+data.toNameList.join()+'</p><p>'+nl2br(escapeHTML(data.message))+'</p></div></li></ul></div>'));
-            $('#myRoom').animate({ scrollTop: getScrolBottom($('#myRoom'))}, 'slow');
-		}
+	    
+	    createMessageElement(data.roomId, data);
 		var target = $('div[name*=roomList]').find(".active").attr("name");
 		if (target != data.roomId) {
             var num = $('span[name='+data.roomId+']').html();
@@ -199,10 +211,10 @@ $(function() {
 
                 $('#roomInfomation').html(data.description);
                 if (!msgAdd)return;
-                var msgLength = data.messages.length;
-                for (var j = 0; j < msgLength; j++) {
-                    $('#'+id).append($('<ul class="chat"><li class="left clearfix"><!--<span class="chat-img pull-left"><img src="img/ff.gif" alt="User Avatar" class="img-circle" /></span>--><div class="chat-body clearfix"><div class="header"><strong class="primary-font">'+data.messages[j].user.name+'</strong><small class="pull-right text-muted"><i class="fa fa-clock-o fa-fw"></i>'+data.messages[j].time+'</small><p>'+nl2br(escapeHTML(data.messages[j].message))+'</p></div></li></ul></div>'));
-                }
+                data.messages.forEach(function(message){
+                    message.roomId = id;
+                    createMessageElement(id, message);
+                });
                 $('#'+id).animate({ scrollTop: getScrolBottom($('#'+id))}, 'slow');
         　　},
         　　error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -227,6 +239,7 @@ $(function() {
 	});
 	//メッセージ送信
 	$('#sendButton').click(function() {
+	    
         if($('#message').val().trim().length===0)return;
         var target = $('#roomContents').find(".active").attr("id");
         var toTarget = $('input[name=toList]:hidden').get();
@@ -235,12 +248,20 @@ $(function() {
         for (var toIndex=0; toIndex < toNum; toIndex++) {
             toList.push(toTarget[toIndex].value);
         }
+        console.log($('#targetTag').val());
+        var tag = {};
+        if ($('#targetTag').val()) {
+            tag._id = $('#targetTag').val();
+            tag.name = $('#selectTag').text().trim().substring(1).split('×');
+            tag.color = $('#targetTagColor').val();
+        }
         var data = {
             message: $('#message').val(),
             roomId: target,
             toTarget:toList,
             toNameList: $('#toUser').text().trim().substring(1).split('×'),
             roomName:$('#roomName').html(),
+            tag:tag
         };
 		socket.emit('msg send', data);
         $('#message').val('');
@@ -255,16 +276,9 @@ $(function() {
 	    
         var msgLength = data.messages.length;
         $('#'+data.roomId).children().remove();
-        for (var msgIndex = 0; msgIndex < msgLength; msgIndex++) {
-    		if (data.messages[msgIndex].to.names[0] === '') {
-
-                $('#'+data.roomId).append($('<ul class="chat"><li class="left clearfix"><!--<span class="chat-img pull-left"><img src="img/ff.gif" alt="User Avatar" class="img-circle" /></span>--><div class="chat-body clearfix"><div name="reseveMessage" class="header"><strong class="primary-font">'+data.messages[msgIndex].user.name+'</strong><small class="pull-right text-muted"><i class="fa fa-clock-o fa-fw"></i>'+data.messages[msgIndex].time+'</small><p>'+nl2br(escapeHTML(data.messages[msgIndex].message))+'</p></div></li></ul></div>'));
-    		}else {
-    		    console.log('to apend');
-                $('#'+data.roomId).append(
-                    $('<ul class="chat"><li class="left clearfix"><!--<span class="chat-img pull-left"><img src="img/ff.gif" alt="User Avatar" class="img-circle" /></span>--><div class="chat-body clearfix"><div name="reseveMessage" class="header"><strong class="primary-font">'+data.messages[msgIndex].user.name+'</strong><small class="pull-right text-muted"><i class="fa fa-clock-o fa-fw"></i>'+data.messages[msgIndex].time+'</small><p><span class="label label-success text-center">TO</span>'+' &nbsp;'+data.messages[msgIndex].to.names.join()+'</p><p>'+nl2br(escapeHTML(data.messages[msgIndex].message))+'</p></div></li></ul></div>'));
-    		}
-        }
+        data.messages.forEach(function(message){
+            createMessageElement(data.roomId, message);
+        });
 	});
     /* room member edit **/
     $('#selectEditMember').change(function(event){
@@ -309,7 +323,7 @@ $(function() {
             createMemberList(data.users);
         }
         console.log($('li[name='+data.roomId+']').text());
-        if($('li[name='+data.roomId+']').text() != '') {
+        if($('li[name='+data.roomId+']').text() !== '') {
             $().toastmessage('showToast', {
                 text     : '['+data.roomName+']<br>'+'のメンバーが変更されました',
                 sticky   : true,
@@ -327,13 +341,36 @@ $(function() {
 	});
     /* to**/
     $('#toDiv').delegate('a', 'click', function() {
-        
         $('#toDiv').removeClass("open");
+        console.log('選択したＩＤ：'+$(this).attr('href'));
+        if ($('#cryptoId').val() === $(this).attr('href') ) return false;
+        var isSelect = false;
+        var toTarget = $('input[name=toList]:hidden').get();
+        toTarget.forEach(function(target){
+            console.log('選択ずみＩＤ：'+target.value);
+            if (target.value === $(this).attr('href')) {
+                console.log('がってん');
+                isSelect = true; return false;
+            }
+        });
+        if (isSelect) return false;
         var element = '<div class="to-user to-user-dismissable">'
                     + '<button type="button" class="close" data-dismiss="to-user" aria-hidden="true">&times;</button>'
                     + '<input type="hidden" name="toList" value='+$(this).attr('href')+'>'                    
                     + $(this).text() + '</div>';
         $('#toUser').append(element);
+        return false;
+	});
+	/* tags**/
+    $('#tagDiv').delegate('a', 'click', function() {
+        $('#tagDiv').removeClass("open");
+        $('#selectTag').children().remove();
+        var element = '<div class="alert alert-success">'
+                    + '<button type="button" class="close" data-dismiss="to-user" aria-hidden="true">&times;</button>'
+                    + '<input type="hidden" id="targetTag" value='+$(this).attr('href')+'>'                    
+                    + '<input type="hidden" id="targetTagColor" value='+$('#'+$(this).attr('href')).val()+'>'                    
+                    + $(this).text() + '</div>';
+        $('#selectTag').append(element);
         return false;
 	});
 });

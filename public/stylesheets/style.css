@@ -13,6 +13,11 @@ body {
 table {
   word-wrap: break-word;
 }
+.main-container{
+    margin-top:60px;
+    margin-left:30px;
+    margin-right:30px;
+}
 .chat-container{
     margin-top:20px;
     margin-left:30px;
@@ -69,6 +74,17 @@ table {
   color: inherit;
 }
 
+.tag {
+    border-radius: 0.25em;
+    color: #FFFFFF;
+    display: inline;
+    font-size: 85%;
+    line-height: 1;
+    padding: 0.2em 0.6em 0.3em;
+    text-align: center;
+    vertical-align: baseline;
+    white-space: nowrap;
+}
 /*     Header
 /* ------------------------------------- */
 #header {

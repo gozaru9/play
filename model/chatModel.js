@@ -52,6 +52,7 @@ var messagesSchema = new mongoose.Schema({
   creatBy: {type: String},
   updateBy: {type: String},
   user: {_id: Object, name: String},
+  tag: [{ type: mongoose.Schema.Types.ObjectId, ref: 'tags' }],
   to: {ids: Array, names: Array},
   time: {type: String, default: moment().format('YYYY-MM-DD HH:mm:ss')},
   message: {type:String},
@@ -143,40 +144,44 @@ chatModel.prototype.save = function(req) {
 chatModel.prototype.addMessage = function(data) {
     var Chat = this.db.model(collection);
     var My = this.db.model(collection3);
+    var Tag = this.db.model('tags');
     Chat.findOne({ "_id" : data.roomId}, function(err, room){
         var message = new messgeModel();
         message.user = {_id:data.userId, name:data.userName};
         message.to = {ids: data.toTarget, names:data.toNameList};
         message.time = data.time;
         message.message = data.message;
-        message.save();
-        room.messages.push(message);
-        room.save();
-        console.log('-----------------add mesage----------------');
-        console.log(data.toTarget);
-        data.toTarget.forEach(function(id){
-
-            console.log('-------target id -----------');
-            console.log(id);
+        
+        //タグは任意のため設定されているかを判定
+        var tagId = data.tag._id;
+        Tag.findOne({'_id': tagId}, function(err, item){
             
-            My.findOne({'recipient': id}, function(err, item) {
-                console.log(item);
-
-                if (item === null || item.length === 0) {
-                    console.log('target is not found');
-                    var MySave = new myMsg();
-                    MySave.recipient = id;
-                    MySave.readFlag = false;
-                    MySave.messages.push(message);
-                    MySave.save();
-                    
-                } else {
-                    
-                    item.readFlag = false;
-                    item.messages.push(message);
-                    item.save();
-                }
+            if (null !== item) {
+                message.tag.push(item);
+            }
+            message.save();
+            room.messages.push(message);
+            room.save();
+            data.toTarget.forEach(function(id){
+                My.findOne({'recipient': id}, function(err, item) {
+    
+                    if (item === null || item.length === 0) {
+                        console.log('target is not found');
+                        var MySave = new myMsg();
+                        MySave.recipient = id;
+                        MySave.readFlag = false;
+                        MySave.messages.push(message);
+                        MySave.save();
+                        
+                    } else {
+                        
+                        item.readFlag = false;
+                        item.messages.push(message);
+                        item.save();
+                    }
+                });
             });
+            
         });
     });
 };
@@ -243,11 +248,17 @@ chatModel.prototype.getMessageById = function(data, callback) {
     } else if (data.status === 'beforedayStatus4') {
         before = moment().subtract('months', 3).format(format);
     }
-    console.log('---------getMessageById----------');
-    console.log(before);
     var Chat = this.db.model(collection);
-    Chat.findOne({'_id': data.roomId}, callback).populate(
-        'messages', null , { 'created': { $gte: before } }, { sort: { 'created': 1 } });
+    var Tags = this.db.model('tags');
+    Chat.findOne({'_id': data.roomId}).lean().populate(
+        'messages', null , { 'created': { $gte: before } }, { sort: { 'created': 1 } })
+        .exec(function(err, chatItem) {
+            
+            var opts = {path:'messages.tag', model:'tags'};
+            Tags.populate(chatItem, opts, callback);
+        });
+    
+//    getMessage(data.roomId, before, callback);
 };
 /**
  * IDに合致する情報を取得する.
@@ -259,9 +270,35 @@ chatModel.prototype.getMessageById = function(data, callback) {
  */
 chatModel.prototype.getById = function(id, callback) {
     var Chat = this.db.model(collection);
-    Chat.findOne({'_id': id}, callback).populate(
-        'messages', null , { 'created': { $gte: moment().format('YYYY-MM-DD 00:00:00') } }, { sort: { 'created': 1 } });
+    var Tags = this.db.model('tags');
+    Chat.findOne({'_id': id}).lean().populate(
+        'messages', null , { 'created': { $gte: moment().format('YYYY-MM-DD 00:00:00') } }, { sort: { 'created': 1 } })
+        .exec(function(err, chatItem) {
+            
+            var opts = {path:'messages.tag', model:'tags'};
+            Tags.populate(chatItem, opts, callback);
+        });
 };
+/**
+ * IDに合致する情報を取得する.
+ * 
+ * @method getById
+ * @author niikawa
+ * @param {Object} id Chat._id
+ * @param {Function} callback
+ */
+function getMessage(id, before, callback) {
+    var Chat = this.db.model(collection);
+    var Tags = this.db.model('tags');
+    Chat.findOne({'_id': id}).lean().populate(
+        'messages', null , { 'created': { $gte: before } }, { sort: { 'created': 1 } })
+        .exec(function(err, chatItem) {
+            
+            var opts = {path:'messages.tag', model:'tags'};
+            Tags.populate(chatItem, opts, callback);
+        });
+}
+
 /**
  * 自分の入れる部屋を取得する.
  * 

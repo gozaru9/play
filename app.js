@@ -2,18 +2,17 @@
  * Module dependencies.
  */
 var express = require('express');
-var partials = require('express-partials');
+//var partials = require('express-partials');
 var http = require('http');
 var path = require('path');
 var app = express();
 var Session = express.session.Session;
-//var fs = require("fs"); // ファイルの読書き
 
 //各画面の定義
 var routes = require('./routes');
 var dashboard = require('./routes/dashboard');
 var account = require('./routes/account');
-var task = require('./routes/task');
+var tags = require('./routes/tags');
 var code = require('./routes/code');
 var todo = require('./routes/todo');
 var chat = require("./routes/chat");
@@ -69,7 +68,6 @@ app.use(passport.session());
 */
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(partials());
 
 // development only
 if ('development' == app.get('env')) {
@@ -89,11 +87,12 @@ app.get('/account/regist', account.regist);
 app.post('/account/login', account.login);
 app.post('/account/delete', account.delete);
 app.post('/account/update', account.update);
-//タスク
-app.get('/task', task.index);
-app.get('/task/regist', task.regist);
-app.post('/task/update', task.update);
-app.post('/task/delete', task.delete);
+//タグ管理
+app.get('/tags', tags.index);
+app.post('/tags/regist', tags.create);
+app.post('/tags/update', tags.update);
+app.post('/tags/delete', tags.delete);
+app.post('/tags/getTagsById', tags.getTagsById);
 //TODO
 app.get('/todo', todo.index);
 app.post('/todo', todo.index);

@@ -42,8 +42,8 @@ $(function() {
     $('#completeButton').click(function() {
         
         if ( $('input[name=isOpen]:radio').val() === '' ) return;
-        if ( ($('#title').val() === '') ) return;
-        if ( ($('#contents').val() === '') ) return;
+        if ( ($('#title').val().trim() === '') ) return;
+        if ( ($('#contents').val().trim() === '') ) return;
         var data = {id : $('#completeButton').val(),
                     isOpen: $('input[name=isOpen]:checked').val(),
                     title: $('#title').val(),

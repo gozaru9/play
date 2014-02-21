@@ -67,6 +67,22 @@ coreModel.prototype.getAll = function(res,callback){
 };
 
 /**
+ * コレクションの値をすべて取得する.
+ * _idの昇順で取得.
+ * 
+ * @author niikawa
+ * @method getAllSync
+ * @param {Object} res
+ * @param {Function} callback
+ */
+coreModel.prototype.getAllSync = function(callback){
+    console.log('------------get all sync----------');
+    var target = this.db.model(this.modelName);
+    
+    target.find({}, callback).sort( { _id : 1} );
+};
+
+/**
  * _idに合致した情報を取得する.
  * 
  * @author niikawa
