@@ -9,8 +9,12 @@ body {
 .line-margin{
     padding-bottom: 10px;
 }
-
 table {
+  word-wrap: break-word;
+}
+.table {
+  width: 100%;
+  table-layout: fixed;
   word-wrap: break-word;
 }
 .main-container{
@@ -85,6 +89,7 @@ table {
     vertical-align: baseline;
     white-space: nowrap;
 }
+
 /*     Header
 /* ------------------------------------- */
 #header {

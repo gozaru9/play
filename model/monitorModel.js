@@ -22,7 +22,7 @@ var monitorSchema = new mongoose.Schema({
   updated: {type: Date, default: moment().format('YYYY-MM-DD hh:mm:ss')},
   creatBy: {type: String},
   updateBy: {type: String},
-  statsu: {type: Number, default:1},//1:未着手 2:進行中 3:完了 9:却下
+  status: {type: Number, default:1},//1:未着手 2:進行中 3:完了 9:却下
   responders: {type: Array},//対応者
   messages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'messages' }],
   comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'comments' }]
@@ -68,6 +68,25 @@ var monitorModel = function monitorModel() {
 util.inherits(monitorModel, Core);
 
 /**
+ * 監視対象のメッセージを取得する.
+ * 
+ * @method getMonitor
+ * @author niikawa
+ * @param {String} status
+ * @param {Funtion} callback
+ */
+monitorModel.prototype.getMonitor = function(status, callback) {
+    
+    var Monitor = this.db.model(collection1);
+    var Tags = this.db.model('tags');
+    Monitor.find({'status':status}).lean().populate('messages', null , null, { sort: { 'created': 1 } })
+    .exec(function(err, monitorItem) {
+            
+            var opts = {path:'messages.tag', model:'tags'};
+            Tags.populate(monitorItem, opts, callback);
+        });
+};
+/**
  * 自身がTOになっている監視対象のメッセージを取得する.
  * 
  * @method getMyMonitor
@@ -102,23 +121,19 @@ monitorModel.prototype.save = function(id, messages, responders) {
 /**
  * 監視対象のメッセージを更新する
  * 
- * @method update
+ * @method changeStatus
  * @author niikawa
  * @param {Object} req 画面からのリクエスト
  * @param {Function} callback
  */
-monitorModel.prototype.update = function(data, callback) {
-    console.log('----- fixed model update----');
+monitorModel.prototype.changeStatus = function(data, callback) {
     var Monitor = this.db.model(collection1);
-    Monitor.findOne({ "_id" : data.id}, function(err, target){
+    Monitor.findOne({ "_id" : data._id}, function(err, target){
         
         target.updateBy = data.updateBy;
         target.updated = moment().format('YYYY-MM-DD hh:mm:ss');
-        target.isOpen = data.isOpen;
-        target.title = data.title;
-        target.contents = data.contents;
-        target.save();
-        callback(err, '');
+        target.status = data.status;
+        target.save(callback);
     });
 };
 /**

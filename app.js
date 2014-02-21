@@ -17,7 +17,7 @@ var code = require('./routes/code');
 var todo = require('./routes/todo');
 var chat = require("./routes/chat");
 var login = require("./routes/login");
-
+var incidnt = require("./routes/incidnt");
 //DB
 var mongoose = require('mongoose');
 var configDB = require('./config/database.js');
@@ -78,7 +78,9 @@ if ('development' == app.get('env')) {
 app.get('/', routes.index);
 app.get('/dashboard', dashboard.index);
 app.get('/login', login.index);
-
+//コード
+app.get('/code', code.index);
+app.post('/code/regist', code.regist);
 //メンバー
 app.get('/account', account.index);
 app.post('/account/parts', account.parts);
@@ -93,15 +95,9 @@ app.post('/tags/regist', tags.create);
 app.post('/tags/update', tags.update);
 app.post('/tags/delete', tags.delete);
 app.post('/tags/getTagsById', tags.getTagsById);
-//TODO
-app.get('/todo', todo.index);
-app.post('/todo', todo.index);
-app.post('/todo/regist', todo.regist);
-app.post('/todo/delete', todo.delete);
-
-//コード
-app.get('/code', code.index);
-app.post('/code/regist', code.regist);
+//インシデント
+app.get('/incidnt', incidnt.index);
+app.post('/incidnt/changeStatus', incidnt.changeStatus);
 
 //チャット
 app.post('/chat', chat.index);
@@ -118,6 +114,11 @@ app.post('/chat/fixedSectence/update', chat.fixedSectenceUpdate);
 app.post('/chat/fixedSectence/delete', chat.fixedSectenceDelete);
 app.post('/chat/getFixedById', chat.getFixedById);
 app.post('/chat/updateUnRead', chat.updateUnRead);
+//TODO
+app.get('/todo', todo.index);
+app.post('/todo', todo.index);
+app.post('/todo/regist', todo.regist);
+app.post('/todo/delete', todo.delete);
 
 var server = http.createServer(app).listen(app.get('port'), function(){
 console.log("Express server listening on port " + app.get('port'));

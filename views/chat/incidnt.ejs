@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+    <head>
+        <%- include ../head.ejs %>
+        <script type="text/javascript" src="/view-script/incidnt.js"></script>
+    </head>
+    <body>
+    <div id="wrap">
+        <%- include ../header.ejs %>
+        <%- include incidntEdit.ejs %>
+
+        <div class="chat-container">
+            <div class="row">
+                <h2 class="page-header">incidnt</h2>
+                <div class="btn-group" data-toggle="buttons">
+                    <label id="open" class="btn btn-success">
+                        <input id="allRadio" name="statusRadio" type="radio" value=0> ALL
+                    </label>
+                    <label id="mine" class="btn btn-success">
+                        <input id="openRadio" name="statusRadio" type="radio" value=1> OPNE
+                    </label>
+                    <label id="mine" class="btn btn-success">
+                        <input id="proRadio" name="statusRadio" type="radio" value=2> IN PROGRESS
+                    </label>
+                    <label id="mine" class="btn btn-success">
+                        <input id="closeRadio" name="statusRadio" type="radio" value=3> CLOSE
+                    </label>
+                    <label id="mine" class="btn btn-success">
+                        <input id="removeRadio" name="statusRadio" type="radio" value=9> REMOVE
+                    </label>
+                </div>
+                <hr>
+                <table class="table table-hover">
+                    <thead>
+                        <th class="col-md-3 hidden-xs text-center">タグ</th>
+                        <th class="col-md-1 col-xs-2 text-center"><span class="glyphicon glyphicon-info-sign"></span></th>
+                        <th class="col-md-1 hidden-xs"><span class="glyphicon glyphicon-user"></span></th>
+                        <th class="col-md-3 hidden-xs text-center">TO</th>
+                        <th class="col-md-12 col-xs-8 text-center"><span class="glyphicon glyphicon-comment"></span></th>
+                    </thead>
+                    <tbody>
+                    <% incidnts.forEach(function(incidnt){ %>
+                        <tr name="<%= incidnt.statusName %>">
+                            <td class="hidden-xs">
+                                <p><span class="tag text-center" style="background-color:<%= incidnt.messages[0].tag[0].color %>"><%= incidnt.messages[0].tag[0].name %></span></p>
+                            </td>
+                            <td>
+                                <div class="dropdown">
+                                  <a href="<%= incidnt._id %>" class="dropdown-toggle" data-toggle="dropdown"><%= incidnt.statusName %></a>
+                                  <ul name="statusList" class="dropdown-menu">
+                                    <li><a href="#" value="1">open</a></li>
+                                    <li><a href="#" value="2">in progress</a></li>
+                                    <li><a href="#" value="3">close</a></li>
+                                    <li><a href="#" value="9">remove</a></li>
+                                  </ul>
+                                </div>                            
+                            </td>
+                            <td class="hidden-xs"><%= incidnt.messages[0].user.name %></td>
+                            <td class="hidden-xs"><%= incidnt.messages[0].to.names.join() %></td>
+                            <td><%= incidnt.messages[0].message %></td>
+                        </tr>
+                    <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    </body>
+</html>
+    
