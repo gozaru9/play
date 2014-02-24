@@ -113,6 +113,7 @@ $(function() {
         var month = now.getMonth()+1;
         var ymd = now.getFullYear() + '/' + month +'/'+now.getDate();
         $('#today').html(ymd + ' ' + hour + ':' + min + ':' + sec);
+        resizeArea();
         setTimeout(clock, 1000);
 	})();
 	//メッセージマウスオーバー
@@ -373,6 +374,7 @@ $(function() {
                     + '<input type="hidden" name="toList" value='+$(this).attr('href')+'>'                    
                     + $(this).text() + '</div>';
         $('#toUser').append(element);
+        resizeArea();
         return false;
 	});
 	/* tags**/
@@ -380,7 +382,7 @@ $(function() {
         $('#tagDiv').removeClass("open");
         $('#selectTag').children().remove();
         var element = '<div class="alert alert-success">'
-                    + '<button type="button" class="close" data-dismiss="to-user" aria-hidden="true">&times;</button>'
+                    + '<button type="button" name="tagAlert" class="close" data-dismiss="to-user" aria-hidden="true">&times;</button>'
                     + '<input type="hidden" id="targetTag" value='+$(this).attr('href')+'>'                    
                     + '<input type="hidden" id="targetTagColor" value='+$('#'+$(this).attr('href')).val()+'>'                    
                     + $(this).text() + '</div>';
