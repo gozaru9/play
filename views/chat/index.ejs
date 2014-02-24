@@ -78,7 +78,7 @@
             <div class="row">
                 <div id="all"></div>
                 <div class="col-md-9">
-                    <div class="page-header-chat">
+                    <div class="page-header">
                         <h2 id="roomName"></h2>
                     </div>
                     <div id="chatMainDiv" class="chat-panel panel panel-default">
@@ -145,7 +145,7 @@
                 </div>
 
                 <div class="col-md-3 hidden-xs">
-                    <div class="page-header-chat">
+                    <div class="page-header">
                         <h4>Room Information</h4>
                         <span id="roomInfomation"></span>
                     </div>
@@ -168,10 +168,11 @@
                     </div>
                     <div name="incidentList">
                         <ul class="nav nav-pills nav-stacked">
-                            <li><a href="/incidnt/?status=0">all</a></li>
-                            <li><a href="/incidnt/?status=1">open</a></li>
-                            <li><a href="/incidnt/?status=2">in progress</a></li>
-                            <li><a href="/incidnt/?status=3">close</a></li>
+                            <li><a href="/incidnt/?status=0">all<span id="incAll" class="badge pull-right"><%= incidnt.allCount %></span></a></li>
+                            <li><a href="/incidnt/?status=1">open<span id="incOpen" class="badge pull-right"><%= incidnt.openCount %></span></a></li>
+                            <li><a href="/incidnt/?status=2">in progress<span id="incProg" class="badge pull-right"><%= incidnt.progCount %></span></a></li>
+                            <li><a href="/incidnt/?status=3">close<span id="incClose" class="badge pull-right"><%= incidnt.closeCount %></span></a></li>
+                            <li><a href="/incidnt/?status=9">close<span id="incRemove" class="badge pull-right"><%= incidnt.removeCount %></span></a></li>
                         </ul>
                     </div>
                     <div class="page-header">
@@ -179,7 +180,7 @@
                     </div>
                     <div name="roomList">
                         <ul id="roomListUl" class="nav nav-pills nav-stacked">
-                          <li name="myRoom" class="">
+                          <li name="myRoom">
                             <a name="roomSelectRadio" href="#">
                               MY ROOM
                             </a>

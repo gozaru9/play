@@ -10,6 +10,8 @@ var unReadModel = require('../model/unReadModel');
 var unRead = new unReadModel();
 var tagsModel = require('../model/tagsModel');
 var tags = new tagsModel();
+var monitorModel = require('../model/monitorModel');
+var monitor = new monitorModel();
 
 /**
  * chat modeule
@@ -58,6 +60,10 @@ exports.index = function(req, res){
                 //タグ取得
                 tags.getAllSync(callback);
                 
+            }, function(callback) {
+                //インシデント
+                monitor.getAllSync(callback);
+
             },function(callback) {
                 //全ユーザー情報取得
                 model.getAllSync(callback);
@@ -105,12 +111,39 @@ exports.index = function(req, res){
                     for (var allUserIndex = 0; allUserIndex < allUsersNum; allUserIndex++) {
                         allUsers[allUserIndex].status = getStatusClass(allUsers[allUserIndex].loginStatus);
                     }
-                    
+                    //TODO ここはGroup By Count にしたいが今は無理
+                    console.log(results[5]);
+                    var inc = results[5];
+                    var incNum = inc.length;
+                    var open = 0;
+                    var prog = 0;
+                    var close = 0;
+                    var remove = 0;
+                    for (var incIndex=0; incIndex<incNum; incIndex++) {
+                        
+                        switch (inc[incIndex].status) {
+                            case 1:
+                                open++;
+                                break;
+                            case 2:
+                                prog++;
+                                break;
+                            case 3:
+                                close++;
+                                break;
+                            case 9:
+                                remove++;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    var incData = {openCount:open, progCount:prog, closeCount:close, removeCount:remove, allCount:incNum};
                     var fixed = results[0].concat(results[1]);
                     console.log('---------------render start--------------------');
                     res.render('chat/index', {title: 'chat', userName:req.session.name, _id:req.session._id,
                         rooms:rooms, targetRoomId:req.body.room, roomName:name, users:users, 
-                        messages:messages, allUsers:allUsers, fixed:fixed, tags:results[4]});
+                        messages:messages, allUsers:allUsers, fixed:fixed, tags:results[4], incidnt:incData});
                 });
             });
 

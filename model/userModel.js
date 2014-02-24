@@ -9,8 +9,11 @@ var moment =require('moment');
 var usersSchema = new mongoose.Schema({
   created: {type: Date, default: Date.now},
   updated: {type: Date, default: Date.now},
+  creatBy: {type: String},
+  updateBy: {type: String},
   name: String,
   mailAddress: String,
+  role:{type: Number, default: 0},
   password: String,
   loginStatus: {type: Number, default: 1},
   lastLoginTime: {type: Date, default: Date.now},
@@ -64,8 +67,11 @@ userModel.prototype.login = function(mailAddress, password, callback){
  * @param req
  * */
 userModel.prototype.save = function(req){
-    
+    req.body.role = req.body.role ? 1 : 0;
     var user = new myModel(req.body);
+    console.log(req.body);
+    user.creatBy = req.session._id;
+    user.updateBy = req.session._id;
     user.password = crypto.createHash('md5').update(user.password).digest("hex");
 
     /*

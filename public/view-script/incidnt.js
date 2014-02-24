@@ -16,12 +16,12 @@ $(function() {
     });
     $('ul[name=statusList]').delegate('a', 'click', function(){
         
-        $(this).parent().parent().parent().children('a').text($(this).text());
         $(this).parent().parent().parent().parent().parent().attr('name', 'close');
         if ($(this).parent().parent().parent().children('a').attr('href') && check($(this).attr('value'))) {
             
             var updatdata = {
                 _id:$(this).parent().parent().parent().children('a').attr('href'),
+                defore:$(this).text(),
                 status:$(this).attr('value')};
             $.ajax({
                 type: 'POST',
@@ -30,7 +30,10 @@ $(function() {
                 data: updatdata,
                 cache: false,
                 success: function(data) {
-                   $('tr[name=close]').hide(500);
+                    $(this).parent().parent().parent().children('a').text($(this).text());
+                    $('tr[name=close]').hide(500);
+                    var socket = io.connect(location.hostname);
+                    socket.emit('incident status change', updatdata);
             　　},
             　　error: function(XMLHttpRequest, textStatus, errorThrown) {
                     $().toastmessage('showToast', {

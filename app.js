@@ -86,7 +86,6 @@ app.get('/account', account.index);
 app.post('/account/parts', account.parts);
 app.post('/account/regist', account.regist);
 app.get('/account/regist', account.regist);
-app.post('/account/login', account.login);
 app.post('/account/delete', account.delete);
 app.post('/account/update', account.update);
 //タグ管理
@@ -235,6 +234,10 @@ var chatRoom = io.sockets.on('connection', function (socket) {
         data.time=moment().format('YYYY-MM-DD HH:mm:ss');
         chatRoom.in(data.roomId).emit('msg push', data);
         socket.broadcast.emit('msg push lobby', data);
+        if ((data.tag.length !== 0)) {
+            socket.broadcast.emit('incident push', '');
+            socket.emit('incident push', '');
+        }
         Chat.addMessage(data);
     });
     //全体メッセージ
@@ -339,6 +342,48 @@ var chatRoom = io.sockets.on('connection', function (socket) {
         
         console.log('leave room');
         socket.leave(roomId);
+    });
+    socket.on('incident status change', function(data) {
+        
+        console.log('incident status change');
+        console.log(data);
+        var deforeStatusId = '';
+        switch (data.before) {
+            case 'open':
+                deforeStatusId = 'incOpen';
+                break;
+            case 'in progress':
+                deforeStatusId = 'incProg';
+                break;
+            case 'close':
+                deforeStatusId = 'incClose';
+                break;
+            case 'remove':
+                deforeStatusId = 'incRemove';
+                break;
+            default:
+                break;
+        }
+        var afterStatusId = '';
+        switch (Number(data.status)) {
+            case 1:
+                afterStatusId = 'incOpen';
+                break;
+            case 2:
+                afterStatusId = 'incProg';
+                break;
+            case 3:
+                afterStatusId = 'incClose';
+                break;
+            case 9:
+                afterStatusId = 'incRemove';
+                break;
+            default:
+                break;
+        }
+        
+        var change = {before: deforeStatusId, after:afterStatusId};
+        socket.broadcast.emit('incident status changed', change);
     });
     //ログアウト/ブラウザクローズ
     socket.on('logout unload', function(){

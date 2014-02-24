@@ -37,12 +37,13 @@ var createMessageElement = function(roomId, data) {
         +tagsElement+namesElement+'<p>'+nl2br(escapeHTML(data.message))+'</p></div></li></ul></div>'));
 };
 var resizeArea = function() {
-    if (jQuery(window).width() < 350) {
-        var h = jQuery(window).height()-$('#messageFooter').height()-200;
+    console.log(jQuery(window).width());
+    if (jQuery(window).width() < 550) {
+        var h = jQuery(window).height()-$('#messageFooter').height()-230;
         $('div[name=messageArea]').css('height', h);
         $('#main').addClass('footer');
         $('body').css('font-size', '1em');
-    } else if (jQuery(window).width() > 350 ) {
+    } else if (jQuery(window).width() > 550 ) {
         $('div[name=messageArea]').css('height', '');
         $('#main').removeClass('footer');
         $('body').css('font-size', '');
@@ -153,6 +154,18 @@ $(function() {
 		    }
 		}
         $('#'+data.roomId).animate({ scrollTop: getScrolBottom($('#'+data.roomId))}, 'slow');
+	});
+	socket.on('incident push', function() {
+        $('#incAll').html(Number($('#incAll').html())+1);
+        $('#incOpen').html(Number($('#incOpen').html())+1);
+	});
+	socket.on('incident status changed', function (data){
+	    console.log(data);
+	    if ('' !== data.defore && '' !== data.after) {
+	        
+            $('#'+data.before).html(Number($('#'+data.before).html())-1);
+            $('#'+data.after).html(Number($('#'+data.after).html())+1);
+	    }
 	});
 	//ユーザーの追加/変更
 	$('#memberEditButton').click(function(){
@@ -381,8 +394,8 @@ $(function() {
     $('#tagDiv').delegate('a', 'click', function() {
         $('#tagDiv').removeClass("open");
         $('#selectTag').children().remove();
-        var element = '<div class="alert alert-success">'
-                    + '<button type="button" name="tagAlert" class="close" data-dismiss="to-user" aria-hidden="true">&times;</button>'
+        var element = '<div class="to-user to-user-dismissable" style="width:100%">'
+                    + '<button type="button" class="close" data-dismiss="to-user" aria-hidden="true">&times;</button>'
                     + '<input type="hidden" id="targetTag" value='+$(this).attr('href')+'>'                    
                     + '<input type="hidden" id="targetTagColor" value='+$('#'+$(this).attr('href')).val()+'>'                    
                     + $(this).text() + '</div>';
