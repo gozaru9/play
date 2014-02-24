@@ -22,7 +22,7 @@
                     $('#roomName').html("<%= roomName %>");
                     $('#memberEditButton').val(target);
                     $('#roomContents').find(".active").hide(0).removeClass("active");
-                    var element = $("<div>", { class: "panel-body active", id: target});
+                    var element = $("<div>", { class: "panel-body active", id: target, name: "messageArea"});
                     $('#roomContents').append(element).show(0);
                     $('#roomList').find(".active").removeClass("active");
                     $('input[value='+target+']:radio').parent('label').addClass('active');
@@ -50,6 +50,7 @@
                             });
                             $('#roomInfomation').html(data.description);
                             $('#'+target).animate({ scrollTop: getScrolBottom($('#'+target))}, 'slow');
+                            resizeArea();
                     　　},
                     　　error: function(XMLHttpRequest, textStatus, errorThrown) {
                             $().toastmessage('showToast', {
@@ -80,7 +81,7 @@
                     <div class="page-header-chat">
                         <h2 id="roomName"></h2>
                     </div>
-                    <div class="chat-panel panel panel-default">
+                    <div id="chatMainDiv" class="chat-panel panel panel-default">
                         <div class="panel-heading">
                             <i class="fa fa-comments fa-fw"></i>
                             本日(<span id="today"></span>) <a id="beforedayStatus1" name="beforeday" href="#">1日前</a> <a id="beforedayStatus2" name="beforeday" href="#">7日前</a> <a id="beforedayStatus3" name="beforeday" href="#">60日前</a> <a id="beforedayStatus4" name="beforeday" href="#">3ヶ月前</a>
@@ -100,9 +101,9 @@
                             <div id="contentsAll" class="panel-body active"></div>
                         </div>
                         <div id="messageFooter" class="panel-footer">
-                            <div id="sendMenu" class="row">
-                                <div id="fixedSectencesDiv" class="btn-group col-md-1">
-                                    <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">定型文 <span class="caret"></span></button>
+                            <div id="sendMenu" class="row col-md-12">
+                                <div id="fixedSectencesDiv" class="btn-group">
+                                    <button type="button" class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown">定型文 <span class="caret"></span></button>
                                     <ul class="dropdown-menu">
                                     <% fixed.forEach(function(contents){ %>
                                         <li><a name="fixedSectences" href="#<%= contents._id %>"><%= contents.title %></a></li>
@@ -110,8 +111,8 @@
                                     <% }) %>
                                     </ul>
                                 </div>
-                                <div id="tagDiv" class="btn-group col-md-1">
-                                    <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">タグ <span class="caret"></span></button>
+                                <div id="tagDiv" class="btn-group">
+                                    <button type="button" class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown">タグ <span class="caret"></span></button>
                                     <ul id="tagUl" class="dropdown-menu">
                                     <% tags.forEach(function(tag){ %>
                                         <li><a name="tags" href="<%= tag._id %>"><%= tag.name %></a></li>
@@ -119,8 +120,8 @@
                                     <% }) %>
                                     </ul>
                                 </div>
-                                <div id="toDiv" class="btn-group col-md-1">
-                                    <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">TO <span class="caret"></span></button>
+                                <div id="toDiv" class="btn-group">
+                                    <button type="button" class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown">TO <span class="caret"></span></button>
                                     <ul id="toUl" class="dropdown-menu"></ul>
                                 </div>
                             </div> 

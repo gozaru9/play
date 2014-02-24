@@ -36,6 +36,18 @@ var createMessageElement = function(roomId, data) {
         +sender+'</strong><small class="pull-right text-muted"><i class="fa fa-clock-o fa-fw"></i>'+data.time+'</small>'
         +tagsElement+namesElement+'<p>'+nl2br(escapeHTML(data.message))+'</p></div></li></ul></div>'));
 };
+var resizeArea = function() {
+    if (jQuery(window).width() < 350) {
+        var h = jQuery(window).height()-$('#messageFooter').height()-200;
+        $('div[name=messageArea]').css('height', h);
+        $('#main').addClass('footer');
+        $('body').css('font-size', '1em');
+    } else if (jQuery(window).width() > 350 ) {
+        $('div[name=messageArea]').css('height', '');
+        $('#main').removeClass('footer');
+        $('body').css('font-size', '');
+    }
+};
 var getMyRoom = function (isMyCreate, roomName) {
         
     $.ajax({
@@ -87,12 +99,7 @@ $(function() {
     
     /* chat **/
     $(window).resize(function() {
-        if (jQuery(window).width() < 600) {
-            $('#main').addClass('footer');
-        } else if (jQuery(window).width() > 500 ) {
-            $('div[name=messageArea]').css('height', '');
-            $('#main').removeClass('footer');
-        }
+        resizeArea();
     });
     
 	(function clock() {
@@ -378,6 +385,7 @@ $(function() {
                     + '<input type="hidden" id="targetTagColor" value='+$('#'+$(this).attr('href')).val()+'>'                    
                     + $(this).text() + '</div>';
         $('#selectTag').append(element);
+        resizeArea();
         return false;
 	});
 });

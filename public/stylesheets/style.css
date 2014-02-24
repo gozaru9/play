@@ -31,7 +31,7 @@ table {
     height:500px;
 }
 .page-header-chat {
-  margin: 80px 0 10px;
+  margin: 60px 0 10px;
   border-bottom: 1px solid #eeeeee;
 }
 
@@ -196,7 +196,7 @@ table {
   -moz-box-sizing: border-box;
 }
 .footer {
-    position: fixed;
+    position: absolute;
 	bottom: 0;
     /*
   padding: 10px 15px;

@@ -64,7 +64,6 @@
                             <th>ユーザー名</th>
                             <th>メールアドレス</th>
                             <th></th>
-                            <th></th>
                         </tr>
                     </thead>
                     <tbody data-bind='foreach: items'>
@@ -72,7 +71,6 @@
                         <tr>
                             <td><%= item.name %></td>
                             <td><%= item.mailAddress %></td>
-                            <td><input type="button" class="btn btn-default" name="btn_delete" value="メッセージ送信"></td>
                             <td><input type="button" class="btn btn-default" name="btn_delete" value="削除"></td>
                             <input type="hidden" value=<%= item._id %>>
                         </tr>
