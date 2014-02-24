@@ -35,7 +35,7 @@ exports.index = function(req, res){
             ,function(err, result) {
                 console.log(result[1]);
                 setStatusDispName(result[0]);
-                result[0].pageNum = result[1] / limit;
+                result[0].pageNum = Math.ceil(result[1] / limit);
                 res.render('chat/incidnt', 
                 { title: 'incidnt管理', incidnts: result[0], status: status, activePage: activePage, _id: req.session._id,userName: req.session.name});
             }
