@@ -86,6 +86,15 @@ $(function() {
     $('#lobbyView').addClass('active');
     
     /* chat **/
+    $(window).resize(function() {
+        if (jQuery(window).width() < 600) {
+            $('#main').addClass('footer');
+        } else if (jQuery(window).width() > 500 ) {
+            $('div[name=messageArea]').css('height', '');
+            $('#main').removeClass('footer');
+        }
+    });
+    
 	(function clock() {
         var now = new Date();
         var hour = now.getHours(); // 時
@@ -105,7 +114,6 @@ $(function() {
 
 	});
 	$('div[name=reseveMessage]').mouseout(function(){
-console.log('out message');
 	});
 	//サーバーが受け取ったメッセージを返して実行する
 	socket.on('msg push', function (data) {
@@ -189,7 +197,7 @@ console.log('out message');
             msgAdd = true;
             console.log('room join');
             socket.emit('join room', id);
-            var element = $("<div>", {class: "panel-body active", id: id});
+            var element = $("<div>", {name: "messageArea", class: "panel-body active", id: id});
             $('#roomContents').append(element).show(500);
         } else {
             $('#'+id).show(500);

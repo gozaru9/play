@@ -23,13 +23,16 @@ table {
     margin-right:30px;
 }
 .chat-container{
-    margin-top:20px;
     margin-left:30px;
     margin-right:30px;
 }
 .panel-body.message-area{
     overflow: auto;
     height:500px;
+}
+.page-header-chat {
+  margin: 80px 0 10px;
+  border-bottom: 1px solid #eeeeee;
 }
 
 .toggleMessage {
@@ -173,9 +176,6 @@ table {
     background-color: #7E7E7E;
 }
 
-/* RADIO
-/*--------------------------------*/
-
 /* CHAT
 /*--------------------------------*/
 .user-area {
@@ -195,7 +195,17 @@ table {
   background-color: #4CAE4C;
   -moz-box-sizing: border-box;
 }
-
+.footer {
+    position: fixed;
+	bottom: 0;
+    /*
+  padding: 10px 15px;
+  background-color: #f5f5f5;
+  border-top: 1px solid #dddddd;
+  border-bottom-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  */
+}
 /* TODO
 /*--------------------------------*/
 .todo-width{

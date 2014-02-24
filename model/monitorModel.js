@@ -73,18 +73,32 @@ util.inherits(monitorModel, Core);
  * @method getMonitor
  * @author niikawa
  * @param {String} status
+ * @param {Number} skip
+ * @param {Number} limit
  * @param {Funtion} callback
  */
-monitorModel.prototype.getMonitor = function(status, callback) {
+monitorModel.prototype.getMonitor = function(status, skip, limit, callback) {
     
     var Monitor = this.db.model(collection1);
     var Tags = this.db.model('tags');
-    Monitor.find({'status':status}).lean().populate('messages', null , null, { sort: { 'created': 1 } })
-    .exec(function(err, monitorItem) {
-            
-            var opts = {path:'messages.tag', model:'tags'};
-            Tags.populate(monitorItem, opts, callback);
-        });
+    if (0 === Number(status)) {
+        
+        Monitor.find().lean().populate('messages', null , null, { sort: { 'created': 1 } }).skip(skip).limit(limit)
+        .exec(function(err, monitorItem) {
+                
+                var opts = {path:'messages.tag', model:'tags'};
+                Tags.populate(monitorItem, opts, callback);
+            });
+        
+    } else {
+        
+        Monitor.find({'status':status}).lean().populate('messages', null , null, { sort: { 'created': 1 } }).skip(skip).limit(limit)
+        .exec(function(err, monitorItem) {
+                
+                var opts = {path:'messages.tag', model:'tags'};
+                Tags.populate(monitorItem, opts, callback);
+            });
+    }
 };
 /**
  * 自身がTOになっている監視対象のメッセージを取得する.

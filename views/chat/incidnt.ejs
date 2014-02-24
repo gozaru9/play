@@ -7,29 +7,39 @@
     <body>
     <div id="wrap">
         <%- include ../header.ejs %>
-        <%- include incidntEdit.ejs %>
 
         <div class="chat-container">
             <div class="row">
                 <h2 class="page-header">incidnt</h2>
                 <div class="btn-group" data-toggle="buttons">
-                    <label id="open" class="btn btn-success">
+                    <label class="btn btn-success <% if (status === 0) { %>active<% } %>">
                         <input id="allRadio" name="statusRadio" type="radio" value=0> ALL
                     </label>
-                    <label id="mine" class="btn btn-success">
+                    <label class="btn btn-success <% if (status === 1) { %>active<% } %>">
                         <input id="openRadio" name="statusRadio" type="radio" value=1> OPNE
                     </label>
-                    <label id="mine" class="btn btn-success">
+                    <label class="btn btn-success <% if (status === 2) { %>active<% } %>">
                         <input id="proRadio" name="statusRadio" type="radio" value=2> IN PROGRESS
                     </label>
-                    <label id="mine" class="btn btn-success">
+                    <label class="btn btn-success <% if (status === 3) { %>active<% } %>">
                         <input id="closeRadio" name="statusRadio" type="radio" value=3> CLOSE
                     </label>
-                    <label id="mine" class="btn btn-success">
+                    <label class="btn btn-success <% if (status === 9) { %>active<% } %>">
                         <input id="removeRadio" name="statusRadio" type="radio" value=9> REMOVE
                     </label>
                 </div>
                 <hr>
+                <% if (incidnts.pageNum > 1) {%>
+                <ul class="pagination">
+                    <li><a href="/incidnt/?status=<%= status %>&pages=1">&laquo;</a></li>
+                    <% for(var i=1; i<=incidnts.pageNum; i++) {%>
+                        <li <% if (activePage == i) {%>class="active"<% } %>>
+                            <a href="/incidnt/?status=<%= status %>&pages=<%= i %>"><%= i %></a></li>
+                    <% } %>
+                    <li><a href="/incidnt/?status=<%= status %>&pages=<%= incidnts.pageNum %>">&raquo;</a></li>
+                </ul>
+                <% } %>
+                
                 <table class="table table-hover">
                     <thead>
                         <th class="col-md-3 hidden-xs text-center">タグ</th>
@@ -48,10 +58,11 @@
                                 <div class="dropdown">
                                   <a href="<%= incidnt._id %>" class="dropdown-toggle" data-toggle="dropdown"><%= incidnt.statusName %></a>
                                   <ul name="statusList" class="dropdown-menu">
-                                    <li><a href="#" value="1">open</a></li>
-                                    <li><a href="#" value="2">in progress</a></li>
-                                    <li><a href="#" value="3">close</a></li>
-                                    <li><a href="#" value="9">remove</a></li>
+
+                                    <li <% if (incidnt.status === 1) { %>class="disabled"<% } %>><a href="#" value="1">open</a></li>
+                                    <li <% if (incidnt.status === 2) { %>class="disabled"<% } %>><a href="#" value="2">in progress</a></li>
+                                    <li <% if (incidnt.status === 3) { %>class="disabled"<% } %>><a href="#" value="3">close</a></li>
+                                    <li <% if (incidnt.status === 9) { %>class="disabled"<% } %>><a href="#" value="9">remove</a></li>
                                   </ul>
                                 </div>                            
                             </td>
@@ -62,6 +73,17 @@
                     <% }) %>
                     </tbody>
                 </table>
+                <% if (incidnts.pageNum > 1) {%>
+                <ul class="pagination">
+                    <li><a href="/incidnt/?status=<%= status %>&pages=1">&laquo;</a></li>
+                    <% for(var i=1; i<=incidnts.pageNum; i++) {%>
+                        <li <% if (activePage == i) {%>class="active"<% } %>>
+                            <a href="/incidnt/?status=<%= status %>&pages=<%= i %>"><%= i %></a></li>
+                    <% } %>
+                    <li><a href="/incidnt/?status=<%= status %>&pages=<%= incidnts.pageNum %>">&raquo;</a></li>
+                </ul>
+                <% } %>
+                
             </div>
         </div>
     </div>

@@ -110,7 +110,17 @@ coreModel.prototype.getById = function(id, callback){
 coreModel.prototype.save = function(req, callback){
 
 };
-
+coreModel.prototype.count = function(property, val, callback) {
+    
+    var target = this.db.model(this.modelName);
+    if (null === property) {
+        
+        target.find().count(callback);
+    } else {
+        
+        target.find({property:val}).count(callback);
+    }
+};
 /**
  * _idに合致したコレクションを更新する
  * 

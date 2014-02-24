@@ -18,10 +18,11 @@
                 <% }) %>
 
                 if ($('#'+target).length === 0) {
+                
                     $('#roomName').html("<%= roomName %>");
                     $('#memberEditButton').val(target);
                     $('#roomContents').find(".active").hide(0).removeClass("active");
-                    var element = $("<div>", {class: "panel-body active", id: target});
+                    var element = $("<div>", { class: "panel-body active", id: target});
                     $('#roomContents').append(element).show(0);
                     $('#roomList').find(".active").removeClass("active");
                     $('input[value='+target+']:radio').parent('label').addClass('active');
@@ -72,127 +73,127 @@
     <div id="wrap">
         <%- include ../header.ejs %>
         <div id="individualMessageInfo"></div>
-        <div class="chat-container">
+        <div id="main" class="chat-container">
             <div class="row">
-                <div class="col-md-12">
-                    <div id="all"></div>
-                    <div class="col-md-9">
-                        <div class="page-header">
-                            <h1 id="roomName"></h1>
+                <div id="all"></div>
+                <div class="col-md-9">
+                    <div class="page-header-chat">
+                        <h2 id="roomName"></h2>
+                    </div>
+                    <div class="chat-panel panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-comments fa-fw"></i>
+                            本日(<span id="today"></span>) <a id="beforedayStatus1" name="beforeday" href="#">1日前</a> <a id="beforedayStatus2" name="beforeday" href="#">7日前</a> <a id="beforedayStatus3" name="beforeday" href="#">60日前</a> <a id="beforedayStatus4" name="beforeday" href="#">3ヶ月前</a>
+                            <div class="btn-group pull-right">
+                                <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                                    <i class="fa fa-chevron-down"></i>
+                                </button>
+                                <ul class="dropdown-menu slidedown">
+                                    <li><a href="#" id="status1" name="statusChange"><i class="fa fa-check-circle fa-fw"></i> Available</a></li>
+                                    <li><a href="#" id="status2" name="statusChange"><i class="fa fa-times fa-fw"></i> Busy</a></li>
+                                    <li><a href="#" id="status3" name="statusChange"><i class="fa fa-clock-o fa-fw"></i> Away</a></li>
+                                    <li><a href="#" id="status4" name="statusChange"><i class="fa fa-sign-out fa-fw"></i> Return home</a></li>
+                                </ul>
+                            </div>
                         </div>
-                        <div class="chat-panel panel panel-default">
-                            <div class="panel-heading">
-                                <i class="fa fa-comments fa-fw"></i>
-                                本日(<span id="today"></span>) <a id="beforedayStatus1" name="beforeday" href="#">1日前</a> <a id="beforedayStatus2" name="beforeday" href="#">7日前</a> <a id="beforedayStatus3" name="beforeday" href="#">60日前</a> <a id="beforedayStatus4" name="beforeday" href="#">3ヶ月前</a>
-                                <div class="btn-group pull-right">
-                                    <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                                        <i class="fa fa-chevron-down"></i>
-                                    </button>
-                                    <ul class="dropdown-menu slidedown">
-                                        <li><a href="#" id="status1" name="statusChange"><i class="fa fa-check-circle fa-fw"></i> Available</a></li>
-                                        <li><a href="#" id="status2" name="statusChange"><i class="fa fa-times fa-fw"></i> Busy</a></li>
-                                        <li><a href="#" id="status3" name="statusChange"><i class="fa fa-clock-o fa-fw"></i> Away</a></li>
-                                        <li><a href="#" id="status4" name="statusChange"><i class="fa fa-sign-out fa-fw"></i> Return home</a></li>
+                        <div id="roomContents">
+                            <div id="contentsAll" class="panel-body active"></div>
+                        </div>
+                        <div id="messageFooter" class="panel-footer">
+                            <div id="sendMenu" class="row">
+                                <div id="fixedSectencesDiv" class="btn-group col-md-1">
+                                    <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">定型文 <span class="caret"></span></button>
+                                    <ul class="dropdown-menu">
+                                    <% fixed.forEach(function(contents){ %>
+                                        <li><a name="fixedSectences" href="#<%= contents._id %>"><%= contents.title %></a></li>
+                                        <input type="hidden" id="<%= contents._id %>" value="<%= contents.contents %>">
+                                    <% }) %>
                                     </ul>
                                 </div>
-                            </div>
-                            <div id="roomContents">
-                                <div id="contentsAll" class="panel-body active"></div>
-                            </div>
-                            <div class="panel-footer">
-                                <div id="sendMenu" class="row">
-                                    <div id="fixedSectencesDiv" class="btn-group col-md-1">
-                                        <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">定型文 <span class="caret"></span></button>
-                                        <ul class="dropdown-menu">
-                                        <% fixed.forEach(function(contents){ %>
-                                            <li><a name="fixedSectences" href="#<%= contents._id %>"><%= contents.title %></a></li>
-                                            <input type="hidden" id="<%= contents._id %>" value="<%= contents.contents %>">
-                                        <% }) %>
-                                        </ul>
-                                    </div>
-                                    <div id="tagDiv" class="btn-group col-md-1">
-                                        <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">タグ <span class="caret"></span></button>
-                                        <ul id="tagUl" class="dropdown-menu">
-                                        <% tags.forEach(function(tag){ %>
-                                            <li><a name="tags" href="<%= tag._id %>"><%= tag.name %></a></li>
-                                            <input type="hidden" id="<%= tag._id %>" value="<%= tag.color %>">
-                                        <% }) %>
-                                        </ul>
-                                    </div>
-                                    <div id="toDiv" class="btn-group col-md-1">
-                                        <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">TO <span class="caret"></span></button>
-                                        <ul id="toUl" class="dropdown-menu"></ul>
-                                    </div>
-                                </div> 
-                                <div class="row">
-                                    <div id="selectTag" class="col-md-12">
-                                    </div>
-                                    <div id="toUser" class="col-md-12">
-                                    </div>
+                                <div id="tagDiv" class="btn-group col-md-1">
+                                    <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">タグ <span class="caret"></span></button>
+                                    <ul id="tagUl" class="dropdown-menu">
+                                    <% tags.forEach(function(tag){ %>
+                                        <li><a name="tags" href="<%= tag._id %>"><%= tag.name %></a></li>
+                                        <input type="hidden" id="<%= tag._id %>" value="<%= tag.color %>">
+                                    <% }) %>
+                                    </ul>
                                 </div>
+                                <div id="toDiv" class="btn-group col-md-1">
+                                    <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">TO <span class="caret"></span></button>
+                                    <ul id="toUl" class="dropdown-menu"></ul>
+                                </div>
+                            </div> 
+                            <div class="row">
+                                <div id="selectTag" class="col-md-12">
+                                </div>
+                                <div id="toUser" class="col-md-12">
+                                </div>
+                            </div>
 
-                                <div class="send-message-box">
-                                    <p>
-                                        <div class="input-area">
-                                            <textarea id="message" class="form-control" rows="3" placeholder="メッセージを入力してください"></textarea>
-                                        </div>
-                                    </p>
-                                    <button type="button" id="sendButton" class="btn btn-success btn-lg">Send Message</button>
-                                </div>
+                            <div class="send-message-box">
+                                <p>
+                                    <div class="input-area">
+                                        <textarea id="message" class="form-control" rows="3" placeholder="メッセージを入力してください"></textarea>
+                                    </div>
+                                </p>
+                                <button type="button" id="sendButton" class="btn btn-success btn-lg">Send Message</button>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="col-md-3 visible-lg">
-                        <div class="page-header">
-                            <h4>Room Information</h4>
-                            <span id="roomInfomation"></span>
-                        </div>
+                <div class="col-md-3 hidden-xs">
+                    <div class="page-header-chat">
+                        <h4>Room Information</h4>
+                        <span id="roomInfomation"></span>
+                    </div>
 
-                        <div class="page-header">
-                            <h4>Whor's here</h4>
-                        </div>
-                        <div class="panel panel-default">
-                            <div class="panel-body">
-                                <ul id="roomUserList" class="list-unstyled">
-                                </ul>
-                            </div>
-                            <div class="panel-footer">
-                            <a data-toggle="modal" href="#memberEditForm" class="btn btn-success" id="memberEditButton">メンバー編集</a>
-                            </div>
-                        </div>
-
-                        <div class="page-header">
-                            <h4>Incident Mesages</h4>
-                        </div>
-                        <div name="incidentList">
-                            <ul class="nav nav-pills nav-stacked">
-                                <li><a href="/incidnt/?status=1">open</a></li>
-                                <li><a href="/incidnt/?status=3">close</a></li>
+                    <div class="page-header">
+                        <h4>Whor's here</h4>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <ul id="roomUserList" class="list-unstyled">
                             </ul>
                         </div>
-                        <div class="page-header">
-                            <h4>Other Room Information</h4>
+                        <div class="panel-footer">
+                        <a data-toggle="modal" href="#memberEditForm" class="btn btn-success" id="memberEditButton">メンバー編集</a>
                         </div>
-                        <div name="roomList">
-                            <ul id="roomListUl" class="nav nav-pills nav-stacked">
-                              <li name="myRoom" class="">
-                                <a name="roomSelectRadio" href="#">
-                                  MY ROOM
-                                </a>
-                              </li>
-                            <% rooms.forEach(function(room){ %>
-                              <li name=<%= room._id %> class="">
-                                <a name="roomSelectRadio" href="#">
-                                  <%= room.name %>
-                                  <% if (room.unReadNum != 0) { %>
-                                  <span name="<%= room._id %>" class="badge pull-right"><%= room.unReadNum %></span>
-                                  <% } %>
-                                </a>
-                              </li>
-                            <% }) %>
-                            </ul>                        
-                        </div>
+                    </div>
+
+                    <div class="page-header">
+                        <h4>Incident Mesages</h4>
+                    </div>
+                    <div name="incidentList">
+                        <ul class="nav nav-pills nav-stacked">
+                            <li><a href="/incidnt/?status=0">all</a></li>
+                            <li><a href="/incidnt/?status=1">open</a></li>
+                            <li><a href="/incidnt/?status=2">in progress</a></li>
+                            <li><a href="/incidnt/?status=3">close</a></li>
+                        </ul>
+                    </div>
+                    <div class="page-header">
+                        <h4>Other Room Information</h4>
+                    </div>
+                    <div name="roomList">
+                        <ul id="roomListUl" class="nav nav-pills nav-stacked">
+                          <li name="myRoom" class="">
+                            <a name="roomSelectRadio" href="#">
+                              MY ROOM
+                            </a>
+                          </li>
+                        <% rooms.forEach(function(room){ %>
+                          <li name=<%= room._id %> class="">
+                            <a name="roomSelectRadio" href="#">
+                              <%= room.name %>
+                              <% if (room.unReadNum != 0) { %>
+                              <span name="<%= room._id %>" class="badge pull-right"><%= room.unReadNum %></span>
+                              <% } %>
+                            </a>
+                          </li>
+                        <% }) %>
+                        </ul>                        
                     </div>
                 </div>
             </div>

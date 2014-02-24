@@ -11,7 +11,7 @@ var async = require('async');
 var monitorModel = require('../model/monitorModel');
 var monitor = new monitorModel();
 /**
- * リクエストを受け取り、tags画面を描画する
+ * リクエストを受け取り、incidnt画面を描画する
  * 
  * @author niikawa
  * @method index
@@ -20,16 +20,24 @@ var monitor = new monitorModel();
  */
 exports.index = function(req, res){
     if (req.session.isLogin) {
-        
+        var activePage = (req.query.pages) ? (req.query.pages) : 1;
+        var limit = 3;
+        var skip = (activePage-1) * limit;
+        var status = (req.query.status) ? Number(req.query.status) : 0;
+        var prop = (status !== 0) ? 'status' : null;
         async.series(
             [function(callback) {
-                monitor.getMonitor(req.query.status, callback);
+                monitor.getMonitor(status, skip, limit, callback);
+            },function(callback) {
+                console.log(prop);
+                monitor.count(prop, status, callback);
             }]
             ,function(err, result) {
-                console.log(result[0]);
+                console.log(result[1]);
                 setStatusDispName(result[0]);
+                result[0].pageNum = result[1] / limit;
                 res.render('chat/incidnt', 
-                { title: 'incidnt管理', incidnts: result[0],_id: req.session._id,userName: req.session.name});
+                { title: 'incidnt管理', incidnts: result[0], status: status, activePage: activePage, _id: req.session._id,userName: req.session.name});
             }
         );
         
@@ -48,7 +56,7 @@ exports.index = function(req, res){
 exports.getTagsById = function(req, res) {
 };
 /**
- * リクエストを受け取り、タグを更新する
+ * リクエストを受け取り、ステータスを更新する
  * 
  * @author niikawa
  * @method changeStatus
@@ -82,16 +90,16 @@ function setStatusDispName(data) {
         switch (data[index].status) {
             
             case 1:
-                data[index].statusName = 'OPNE';
+                data[index].statusName = 'open';
                 break;
             case 2: 
-                data[index].statusName = 'IN PROGRESS';
+                data[index].statusName = 'in progress';
                 break;
             case 3: 
-                data[index].statusName = 'CLOSE';
+                data[index].statusName = 'close';
                 break;
             case 9: 
-                data[index].statusName = 'REMOVE';
+                data[index].statusName = 'remove';
                 break;
             default: 
                 data[index].statusName = 'Unknown';
