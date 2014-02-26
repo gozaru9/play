@@ -107,6 +107,7 @@ $(function() {
     });
 	//個人への送信エリア制御
 	$('#individual').delegate('a', 'click', function() {
+	    if ($('#cryptoId').val() === $(this).attr('name')) return false;
         if ($('#individualSend').val() != $(this).attr('name')) {
             $('#individualname').text($(this).text());
             $('#individualMessage').text('');
@@ -117,12 +118,11 @@ $(function() {
         return false; 
 	});
     //個人メッセージエリアを閉じる
-    $('#individualClose').click(function() {
+    $('button[name=individualClose]').click(function() {
         $('#individualMessageDiv').fadeToggle("slow");
     });
     //個人への返信
     $('#individualMessageInfo').delegate('button', 'click', function() {
-        
         var target = $(this).attr('id').split('_');
         if (target[0] === 'individualReSend') {
             if($('#individualReMessage').val().trim().length===0)return;
@@ -190,8 +190,7 @@ $(function() {
                 +'<div class="panel-body"><div id='+messageAreaId+' class="individual-message-box">'+m+'<hr>'
                 +'<textarea id="individualReMessage" class="form-control" name="individualReMessage"></textarea></div>'
                 +'<div class="panel-footer">'
-                +'<button id='+reId+' value='+data.userId+' class="btn btn-primary">Send Massage</button>'
-                +'<button id='+addId+' value='+data.userId+' class="btn btn-primary">ドッキング</button>'
+                +'<button id='+reId+' value='+data.userId+' class="btn btn-primary">返信する</button>'
                 +'</div></div></div>';
             document.getElementById("individualMessageInfo").innerHTML += element;
             $('#'+areaId).slideToggle("slow");
@@ -223,8 +222,7 @@ $(function() {
                 +'<div class="panel-body"><div id='+messageAreaId+' class="individual-message-box">'+m+'<hr>'
                 +'<textarea id="individualReMessage" class="form-control" name="individualReMessage"></textarea></div>'
                 +'<div class="panel-footer">'
-                +'<button id='+reId+' value='+data.targetId+' class="btn btn-primary">Send Massage</button>'
-                +'<button id='+addId+' value='+data.targetId+' class="btn btn-primary">ドッキング</button>'
+                +'<button id='+reId+' value='+data.targetId+' class="btn btn-primary">返信する</button>'
                 +'</div></div></div>';
             document.getElementById("individualMessageInfo").innerHTML += element;
             $('#'+areaId).slideToggle("slow");

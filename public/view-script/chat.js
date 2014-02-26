@@ -376,11 +376,14 @@ $(function() {
         if ($('#cryptoId').val() === $(this).attr('href') ) return false;
         var isSelect = false;
         var toTarget = $('input[name=toList]:hidden').get();
-        toTarget.forEach(function(target){
-            if (target.value === $(this).attr('href')) {
-                isSelect = true; return false;
+        var toNum = toTarget.length;
+        for (var toIndex=0; toIndex < toNum; toIndex++) {
+            
+            if (toTarget[toIndex].value === $(this).attr('href')) {
+                isSelect = true; 
+                return false;
             }
-        });
+        }
         if (isSelect) return false;
         var element = '<div class="to-user to-user-dismissable">'
                     + '<button type="button" class="close" data-dismiss="to-user" aria-hidden="true">&times;</button>'

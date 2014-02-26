@@ -219,12 +219,12 @@ var chatRoom = io.sockets.on('connection', function (socket) {
             
             data.targetId = user._id;
             data.targetName = user.name;
-            
+            /* 個人あてのメッセージをDBへ格納するのは今回はやらない
             var individualData 
                 = {sender:data.userId, recipient: user._id,
                    messages: data.message, time: data.time};
             Chat.addMyMessage(individualData);
-            
+            */
             io.sockets.socket(user.socketId).emit('individual push', data);
             socket.emit('individual my push', data);
         });
