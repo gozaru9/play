@@ -1,27 +1,21 @@
-var completeButtonCheck = function() {
+var accountCompleteButtonCheck = function() {
     
-    if ($('#inputName').val().trim().length === 0 || $('#inputEmail').val().trim().length === 0
-        || $('#inputPassword').val().trim().length === 0 || $('#inputPasswordConfirm').val().trim().length === 0) {
-        $('#completeButton').attr("disabled", "disabled"); 
+    if ($('#accountPassword').val().trim().length === 0 || $('#accountPasswordConfirm').val().trim().length === 0) {
+        $('#accountCompleteButton').attr("disabled", "disabled"); 
         return false;
     } else {
-        $('#completeButton').removeAttr("disabled");
+        $('#accountCompleteButton').removeAttr("disabled");
         return true;
     }
 };
 var clear = function() {
     
-    $('#inputName').val('');
-    $('#inputEmail').val('');
-    $('#completeButton').val('');
-    $('#role').prop('checked', false);
-    $('#accountId').val('');
-    $('#inputPassword').val('');
-    $('#inputPasswordConfirm').val('');
-    $('#inputPassword').removeClass('error');
-    $('#inputPasswordConfirm').removeClass('error');
+    $('#accountPassword').val('');
+    $('#accountPasswordConfirm').val('');
+    $('#accountPassword').removeClass('error');
+    $('#accountPasswordConfirm').removeClass('error');
 };
-var message = function(message, position) {
+var errorMessage = function(message, position) {
     $().toastmessage('showToast', {
         text     : message,
         sticky   : true,
@@ -29,22 +23,22 @@ var message = function(message, position) {
         type     : 'error'
     });
 };
-var loadMessage = function(msg) {
-    if ('' !== msg) {
-        message(msg, 'top-center');
-    }
+var message = function(message, position) {
+    $().toastmessage('showToast', {
+        text     : message,
+        sticky   : true,
+        position : position,
+        type     : 'success'
+    });
 };
 $(function() {
 
-    $('#createAccountDiv').focusout(function() {
-        completeButtonCheck();
+    $('#profiletDiv').focusout(function() {
+        accountCompleteButtonCheck();
     });
     $("#profile").click(function(){
         
-//        clear();
-        if (!$(this).val()) return false;
-        $('#createFormLabel').text('ユーザーを更新します');
-        $('#completeButton').text('更新する');
+        clear();
         $.ajax({
             type: 'POST',
             url: '/account/getById',
@@ -53,67 +47,59 @@ $(function() {
             cache: false,
             success: function(data) {
                 if (data.errinfo.status) {
-                    message(data.errinfo.message);
+                    errorMessage(data.errinfo.message);
                 } else {
                     
                     $('#name').text(data.target.name);
                     $('#mailAddress').text(data.target.mailAddress);
-//                    $('#completeButton').val(data.target._id);
-                    $('#role').text(data.target.role);
+                    if (data.target.role === 1) {
+                        
+                        $('#role').text('管理ユーザー');
+                    } else {
+                        
+                        $('#role').text('一般ユーザー');
+                    }
                 }
         　　},
         　　error: function(XMLHttpRequest, textStatus, errorThrown) {
+        　　  errorMessage('ユーザー情報の取得に失敗しました。');
         　　    console.log(XMLHttpRequest);
         　　    console.log(textStatus);
         　　},
         });
     });
-    $('#completeButton').click(function(){
-        if (!completeButtonCheck()) {
+    $('#accountCompleteButton').click(function(){
+        if (!accountCompleteButtonCheck()) {
             return false;
         }
-        if ($('#inputPassword').val().trim() !== $('#inputPasswordConfirm').val().trim()) {
+        if ($('#accountPassword').val().trim() !== $('#accountPasswordConfirm').val().trim()) {
             
-            $('#inputPassword').addClass('error');
-            $('#inputPasswordConfirm').addClass('error');
-            message('入力されたパスワードが一致しません', 'top-center');
+            $('#accountPassword').addClass('error');
+            $('#accountPasswordConfirm').addClass('error');
+            errorMessage('入力されたパスワードが一致しません', 'top-center');
             return false;
         }
-        var id = $(this).val();
-        var checkInfo = {accountId:id, name:$('#inputName').val(), mailAddress:$('#inputEmail').val(), password:$('#inputPassword').val(), passwordConfirm: $('#inputPasswordConfirm').val()};
+        var id = $('#cryptoId').val();
+        var checkInfo = {mailAddress:$('#mailAddress').text(), password:$('#accountPassword').val(), passwordConfirm: $('#accountPasswordConfirm').val()};
         $.ajax({
             type: 'POST',
-            url: '/account/validation',
+            url: '/account/profileUpdate',
             dataType: 'json',
             data: checkInfo,
             cache: false,
             success: function(data) {
-                console.log(data);
                 if (data.validationInfo.status) {
-                    message(data.validationInfo.message, 'top-center');
-                    return false;
-                }
-                if (id) {
-                    document.getElementById("accountId").value=id;
-                    document.accountForm.action = '/account/update';
+                    errorMessage(data.validationInfo.message, 'top-center');
                 } else {
-                    document.accountForm.action = '/account/regist';
+                    message('プロフィールを更新しました', 'top-center');
                 }
-                document.accountForm.submit();
         　　},
         　　error: function(XMLHttpRequest, textStatus, errorThrown) {
+                errorMessage('プロフィールを更新に失敗しました', 'top-center');
         　　    console.log(XMLHttpRequest);
         　　    console.log(textStatus);
-        　　  return ;
         　　},
         });
         return false;
-    });
-    $("button[name=accountDeleteButton]").click(function(){
-        if ($(this).val()) {
-            var data = {_id:$(this).val()};
-            createFormSubmitByParam('/account/delete',data);
-            return false;
-        }
     });
 });

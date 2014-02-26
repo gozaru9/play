@@ -178,7 +178,27 @@ userModel.prototype.update = function(req, callback) {
         target.password = crypto.createHash('md5').update(req.body.password).digest("hex");
         target.save(callback);
     });
- };
+};
+/**
+ * プロフィール更新
+ * 
+ * @author niikawa
+ * @param {Object} req
+ * @param {Function} callback
+ */
+userModel.prototype.profileUpdate = function(req, callback) {
+    
+    var User = mongoose.model(collection);
+    User.findOne({_id:req.session._id},function(err,target){
+        if(err || target === null){
+            
+            callback();
+        }
+        target.updated = moment().format('YYYY-MM-DD HH:mm:ss');
+        target.password = crypto.createHash('md5').update(req.body.password).digest("hex");
+        target.save(callback);
+    });
+};
 /**
  * 削除
  * 

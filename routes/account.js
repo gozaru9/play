@@ -53,6 +53,31 @@ exports.regist = function(req, res){
     }
 };
 
+exports.profileUpdate = function(req, res) {
+    var validationInfo = {status: false, target:[], message: ''};
+    validationInfo.message = checkPassword(req.body);
+    if ('' !== validationInfo.message) {
+        validationInfo.status = true;
+        res.send({validationInfo: validationInfo});
+    } else {
+        
+        myModel.getById(req.session._id, function(err, item) {
+            
+            //データ改ざんの可能性あり
+            if (item.mailAddress !== req.body.mailAddress) {
+                validationInfo.status = true;
+                validationInfo.message = checkPassword(req.body);
+                res.send({validationInfo: validationInfo});
+
+            } else {
+                myModel.profileUpdate(req, function(err) {
+                    
+                    res.send({validationInfo: validationInfo});
+                });
+            }
+        });
+    }
+}
 exports.validation = function(req, res) {
     var validationInfo = validation(req.body);
     if (validationInfo.status) {
@@ -127,14 +152,17 @@ function validation(data) {
         
         validationInfo.message = 'パスワードは必須です';
     }
-    //固有チェック
-    if (data.password.trim() !== data.passwordConfirm.trim()) {
-        validationInfo.message = '入力されたパスワードが一致しません。';
-    }
-    if (data.password.trim().length < 8 || data.password.trim().length > 20) {
-        
-        validationInfo.message = 'パスワードの文字数は<br>8から20文字です。';
-    }
+    validationInfo.message = checkPassword();
     if (validationInfo.message !== '') validationInfo.status = true;
     return validationInfo;
+}
+function checkPassword(data) {
+    //固有チェック
+    if (data.password.trim() !== data.passwordConfirm.trim()) {
+        return '入力されたパスワードが一致しません。';
+    }
+    if (data.password.trim().length < 8 || data.password.trim().length > 20) {
+        return 'パスワードの文字数は<br>8から20文字です。';
+    }
+    return '';
 }
