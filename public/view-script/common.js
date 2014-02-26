@@ -8,12 +8,13 @@ var accountCompleteButtonCheck = function() {
         return true;
     }
 };
-var clear = function() {
+var accountClear = function() {
     
     $('#accountPassword').val('');
     $('#accountPasswordConfirm').val('');
     $('#accountPassword').removeClass('error');
     $('#accountPasswordConfirm').removeClass('error');
+    $('#accountCompleteButton').attr("disabled", "disabled"); 
 };
 var errorMessage = function(message, position) {
     $().toastmessage('showToast', {
@@ -23,7 +24,7 @@ var errorMessage = function(message, position) {
         type     : 'error'
     });
 };
-var message = function(message, position) {
+var successMessage = function(message, position) {
     $().toastmessage('showToast', {
         text     : message,
         sticky   : true,
@@ -38,7 +39,7 @@ $(function() {
     });
     $("#profile").click(function(){
         
-        clear();
+        accountClear();
         $.ajax({
             type: 'POST',
             url: '/account/getById',
@@ -91,7 +92,7 @@ $(function() {
                 if (data.validationInfo.status) {
                     errorMessage(data.validationInfo.message, 'top-center');
                 } else {
-                    message('プロフィールを更新しました', 'top-center');
+                    successMessage('プロフィールを更新しました', 'top-center');
                 }
         　　},
         　　error: function(XMLHttpRequest, textStatus, errorThrown) {
