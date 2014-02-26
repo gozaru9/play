@@ -14,47 +14,50 @@
     </head>
     <body>
         <%- include ../header.ejs %>
-        <div class="main-container">
-            <div class="pull-right line-margin">
-                <button id="accountCreateButton" class="btn btn-info" data-toggle="modal" data-target="#createForm">
-                  新規登録
-                </button>  
-            </div>
+        <div class="chat-container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-header pull-right">
+                        <button id="accountCreateButton" class="btn btn-info" data-toggle="modal" data-target="#createForm">create new</button>  
+                    </div>
+                    <h2 class="page-header">ユーザー管理</h2>
+        
+                    <div class="clearfix"></div>
+                    
+                    <!-- /entry-dialog -->
+                    <%- include create.ejs %>
             
-            <div class="clearfix"></div>
-            
-            <!-- /entry-dialog -->
-            <%- include create.ejs %>
-    
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr class="active">
-                            <th>ユーザー名</th>
-                            <th>メールアドレス</th>
-                            <th>ロール</th>
-                            <th></th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <% items.users.forEach(function(item){ %>
-                        <tr>
-                            <td><%= item.name %></td>
-                            <td><%= item.mailAddress %></td>
-                            <td>
-                                <% if (item.role == 0) { %>
-                                    一般ユーザー
-                                <% }else{ %>
-                                    管理ユーザー
-                                <% } %>
-                            </td>
-                            <td><button name="accountUpdateButton" data-toggle="modal" data-target="#createForm" value="<%= item._id %>" class="btn btn-warning">update</button></td>
-                            <td><button type="button" name="accountDeleteButton" value="<%= item._id %>" class="btn btn-danger">delete</button></td>
-                        </tr>
-                    <% }) %>
-                    </tbody>
-                </table>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr class="active">
+                                    <th>ユーザー名</th>
+                                    <th>メールアドレス</th>
+                                    <th>ロール</th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <% items.users.forEach(function(item){ %>
+                                <tr>
+                                    <td><%= item.name %></td>
+                                    <td><%= item.mailAddress %></td>
+                                    <td>
+                                        <% if (item.role == 0) { %>
+                                            一般ユーザー
+                                        <% }else{ %>
+                                            管理ユーザー
+                                        <% } %>
+                                    </td>
+                                    <td><button name="accountUpdateButton" data-toggle="modal" data-target="#createForm" value="<%= item._id %>" class="btn btn-warning">update</button></td>
+                                    <td><button type="button" name="accountDeleteButton" value="<%= item._id %>" class="btn btn-danger">delete</button></td>
+                                </tr>
+                            <% }) %>
+                            </tbody>
+                        </table>
+                    </div>        
+                </div>        
             </div>        
         </div>        
     </body>

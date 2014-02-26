@@ -111,7 +111,7 @@ exports.index = function(req, res){
                     for (var allUserIndex = 0; allUserIndex < allUsersNum; allUserIndex++) {
                         allUsers[allUserIndex].status = getStatusClass(allUsers[allUserIndex].loginStatus);
                     }
-                    //TODO ここはGroup By Count にしたいが今は無理
+                    //TODO ここはGroup By Count にしたいがmongooseのスキルが足りない
                     console.log(results[5]);
                     var inc = results[5];
                     var incNum = inc.length;
