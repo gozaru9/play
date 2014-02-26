@@ -35,20 +35,13 @@ var loadMessage = function(msg) {
     }
 };
 $(function() {
-    $('#hederMenu').children().removeClass('active');
-    $('#accountView').addClass('active');
 
     $('#createAccountDiv').focusout(function() {
         completeButtonCheck();
     });
-    $("#accountCreateButton").click(function(){
-        clear();
-        $('#createFormLabel').text('ユーザーを作成します');
-        $('#completeButton').text('作成する');
-    });
-    $("button[name=accountUpdateButton]").click(function(){
+    $("#profile").click(function(){
         
-        clear();
+//        clear();
         if (!$(this).val()) return false;
         $('#createFormLabel').text('ユーザーを更新します');
         $('#completeButton').text('更新する');
@@ -56,18 +49,17 @@ $(function() {
             type: 'POST',
             url: '/account/getById',
             dataType: 'json',
-            data: ({_id:$(this).val()}),
+            data: ({_id:$('#cryptoId').val()}),
             cache: false,
             success: function(data) {
                 if (data.errinfo.status) {
                     message(data.errinfo.message);
                 } else {
                     
-                    $('#inputName').val(data.target.name);
-                    $('#inputEmail').val(data.target.mailAddress);
-                    $('#completeButton').val(data.target._id);
-                    if(data.target.role === 1) 
-                        $('#role').prop("checked", true);
+                    $('#name').text(data.target.name);
+                    $('#mailAddress').text(data.target.mailAddress);
+//                    $('#completeButton').val(data.target._id);
+                    $('#role').text(data.target.role);
                 }
         　　},
         　　error: function(XMLHttpRequest, textStatus, errorThrown) {

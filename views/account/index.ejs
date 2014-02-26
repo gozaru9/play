@@ -42,7 +42,13 @@
                         <tr>
                             <td><%= item.name %></td>
                             <td><%= item.mailAddress %></td>
-                            <td><%= item.role %></td>
+                            <td>
+                                <% if (item.role == 0) { %>
+                                    一般ユーザー
+                                <% }else{ %>
+                                    管理ユーザー
+                                <% } %>
+                            </td>
                             <td><button name="accountUpdateButton" data-toggle="modal" data-target="#createForm" value="<%= item._id %>" class="btn btn-warning">update</button></td>
                             <td><button type="button" name="accountDeleteButton" value="<%= item._id %>" class="btn btn-danger">delete</button></td>
                         </tr>

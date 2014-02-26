@@ -141,7 +141,7 @@ exports.index = function(req, res){
                     var incData = {openCount:open, progCount:prog, closeCount:close, removeCount:remove, allCount:incNum};
                     var fixed = results[0].concat(results[1]);
                     console.log('---------------render start--------------------');
-                    res.render('chat/index', {title: 'chat', userName:req.session.name, _id:req.session._id,
+                    res.render('chat/index', {title: 'chat', userName:req.session.name, _id:req.session._id, role:req.session.role,
                         rooms:rooms, targetRoomId:req.body.room, roomName:name, users:users, 
                         messages:messages, allUsers:allUsers, fixed:fixed, tags:results[4], incidnt:incData});
                 });
@@ -191,7 +191,7 @@ exports.lobby = function(req, res){
                         allUsers[allUserIndex].status = getStatusClass(allUsers[allUserIndex].loginStatus);
                     }
                     res.render('chat/lobby', 
-                        {title: 'LOBBY', userName: req.session.name,
+                        {title: 'LOBBY', userName: req.session.name, role:req.session.role,
                             _id:req.session._id, rooms:rooms, allUsers: allUsers});
                 });
         });
@@ -225,7 +225,7 @@ exports.fixedSectence = function(req, res){
                 console.log(err);
                 if (err) throw err;
                 res.render('chat/fixedSectence', 
-                    {title: 'fixedSectence', userName:req.session.name, 
+                    {title: 'fixedSectence', userName:req.session.name, role:req.session.role, 
                     _id:req.session._id, mineFixed:results[1], openFixed:results[0]});
             });
         
@@ -246,7 +246,7 @@ exports.login = function(req, res){
     model.login(req.body.mailAddress, req.body.password, 
         function(err, results) {
             if (err) {
-                res.render('/login', {title: 'LOGIN', errMsg:'ごらぁぁぁ'});
+                res.render('/login', {title: 'LOGIN', errMsg:''});
             }
             console.log('-----------login------');
             console.log(results[0]);
@@ -257,6 +257,7 @@ exports.login = function(req, res){
             
             req.session._id = results[0]._id;
             req.session.name = results[0].name;
+            req.session.role = results[0].role;
             req.session.isLogin = true;
             req.session.loginNotice = true;
             req.session.unreadjudgmentTime = results[0].unreadjudgmentTime;

@@ -164,7 +164,7 @@
                     </div>
 
                     <div class="page-header">
-                        <h4>Incident Mesages</h4>
+                        <h4>Incident Message</h4>
                     </div>
                     <div name="incidentList">
                         <ul class="nav nav-pills nav-stacked">
@@ -172,7 +172,7 @@
                             <li><a href="/incidnt/?status=1">open<span id="incOpen" class="badge pull-right"><%= incidnt.openCount %></span></a></li>
                             <li><a href="/incidnt/?status=2">in progress<span id="incProg" class="badge pull-right"><%= incidnt.progCount %></span></a></li>
                             <li><a href="/incidnt/?status=3">close<span id="incClose" class="badge pull-right"><%= incidnt.closeCount %></span></a></li>
-                            <li><a href="/incidnt/?status=9">close<span id="incRemove" class="badge pull-right"><%= incidnt.removeCount %></span></a></li>
+                            <li><a href="/incidnt/?status=9">remove<span id="incRemove" class="badge pull-right"><%= incidnt.removeCount %></span></a></li>
                         </ul>
                     </div>
                     <div class="page-header">
@@ -205,7 +205,6 @@
     <%- include ../chat/allSendMessage.ejs %>
     <%- include ../chat/sendMessage.ejs %>
     <%- include ../chat/createRoom.ejs %>
-    <%- include ../chat/profile.ejs %>
     <%- include ../chat/setting.ejs %>
     <%- include ../chat/memberEdit.ejs %>
     <%- include ../sideMenu.ejs %>

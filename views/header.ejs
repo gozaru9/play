@@ -16,14 +16,16 @@
                     <li data-toggle="modal" data-target="#allMessageForm"><a href="#">All Message</a></li>
                     <li data-toggle="modal" data-target="#createRoomForm"><a href="#">Create Room</a></li>
                     <li id="fixedView" class=""><a href="/chat/fixedSectence">定型文</a></li>
-                    <li id="fixedView" class=""><a href="/account">ユーザー管理</a></li>
+                    <% if (role == 1) { %>
+                    <li id="accountView" class=""><ahref="/account">ユーザー管理</a></li>
+                    <% } %>
                     <li id="tagsView" class=""><a href="/tags">タグ</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
                         <a style="margin-right:15px;" href="#" class="dropdown-toggle" data-toggle="dropdown"><%= userName %><b class="caret"></b></a>
                         <ul class="dropdown-menu">
-                            <li data-toggle="modal" data-target="#profileForm"><a href="#">Profile </a></li>
+                            <li data-toggle="modal" data-target="#profileForm"><a id="profile" href="#">Profile </a></li>
                             <li data-toggle="modal" data-target="#settingForm"><a href="#">Settings </a></li>
                             <li class="divider"></li>
                             <li><a id="logout" href="/chat/logout">Log out </a></li>
@@ -32,3 +34,4 @@
                 </ul>
             </div>
         </div>
+        <%- include ./chat/profile.ejs %>

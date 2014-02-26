@@ -23,7 +23,7 @@ exports.index = function(req, res){
         tags.getAll(res,
             function(res,docs){
                 res.render('chat/tags', 
-                { title: 'タグ管理', tags: docs,_id: req.session._id,userName: req.session.name});
+                { title: 'タグ管理', tags: docs,_id: req.session._id,userName: req.session.name, role:req.session.role});
             }
         );
         
@@ -51,7 +51,7 @@ exports.create = function(req, res){
                 tags.getAll(res,
                     function(res,docs){
                         res.render('chat/tags', 
-                        { title: 'タグ管理', tags: docs,_id: req.session._id,
+                        { title: 'タグ管理', tags: docs,_id: req.session._id,role:req.session.role,
                             userName: req.session.name, error: []});
                     }
                 );
@@ -61,7 +61,7 @@ exports.create = function(req, res){
             tags.getAll(res,
                 function(res,docs){
                     res.render('chat/tags', 
-                    { title: 'タグ管理', tags: docs,_id: req.session._id,
+                    { title: 'タグ管理', tags: docs,_id: req.session._id, role:req.session.role,
                         userName: req.session.name, error:[]});
                 }
             );

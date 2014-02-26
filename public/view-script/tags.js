@@ -20,34 +20,34 @@ $(function() {
             $('#tagsCreateFormLabel').text('タグを更新します');
             $('#completeButton').text('更新する');
             $.ajax({
-                    type: 'POST',
-                    url: '/tags/getTagsById',
-                    dataType: 'json',
-                    data: ({id:$(this).val()}),
-                    cache: false,
-                    success: function(data) {
-                        
-                        if (data.target) {
-                            $("#color").spectrum({
-                                showInput: true,
-                                allowEmpty:true,
-                                color: data.target.color,
-                                change:function(color) {
-                                    var select = (null !== color) ? color.toHexString() : '';
-                                    $('#selectColor').val(select);
-                                }
-                            });
-                            $('#name').val(data.target.name);
-                            $('#selectColor').val(data.target.color);
-                            $('#completeButton').val(data.target._id);
-                            $('#isMonitor').attr('checked', data.target.isMonitor);
-                        }
-                　　},
-                　　error: function(XMLHttpRequest, textStatus, errorThrown) {
-                　　    console.log(XMLHttpRequest);
-                　　    console.log(textStatus);
-                　　},
-                });
+                type: 'POST',
+                url: '/tags/getTagsById',
+                dataType: 'json',
+                data: ({id:$(this).val()}),
+                cache: false,
+                success: function(data) {
+                    
+                    if (data.target) {
+                        $("#color").spectrum({
+                            showInput: true,
+                            allowEmpty:true,
+                            color: data.target.color,
+                            change:function(color) {
+                                var select = (null !== color) ? color.toHexString() : '';
+                                $('#selectColor').val(select);
+                            }
+                        });
+                        $('#name').val(data.target.name);
+                        $('#selectColor').val(data.target.color);
+                        $('#completeButton').val(data.target._id);
+                        $('#isMonitor').prop('checked', data.target.isMonitor);
+                    }
+            　　},
+            　　error: function(XMLHttpRequest, textStatus, errorThrown) {
+            　　    console.log(XMLHttpRequest);
+            　　    console.log(textStatus);
+            　　},
+            });
         }
     });
     $('#completeButton').click(function(){
@@ -64,7 +64,7 @@ $(function() {
     });
     $('button[name=close]').click(function() {
         $('#name').val('');
-        $('#isMonitor').attr('checked', false);
+        $('#isMonitor').prop('checked', false);
         $('#selectColor').val('');
     });
     $('button[name=tagsDeleteButton]').click(function() {

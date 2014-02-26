@@ -4,15 +4,19 @@ var myModel = new userModel();
 
 //ユーザーの一覧を取得し画面描画
 exports.index = function(req, res){
-
+    if (req.session.isLogin) {
         myModel.getAll(res,
             function(res,docs){
                 
                 var data = {users: docs, message: ''};
                 res.render('account/index', 
-                { title: 'ユーザー管理', items: data, _id: req.session._id, userName:req.session.name});
+                    { title: 'ユーザー管理', items: data, _id: req.session._id, 
+                        userName:req.session.name, role:req.session.role});
             }
         );
+    } else {
+        res.render('login/index', {title: 'LOGIN', errMsg:''});
+    }
 };
 exports.getById = function(req, res) {
     
@@ -50,19 +54,28 @@ exports.regist = function(req, res){
 };
 
 exports.validation = function(req, res) {
-    console.log('account validation');
-    console.log(req.body);
     var validationInfo = validation(req.body);
-    if (validationInfo.status) res.send(validationInfo);
-    myModel.exsitsMailAddress(req.body.accountId, req.body.mailAddress, function(err, count) {
-        
-        if (count !== 0) {
-            validationInfo.status = true;
-            validationInfo.target = [];
-            validationInfo.message = 'すでに使用されているメールアドレスです';
+    if (validationInfo.status) {
+        if ('' === req.body.accountId) {
+            
+            validationInfo.message = '[ユーザー登録失敗]<br>'+validationInfo.message;
+        } else {
+            
+            validationInfo.message = '[ユーザー更新失敗]<br>'+validationInfo.message;
         }
         res.send({validationInfo: validationInfo});
-    });
+    } else {
+        
+        myModel.exsitsMailAddress(req.body.accountId, req.body.mailAddress, function(err, count) {
+            
+            if (count !== 0) {
+                validationInfo.status = true;
+                validationInfo.target = [];
+                validationInfo.message = 'すでに使用されているメールアドレスです';
+            }
+            res.send({validationInfo: validationInfo});
+        });
+    }
 };
 
 //ユーザーの更新
@@ -75,7 +88,8 @@ exports.update = function(req, res) {
             myModel.getAll(res, function(res, docs){
                 var data = {users: docs, message: 'すでに使用されているメールアドレスです'};
                 res.render('account/index', 
-                { title: 'ユーザー管理', items: data, _id: req.session._id, userName:req.session.name});
+                { title: 'ユーザー管理', items: data, _id: req.session._id, 
+                    userName:req.session.name, role:req.session.role});
             });
         }
         
@@ -101,6 +115,7 @@ function validation(data) {
     if (!data.name || !data.mailAddress || !data.password || !data.passwordConfirm) {
         validationInfo.message = 'パラメータが改竄されています';
     }
+    //必須チェック
     if (data.name.trim().length === 0) {
         validationInfo.message = 'ユーザー名は必須です';
     }
@@ -112,8 +127,13 @@ function validation(data) {
         
         validationInfo.message = 'パスワードは必須です';
     }
+    //固有チェック
     if (data.password.trim() !== data.passwordConfirm.trim()) {
         validationInfo.message = '入力されたパスワードが一致しません。';
+    }
+    if (data.password.trim().length < 8 || data.password.trim().length > 20) {
+        
+        validationInfo.message = 'パスワードの文字数は<br>8から20文字です。';
     }
     if (validationInfo.message !== '') validationInfo.status = true;
     return validationInfo;
