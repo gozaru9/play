@@ -26,7 +26,14 @@ function getScrolBottom(element) {
 //    return $(element).scrollTop() + $(element).height();
     return 10000;
 }
-
+function popMessage(message, sticky) {
+    
+    $().toastmessage('showToast', {
+        text     : message,
+        sticky   : sticky,
+        type     : 'notice'
+    });
+}
 + function ($) { "use strict";
 
   var dismiss = '[data-dismiss="to-user"]'

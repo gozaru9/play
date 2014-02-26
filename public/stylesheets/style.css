@@ -93,7 +93,9 @@ table {
     vertical-align: baseline;
     white-space: nowrap;
 }
-
+.error {
+    background-color:red !important;
+}
 /*     Header
 /* ------------------------------------- */
 #header {

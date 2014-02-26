@@ -80,7 +80,6 @@ userModel.prototype.save = function(req){
         return;
     }
     */
-    console.log(user);
     user.save(function(err){
         if (err) {
             console.log(err);
@@ -152,25 +151,22 @@ userModel.prototype.logout = function(id) {
  * @author niikawa
  * @param req
  * */
-userModel.prototype.updateById = function(req) {
+userModel.prototype.update = function(req, callback) {
 
-     var User = mongoose.model(collection);
-    User.findOne({_id:req.body.id},function(err,target){
-    if(err || target === null){return;}
-    
-        if (req.body.name !== undefined) {
-            target.name = req.body.name;
+    req.body.role = req.body.role ? 1 : 0;
+    var User = mongoose.model(collection);
+    User.findOne({_id:req.body.accountId},function(err,target){
+        if(err || target === null){
+            
+            callback();
         }
-        
-        if (req.body.mailAddress !== undefined) {
-            target.mailAddress = req.body.mailAddress;
-        }
-        
-        if (req.body.password !== undefined) {
-            target.mailAddress = req.body.password;
-        }
-        
-        target.save();
+//        target.updateBy = req.session._id;
+        target.updated = moment().format('YYYY-MM-DD HH:mm:ss');
+        target.name = req.body.name;
+        target.mailAddress = req.body.mailAddress;
+        target.role = req.body.role;
+        target.password = crypto.createHash('md5').update(req.body.password).digest("hex");
+        target.save(callback);
     });
  };
 /**

@@ -2,34 +2,14 @@
 <html>
     <head>
         <%- include ../head.ejs %>
-        <script type="text/javascript" src="/javascripts/table.js"></script>
         <script type="text/javascript" src="/javascripts/submit.js"></script>
-        <script type="text/javascript">
-            $(document).ready( function() {
-                $("input:button[name=btn_delete]").click(function(){
-                    var id=getTableHiddenValue(this);
-                    var data = {_id:id};
-                    createFormSubmitByParam('/account/delete',data);
-                    return false;
-                });
-                /*
-                $("tr").click(function(){
-                    var id=getTableHiddenValue(this);
-//                    createFormSubmitByParam('/account/update',id);
-                    $("div#referenceForm").attr("aria-hidden", false);
-                    $("div#referenceForm").removeClass("modal fade").addClass("in fade modal"); 
-                    $("div#referenceForm").attr("style", "display:block");
-                    return false;
-                });
-                */
-            });
-        </script>
+        <script type="text/javascript" src="/view-script/account.js"></script>
     </head>
     <body>
         <%- include ../header.ejs %>
         <div class="main-container">
             <div class="pull-right line-margin">
-                <button class="btn btn-info" data-toggle="modal" data-target="#entryForm">
+                <button id="accountCreateButton" class="btn btn-info" data-toggle="modal" data-target="#createForm">
                   新規登録
                 </button>  
             </div>
@@ -37,25 +17,7 @@
             <div class="clearfix"></div>
             
             <!-- /entry-dialog -->
-            <form class="form-horizontal" method="POST" action="/account/regist">
-                <div class="modal fade" id="entryForm" tabindex="-1" role="dialog" aria-labelledby="entryFormLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                <h4 class="modal-title" id="entryFormLabel">登録フォーム</h4>
-                            </div>
-                            <div class="modal-body">
-                            <%- include regist.ejs %>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
-                                <button data-bind='click: addGift' class="btn btn-primary" >登録する</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>        
+            <%- include create.ejs %>
     
             <div class="table-responsive">
                 <table class="table table-hover">
@@ -64,6 +26,7 @@
                             <th>ユーザー名</th>
                             <th>メールアドレス</th>
                             <th></th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody data-bind='foreach: items'>
@@ -71,8 +34,8 @@
                         <tr>
                             <td><%= item.name %></td>
                             <td><%= item.mailAddress %></td>
-                            <td><input type="button" class="btn btn-default" name="btn_delete" value="削除"></td>
-                            <input type="hidden" value=<%= item._id %>>
+                            <td><button name="accountUpdateButton" data-toggle="modal" data-target="#createForm" value="<%= item._id %>" class="btn btn-warning">update</button></td>
+                            <td><button type="button" id="accountDeleteButton" value="<%= item._id %>" class="btn btn-danger">delete</button></td>
                         </tr>
                     <% }) %>
                     </tbody>
