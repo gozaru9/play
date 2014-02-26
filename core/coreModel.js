@@ -110,6 +110,15 @@ coreModel.prototype.getById = function(id, callback){
 coreModel.prototype.save = function(req, callback){
 
 };
+/**
+ * 指定されたプロパティを条件に件数を取得する
+ * 条件未指定時は、コレクションのレコード数を取得する
+ * @author niikawa
+ * @method count
+ * @param {String} property
+ * @param {Object} val
+ * @param {Function} callback
+ */
 coreModel.prototype.count = function(property, val, callback) {
     
     var target = this.db.model(this.modelName);
@@ -117,8 +126,8 @@ coreModel.prototype.count = function(property, val, callback) {
         
         target.find().count(callback);
     } else {
-        
-        target.find({property:val}).count(callback);
+        var prop = property.toString();
+        target.find({prop:val.toString()}).count(callback);
     }
 };
 /**

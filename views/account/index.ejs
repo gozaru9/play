@@ -4,6 +4,13 @@
         <%- include ../head.ejs %>
         <script type="text/javascript" src="/javascripts/submit.js"></script>
         <script type="text/javascript" src="/view-script/account.js"></script>
+        <script>
+        $(function() {
+            
+            loadMessage("<%= items.message %>");
+        });
+        </script>
+        
     </head>
     <body>
         <%- include ../header.ejs %>
@@ -25,17 +32,19 @@
                         <tr class="active">
                             <th>ユーザー名</th>
                             <th>メールアドレス</th>
+                            <th>ロール</th>
                             <th></th>
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody data-bind='foreach: items'>
-                    <% items.forEach(function(item){ %>
+                    <tbody>
+                    <% items.users.forEach(function(item){ %>
                         <tr>
                             <td><%= item.name %></td>
                             <td><%= item.mailAddress %></td>
+                            <td><%= item.role %></td>
                             <td><button name="accountUpdateButton" data-toggle="modal" data-target="#createForm" value="<%= item._id %>" class="btn btn-warning">update</button></td>
-                            <td><button type="button" id="accountDeleteButton" value="<%= item._id %>" class="btn btn-danger">delete</button></td>
+                            <td><button type="button" name="accountDeleteButton" value="<%= item._id %>" class="btn btn-danger">delete</button></td>
                         </tr>
                     <% }) %>
                     </tbody>

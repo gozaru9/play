@@ -7,8 +7,10 @@ exports.index = function(req, res){
 
         myModel.getAll(res,
             function(res,docs){
+                
+                var data = {users: docs, message: ''};
                 res.render('account/index', 
-                { title: 'ユーザー管理', items : docs, _id: req.session._id, userName:req.session.name});
+                { title: 'ユーザー管理', items: data, _id: req.session._id, userName:req.session.name});
             }
         );
 };
@@ -47,12 +49,40 @@ exports.regist = function(req, res){
     }
 };
 
+exports.validation = function(req, res) {
+    console.log('account validation');
+    console.log(req.body);
+    var validationInfo = validation(req.body);
+    if (validationInfo.status) res.send(validationInfo);
+    myModel.exsitsMailAddress(req.body.accountId, req.body.mailAddress, function(err, count) {
+        
+        if (count !== 0) {
+            validationInfo.status = true;
+            validationInfo.target = [];
+            validationInfo.message = 'すでに使用されているメールアドレスです';
+        }
+        res.send({validationInfo: validationInfo});
+    });
+};
+
 //ユーザーの更新
 exports.update = function(req, res) {
     
-    myModel.update(req, function(err) {
+    myModel.exsitsMailAddress(req.body.accountId, req.body.mailAddress, function(err, count) {
+
+        if (count !== 0) {
+
+            myModel.getAll(res, function(res, docs){
+                var data = {users: docs, message: 'すでに使用されているメールアドレスです'};
+                res.render('account/index', 
+                { title: 'ユーザー管理', items: data, _id: req.session._id, userName:req.session.name});
+            });
+        }
         
-        res.redirect('/account');
+        myModel.update(req, function(err) {
+            
+            res.redirect('/account');
+        });
     });
 };
 
@@ -60,21 +90,31 @@ exports.update = function(req, res) {
 exports.delete = function(req, res) {
     
     myModel.removeById(res,req.body._id,
-        function(res, docs){
-            res.render('account/index', { title: 'ユーザー管理', items : docs});
+        function(){
+            res.redirect('/account');
         }
     );
 };
 function validation(data) {
-    var message = '';
+    var validationInfo = {status: false, target:[], message: ''};
     //プロパティチェック
     if (!data.name || !data.mailAddress || !data.password || !data.passwordConfirm) {
-        message = 'パラメータが改竄されています';
+        validationInfo.message = 'パラメータが改竄されています';
     }
     if (data.name.trim().length === 0) {
-        
+        validationInfo.message = 'ユーザー名は必須です';
     }
     if (data.mailAddress.trim().length === 0) {
         
+        validationInfo.message = 'メールアドレス名は必須です';
     }
+    if (data.password.trim().length === 0) {
+        
+        validationInfo.message = 'パスワードは必須です';
+    }
+    if (data.password.trim() !== data.passwordConfirm.trim()) {
+        validationInfo.message = '入力されたパスワードが一致しません。';
+    }
+    if (validationInfo.message !== '') validationInfo.status = true;
+    return validationInfo;
 }

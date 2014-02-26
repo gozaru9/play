@@ -84,6 +84,7 @@ app.post('/code/regist', code.regist);
 //メンバー
 app.get('/account', account.index);
 app.post('/account/getById', account.getById);
+app.post('/account/validation', account.validation);
 app.post('/account/parts', account.parts);
 app.post('/account/regist', account.regist);
 app.get('/account/regist', account.regist);

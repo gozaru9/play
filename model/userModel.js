@@ -146,6 +146,16 @@ userModel.prototype.logout = function(id) {
     });
 };
 /**
+ * 同一のメールアドレスを持つユーザーがいないことを確認
+ * 
+ * @author niikawa
+ * */
+userModel.prototype.exsitsMailAddress = function(id, mailAddress, callback) {
+    
+    var User = mongoose.model(collection);
+    User.find({ $and: [{'mailAddress':mailAddress} , {'_id': {$ne: id}}] }).count(callback);
+};
+/**
  * 更新
  * 
  * @author niikawa
@@ -178,10 +188,7 @@ userModel.prototype.removeById = function(res, id,callback) {
     var User = mongoose.model(collection);
     User.findOne({_id:id},function(err,target){
     if(err || target === null){return;}
-        target.remove();
-        User.find({}, function(err, docs) {
-            callback(res, docs);
-        });
+        target.remove(callback);
     });
  };
 module.exports = userModel;
