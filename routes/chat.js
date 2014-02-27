@@ -328,6 +328,21 @@ exports.getMyRoom = function(req, res) {
         });
 };
 /**
+ * リクエストを受け取り、ユーザーの入れる部屋の一覧を取得する
+ * この処理では部屋の情報のみ取得する
+ * 
+ * @author niikawa
+ * @method getMyRoomList
+ * @param {Object} req 画面からのリクエスト
+ * @param {Object} res 画面へのレスポンス
+ */
+exports.getMyRoomList = function(req, res) {
+
+    chat.getMyRoom(req, function(err, result) {
+        res.send({roomList:result});
+    });
+};
+/**
  * リクエストを受け取り、ユーザーの入れる部屋を取得する(ajax版)
  * 
  * @author niikawa

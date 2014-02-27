@@ -150,12 +150,21 @@ chatModel.prototype.addMessage = function(data) {
     Chat.findOne({ "_id" : data.roomId}, function(err, room){
         var message = new messgeModel();
         message.user = {_id:data.userId, name:data.userName};
-        message.to = {ids: data.toTarget, names:data.toNameList};
+        if (data.toTarget && data.toNameList) {
+            
+            message.to = {ids: data.toTarget, names:data.toNameList};
+        } else {
+            message.to = {ids: [], names:[]};
+        }
         message.time = data.time;
         message.message = data.message;
         
         //タグは任意のため設定されているかを判定
-        var tagId = (data.tag.length !== 0) ? data.tag[0]._id : '1';
+        var tagId = 'X';
+        if (data.tag) {
+            
+            tagId = (data.tag.length !== 0) ? data.tag[0]._id : 'X';
+        }
         Tag.findOne({'_id': tagId}, function(err, item){
             if (item) message.tag.push(item);
             message.save();

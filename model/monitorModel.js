@@ -83,7 +83,7 @@ monitorModel.prototype.getMonitor = function(status, skip, limit, callback) {
     var Tags = this.db.model('tags');
     if (0 === Number(status)) {
         
-        Monitor.find().lean().populate('messages', null , null, { sort: { 'created': 1 } }).skip(skip).limit(limit)
+        Monitor.find().lean().populate('messages', null , null, { sort: { 'created': -1 } }).skip(skip).limit(limit)
         .exec(function(err, monitorItem) {
                 
                 var opts = {path:'messages.tag', model:'tags'};
@@ -92,7 +92,7 @@ monitorModel.prototype.getMonitor = function(status, skip, limit, callback) {
         
     } else {
         
-        Monitor.find({'status':status}).lean().populate('messages', null , null, { sort: { 'created': 1 } }).skip(skip).limit(limit)
+        Monitor.find({'status':status}).lean().populate('messages', null , null, { sort: { 'created': -1 } }).skip(skip).limit(limit)
         .exec(function(err, monitorItem) {
                 
                 var opts = {path:'messages.tag', model:'tags'};

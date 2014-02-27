@@ -38,10 +38,11 @@ table {
 
 .toggleMessage {
   position: fixed;
-  width:400px;
+  width:250px;
   right: 0px;
   bottom: 0; 
   z-index: 99999;
+  word-break: break-all;
 }
 .individualMessage {
   position: fixed;

@@ -51,7 +51,6 @@ $(function() {
     socket.emit('login notice');
 
 	socket.on('msg push lobby', function (data) {
-	    console.log('msg push lobby');
         var num = $('span[name='+data.roomId+']').html();
         if (num  !== undefined) {
             var unReadNum = Number(num)+1;

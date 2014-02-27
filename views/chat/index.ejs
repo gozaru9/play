@@ -20,6 +20,7 @@
                 if ($('#'+target).length === 0) {
                 
                     $('#roomName').html("<%= roomName %>");
+                    window.document.title = $('#roomName').text();
                     $('#memberEditButton').val(target);
                     $('#roomContents').find(".active").hide(0).removeClass("active");
                     var element = $("<div>", { class: "panel-body active", id: target, name: "messageArea"});
@@ -67,10 +68,9 @@
             }
         });
         </script>
-        
     </head>
-    
-    <body>
+    <body onblur="tabMove();" onfocus="tabReturn();">
+    <input type="hidden" id="isActive">
     <div id="wrap">
         <%- include ../header.ejs %>
         <div id="individualMessageInfo"></div>
@@ -195,15 +195,15 @@
                             </a>
                           </li>
                         <% }) %>
-                        </ul>                        
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
         
     <%- include ../chat/individualMessage.ejs %>
+    <%- include ../chat/multipleMessag.ejs %>
     <%- include ../chat/allSendMessage.ejs %>
-    <%- include ../chat/sendMessage.ejs %>
     <%- include ../chat/createRoom.ejs %>
     <%- include ../chat/setting.ejs %>
     <%- include ../chat/memberEdit.ejs %>

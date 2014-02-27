@@ -109,6 +109,7 @@ app.get('/chat/lobby', chat.lobby);
 app.get('/chat/fixedSectence', chat.fixedSectence);
 app.post('/chat/create', chat.create);
 app.post('/chat/getMyRoom', chat.getMyRoom);
+app.post('/chat/getMyRoomList', chat.getMyRoomList);
 app.post('/chat/getUserByRoomId', chat.getUserByRoomId);
 app.post('/chat/memberUpdate', chat.memberUpdate);
 app.post('/chat/fixedSectence/save', chat.fixedSectenceSave);
@@ -186,7 +187,6 @@ var chatRoom = io.sockets.on('connection', function (socket) {
     var sessionReloadIntervalID = setInterval(function() {
         socket.handshake.session.reload(function() {
             socket.handshake.session.touch().save();
-            
         });
     }, 60 * 2 * 1000);
     //ログイン通知
@@ -204,7 +204,6 @@ var chatRoom = io.sockets.on('connection', function (socket) {
     });
     //対象の部屋とのコネクション接続
     socket.on('join room', function(roomId) {
-        
         socket.join(roomId);
     });
     //個別メッセージ
@@ -236,7 +235,8 @@ var chatRoom = io.sockets.on('connection', function (socket) {
         data.userName=socket.handshake.session.name;
         data.time=moment().format('YYYY-MM-DD HH:mm:ss');
         chatRoom.in(data.roomId).emit('msg push', data);
-        socket.broadcast.emit('msg push lobby', data);
+        var lobbyPush = {roomId: data.roomId};
+        socket.broadcast.emit('msg push lobby', lobbyPush);
         if ((data.tag.length !== 0)) {
             socket.broadcast.emit('incident push', '');
             socket.emit('incident push', '');
@@ -250,6 +250,31 @@ var chatRoom = io.sockets.on('connection', function (socket) {
         socket.emit('all push', msg);
         //イベントを実行した方以外に実行する
         socket.broadcast.emit('all push', msg);
+    });
+    //複数部屋へのメッセージ
+    socket.on('multiple send', function (data) {
+    
+        if (null !== data.roomList &&
+            Array.isArray(data.roomList) && data.roomList.length !== 0) {
+            
+            data.roomList.forEach(function(roomId) {
+                
+                var push = {
+                        userId: socket.handshake.session._id,
+                        userName: socket.handshake.session.name,
+                        roomId: roomId,
+                        time: moment().format('YYYY-MM-DD HH:mm:ss'),
+                        message: data.message,
+                        to:{ids:[], names:[]}//要素生成時の判定のため空の要素を設定
+                    };
+                //複数部屋のメッセージ機能をバージョンアップする可能性があるため別のイベントで送信
+                chatRoom.in(roomId).emit('multiple push', push);
+                Chat.addMessage(push);
+                var lobbyPush = {roomId: roomId};
+                socket.emit('msg push lobby', lobbyPush);
+                socket.broadcast.emit('msg push lobby', lobbyPush);
+            });
+        }  
     });
     //ステータス変更
     socket.on('status change', function (values) {

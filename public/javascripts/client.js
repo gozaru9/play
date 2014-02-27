@@ -24,7 +24,7 @@ var roomNotification = function (roomName) {
         text     : '['+roomName+']<br>に招待されました',
         sticky   : true,
         type     : 'notice'
-    });    
+    });
 };
 var joinRoom = function (id) {
     socket.emit('join room', id);
@@ -153,17 +153,6 @@ $(function() {
 		socket.emit('individual send', data);
         $('#individualMessage').val('');
     });
-	//部屋とのコネクションを削除
-	$('#leaveButton').click(function() {
-        var target = $('#roomHead').find(".active").attr("name");
-		//サーバーにメッセージを引数にイベントを実行する
-		socket.emit('leave room', target);
-	});
-	//全体メッセージ
-	$('#allSend').click(function() {
-        if($('#message').val().trim().length===0)return;
-		socket.emit('all send', $('#allMessage').val());
-	});
 	//個人へのメッセージプッシュ
 	socket.on('individual push', function (data) {
 
@@ -228,6 +217,48 @@ $(function() {
             $('#'+areaId).slideToggle("slow");
             $('#'+areaId).draggable();
         }
+	});
+	//部屋とのコネクションを削除
+	$('#leaveButton').click(function() {
+        var target = $('#roomHead').find(".active").attr("name");
+		//サーバーにメッセージを引数にイベントを実行する
+		socket.emit('leave room', target);
+	});
+	//全体メッセージ
+	$('#allSend').click(function() {
+        if($('#message').val().trim().length===0)return;
+		socket.emit('all send', $('#allMessage').val());
+	});
+	//複数部屋へのメッセージ
+	$('#multipleMessag').click(function() {
+        $('#multipleMessage').val('');
+        $.ajax({
+            type: 'POST',
+            url: '/chat/getMyRoomList',
+            dataType: 'json',
+            data: '',
+            cache: false,
+            success: function(data) {
+                console.log(data);
+                var roomNum = data.roomList.length;
+                var element = '';
+                for (var roomIndex=0; roomIndex<roomNum; roomIndex++) {
+                    element += '<option value='+data.roomList[roomIndex]._id+'>'+data.roomList[roomIndex].name+'</option>';
+                }
+                document.getElementById("selectRooms").innerHTML = element;
+            },
+        　　error: function(XMLHttpRequest, textStatus, errorThrown) {
+                console.log(XMLHttpRequest);
+                console.log(textStatus);
+                errorMessage('部屋情報の取得に失敗しました','top-center');
+        　　}
+        });
+	});
+	$('#multipleSend').click(function(){
+	    if ($('#multipleMessage').val().trim().length === 0) return;
+	    if (null === $('#selectRooms').val()) return false;
+	    var data ={roomList:$('#selectRooms').val(), message:$('#multipleMessage').val()};
+	    socket.emit('multiple send', data);
 	});
 	//サーバーが受け取ったメッセージを返して実行する
 	socket.on('all push', function (msg) {

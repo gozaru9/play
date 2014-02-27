@@ -1,4 +1,18 @@
 var socket = io.connect(location.hostname);
+var tabMove = function() {
+    $('#isActive').val(0);
+};
+var tabReturn = function() {
+    $('#isActive').val(1);
+    console.log('tabReturn');
+    updateActiveRoomUnRead();
+};
+var updateActiveRoomUnRead = function() {
+    var target = $('div[name*=roomList]').find(".active").attr("name");
+    updateUnReadNum(target, 0);
+    $('li[name='+target+']').children().children().remove();
+    window.document.title = $('#roomName').text();
+};
 var memberEditCompleteButtonCheck = function (){
     if ( $('#selectedEditMember option' ).length !== 0 ) {
         $('#memberEditCompleteButton').removeAttr("disabled");
@@ -11,7 +25,6 @@ var createMemberList = function(users) {
     var length = users.length;
     var toElement = '';
     for (var i = 0; i < length; i++) {
-        console.log(users[i].name);
         $('#roomUserList').append($("<li>",{name: users[i]._id}).append(
             $("<i>",{class: users[i].status})).append(users[i].name));
         toElement += '<li><a name="toTarget" href="#">'+users[i].name+'</a></li>';
@@ -19,7 +32,7 @@ var createMemberList = function(users) {
     document.getElementById("toUl").innerHTML = toElement;
 };
 var createMessageElement = function(roomId, data) {
-    //TODO リファクタリング
+    //TODO リファクタリングしたい
     var names = (data.toNameList) ? data.toNameList.join() : data.to.names.join();
     var namesElement = '';
     if (names !==  '') namesElement = '<p><span class="label label-success text-center">TO</span>'+' &nbsp;'+names+'</p>';
@@ -35,6 +48,36 @@ var createMessageElement = function(roomId, data) {
         $('<ul name="message" class="chat"><li class="clearfix"><!--<span class="chat-img pull-left"><img src="img/ff.gif" alt="User Avatar" class="img-circle" /></span>--><div class="chat-body clearfix"><div name="reseveMessage" class="header"><strong class="primary-font">'
         +sender+'</strong><small class="pull-right text-muted"><i class="fa fa-clock-o fa-fw"></i>'+data.time+'</small>'
         +tagsElement+namesElement+'<p>'+nl2br(escapeHTML(data.message))+'</p></div></li></ul></div>'));
+};
+var updateUnReadNumAndScrolBottom = function(data) {
+    var target = $('div[name*=roomList]').find(".active").attr("name");
+    var unReadNum = 1;
+    if (target != data.roomId) {
+        var num = $('span[name='+data.roomId+']').html();
+        console.log('go----------------');
+        console.log(num);
+        if (num === undefined) {
+            $('li[name='+data.roomId+']').children().append($('<span>',{class:"badge pull-right",name: data.roomId}).text(unReadNum));
+        } else {
+            unReadNum = Number(num)+1;
+            $('span[name='+data.roomId+']').text(unReadNum);
+        }
+        updateUnReadNum(data.roomId, unReadNum);
+	} else {
+        if (Number($('#isActive').val()) === 0) {
+            var dispRoomUnReadNum = $('span[name='+target+']').html();
+            console.log(dispRoomUnReadNum);
+            if (dispRoomUnReadNum === undefined) {
+                $('li[name='+target+']').children().append($('<span>',{class:"badge pull-right",name: target}).text(1));
+            } else {
+                unReadNum = Number(dispRoomUnReadNum)+1;
+                $('span[name='+target+']').text(unReadNum);
+            }
+            window.document.title = $('#roomName').text()+'['+unReadNum+']';
+            updateUnReadNum(data.roomId, unReadNum);
+        }
+        $('#'+data.roomId).animate({ scrollTop: getScrolBottom($('#'+data.roomId))}, 'slow');
+	}
 };
 var resizeArea = function() {
     console.log(jQuery(window).width());
@@ -66,9 +109,7 @@ var getMyRoom = function (isMyCreate, roomName) {
             var rooms = data.rooms;
             var element = '';
             for (var i=0; i < roomLength; i++) {
-                
                 if (!$('li[name='+rooms[i]._id+']')[0]) {
-                    
                     element += '<li name=' + rooms[i]._id + '><a name="roomSelectRadio" href="#">'+ rooms[i].name + '</a></li>';
                 }
             }
@@ -102,7 +143,6 @@ $(function() {
     $(window).resize(function() {
         resizeArea();
     });
-    
 	(function clock() {
         var now = new Date();
         var hour = now.getHours(); // 時
@@ -119,27 +159,13 @@ $(function() {
 	})();
 	//メッセージマウスオーバー
 	$('div[name=reseveMessage]').mouseover(function(){
-	    console.log('over message');
-
 	});
 	$('div[name=reseveMessage]').mouseout(function(){
 	});
 	//サーバーが受け取ったメッセージを返して実行する
 	socket.on('msg push', function (data) {
-	    
-	    createMessageElement(data.roomId, data);
-		var target = $('div[name*=roomList]').find(".active").attr("name");
-		if (target != data.roomId) {
-            var num = $('span[name='+data.roomId+']').html();
-            var unReadNum = 1;
-            if (num === undefined) {
-                $('li[name='+data.roomId+']').children().append($('<span>',{class:"badge pull-right",name: data.roomId}).text(unReadNum));
-            } else {
-                unReadNum = Number(num)+1;
-                $('span[name='+data.roomId+']').text(unReadNum);
-            }
-            updateUnReadNum(data.roomId, unReadNum);
-		}
+        createMessageElement(data.roomId, data);
+        updateUnReadNumAndScrolBottom(data);
 		var toNum = data.toTarget.length;
 		var my = $('#cryptoId').val();
 		$('div[name*=roomList]').find(".active").attr("name");
@@ -153,16 +179,13 @@ $(function() {
                 });
 		    }
 		}
-        $('#'+data.roomId).animate({ scrollTop: getScrolBottom($('#'+data.roomId))}, 'slow');
 	});
 	socket.on('incident push', function() {
         $('#incAll').html(Number($('#incAll').html())+1);
         $('#incOpen').html(Number($('#incOpen').html())+1);
 	});
 	socket.on('incident status changed', function (data){
-	    console.log(data);
 	    if ('' !== data.defore && '' !== data.after) {
-	        
             $('#'+data.before).html(Number($('#'+data.before).html())-1);
             $('#'+data.after).html(Number($('#'+data.after).html())+1);
 	    }
@@ -205,7 +228,7 @@ $(function() {
         var id = $(this).parent().attr('name');
         $('li').removeClass("active");
         $('li[name='+id+']').addClass('active');
-        $(this).children().remove();
+        $('li[name='+id+']').children().children().remove();
         $('#roomName').html($(this).text());
         $('#memberEditButton').val(id);
         $('#sendButton').val(id);
@@ -224,6 +247,7 @@ $(function() {
             $('#'+id).show(500);
             $('#'+id).addClass('active');
         }
+        window.document.title = $('#roomName').text();
         updateUnReadNum(id, 0);
         $.ajax({
             type: 'POST',
@@ -303,12 +327,16 @@ $(function() {
 		return false;
 	});
 	socket.on('beforeday push', function(data) {
-	    
         var msgLength = data.messages.length;
         $('#'+data.roomId).children().remove();
         data.messages.forEach(function(message){
             createMessageElement(data.roomId, message);
         });
+	});
+	/* multiple message**/
+	socket.on('multiple push', function(data){
+	    createMessageElement(data.roomId, data);
+	    updateUnReadNumAndScrolBottom(data);
 	});
     /* room member edit **/
     $('#selectEditMember').change(function(event){
@@ -329,7 +357,6 @@ $(function() {
         var editMember = {roomId:roomId, users:users};
         socket.emit('member edit', editMember);
     });
-    
     socket.on('member add', function (data) {
         socket.emit('join room', data.roomId);
         getMyRoom(false, data.roomName);
