@@ -134,6 +134,7 @@ $(function() {
         location.href="/incidnt/?status="+$(this).val();
     });
     $("#statusSelect").change(function(){
+        
         location.href="/incidnt/?status="+$(this).val();
     })
     $('ul[name=statusList]').on('click', 'a', function(){
