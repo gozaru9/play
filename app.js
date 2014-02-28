@@ -100,7 +100,7 @@ app.post('/tags/getTagsById', tags.getTagsById);
 //インシデント
 app.get('/incidnt', incidnt.index);
 app.post('/incidnt/changeStatus', incidnt.changeStatus);
-
+app.post('/incidnt/getIncidnt', incidnt.getIncidnt);
 //チャット
 app.post('/chat', chat.index);
 app.post('/chat/login', chat.login);

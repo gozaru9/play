@@ -51,6 +51,19 @@ var tagsModel = function tagsModel() {
 util.inherits(tagsModel, Core);
 
 /**
+ * タグを取得する.
+ * 
+ * @method getTags
+ * @author niikawa
+ * @param {Number} skip
+ * @param {Number} limit
+ * @param {Funtion} callback
+ */
+tagsModel.prototype.getTags = function(skip, limit, callback) {
+    var Tags = this.db.model(collection);
+    Tags.find().sort({'created': 1}).skip(skip).limit(limit).exec(callback);
+};
+/**
  * タグを登録する.
  * 
  * @method save
@@ -65,7 +78,6 @@ tagsModel.prototype.save = function(req, callback) {
     Tags.updateBy = req.session._id;
     Tags.save(callback);
 };
-
 /**
  * タグを更新する.
  * 

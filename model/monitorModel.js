@@ -101,18 +101,22 @@ monitorModel.prototype.getMonitor = function(status, skip, limit, callback) {
     }
 };
 /**
- * 自身がTOになっている監視対象のメッセージを取得する.
- * 
- * @method getMyMonitor
+ * 指定されたステータスの監視メッセージ数を取得する
+ * statusが0の場合はすべて取得
+ * @method countByStatus
  * @author niikawa
- * @param {String} id ユーザーID
+ * @param {String} status 
  * @param {Funtion} callback
  */
-monitorModel.prototype.getMyMonitor = function(id, callback) {
+monitorModel.prototype.countByStatus = function(status, callback) {
     
-    console.log('-----------getMySectence-----------');
     var Monitor = this.db.model(collection1);
-    
+    if (0 === status) {
+        Monitor.find({}).count(callback);
+    } else {
+        
+        Monitor.find({'status':status}).count(callback);
+    }
 };
 /**
  * 監視対象を登録する.

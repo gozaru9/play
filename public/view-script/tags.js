@@ -11,14 +11,22 @@ $(function() {
         }
     });
     $('#tagsCreateButton').click(function() {
-        
+        $('#tagName').val('');
+        $('#isMonitor').prop('checked', false);
+        $('#selectColor').val('');
         $('#tagsCreateFormLabel').text('タグを作成します');
-        $('#completeButton').text('作成する');
+        $('#tagCompleteButton').text('作成する');
+        $('#tagCompleteButton').val('');
     });
     $('button[name=tagsUpdateButton]').click(function() {
+        
+        $('#tagName').val('');
+        $('#isMonitor').prop('checked', false);
+        $('#selectColor').val('');
+        $('#tagCompleteButton').val('');
         if ($(this).val()) {
             $('#tagsCreateFormLabel').text('タグを更新します');
-            $('#completeButton').text('更新する');
+            $('#tagCompleteButton').text('更新する');
             $.ajax({
                 type: 'POST',
                 url: '/tags/getTagsById',
@@ -37,9 +45,9 @@ $(function() {
                                 $('#selectColor').val(select);
                             }
                         });
-                        $('#name').val(data.target.name);
+                        $('#tagName').val(data.target.name);
                         $('#selectColor').val(data.target.color);
-                        $('#completeButton').val(data.target._id);
+                        $('#tagCompleteButton').val(data.target._id);
                         $('#isMonitor').prop('checked', data.target.isMonitor);
                     }
             　　},
@@ -50,20 +58,20 @@ $(function() {
             });
         }
     });
-    $('#completeButton').click(function(){
-        if ( $('#name').val().trim().length === 0 ) return;
-        var data = {id:$('#completeButton').val(),
-                    name :$('#name').val().trim(),
+    $('#tagCompleteButton').click(function(){
+        if ( $('#tagName').val().trim().length === 0 ) return;
+        var data = {id:$('#tagCompleteButton').val(),
+                    name :$('#tagName').val().trim(),
                     isMonitor:$('#isMonitor').val(),
                     color:$('#selectColor').val()};
-        if ( $('#completeButton').val()) {
+        if ( $('#tagCompleteButton').val()) {
             createFormSubmitByParam('/tags/update',data);
         } else {
             createFormSubmitByParam('/tags/regist',data);
         }
     });
-    $('button[name=close]').click(function() {
-        $('#name').val('');
+    $('button[name=tagClose]').click(function() {
+        $('#tagName').val('');
         $('#isMonitor').prop('checked', false);
         $('#selectColor').val('');
     });

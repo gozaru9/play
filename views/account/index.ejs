@@ -27,6 +27,16 @@
                     <!-- /entry-dialog -->
                     <%- include create.ejs %>
             
+                    <% if (pager.maxPage > 1) {%>
+                    <ul class="pagination btn-sm">
+                        <li><a href="/account/?pages=1">&laquo;</a></li>
+                        <% for(var i=pager.startPage; i<=pager.endPage; i++) {%>
+                            <li <% if (pager.activePage == i) {%>class="active"<% } %>>
+                                <a href="/account/?pages=<%= i %>"><%= i %></a></li>
+                        <% } %>
+                        <li><a href="/account/?pages=<%= pager.maxPage %>">&raquo;</a></li>
+                    </ul>
+                    <% } %>
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead>
@@ -56,9 +66,19 @@
                             <% }) %>
                             </tbody>
                         </table>
-                    </div>        
-                </div>        
-            </div>        
-        </div>        
+                        <% if (pager.maxPage > 1) {%>
+                        <ul class="pagination btn-sm">
+                            <li><a href="/account/?pages=1">&laquo;</a></li>
+                            <% for(var i=pager.startPage; i<=pager.endPage; i++) {%>
+                                <li <% if (pager.activePage == i) {%>class="active"<% } %>>
+                                    <a href="/account/?pages=<%= i %>"><%= i %></a></li>
+                            <% } %>
+                            <li><a href="/account/?pages=<%= pager.maxPage %>">&raquo;</a></li>
+                        </ul>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
     </body>
 </html>

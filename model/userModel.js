@@ -59,7 +59,19 @@ userModel.prototype.login = function(mailAddress, password, callback){
     
     User.find({'mailAddress':mailAddress, 'password':cryptoPass}, callback);
 };
-
+/**
+ * ユーザーを取得する.
+ * 
+ * @method getTags
+ * @author niikawa
+ * @param {Number} skip
+ * @param {Number} limit
+ * @param {Funtion} callback
+ */
+userModel.prototype.getUser = function(skip, limit, callback) {
+    var User = this.db.model(collection);
+    User.find().sort({'created': 1}).skip(skip).limit(limit).exec(callback);
+};
 /**
  * 登録
  * 

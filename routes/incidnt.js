@@ -1,13 +1,15 @@
 /**
  * incidnt modeule
  * @namespace routes
- * @modeule tags.js
+ * @modeule incidnt.js
  */
-var moment =require('moment');
 var async = require('async');
 /**
  * incidnt
  * */
+var define = require('../config/define.js');
+var utilsClass = require('../util/utils');
+var utils = new utilsClass(); 
 var monitorModel = require('../model/monitorModel');
 var monitor = new monitorModel();
 /**
@@ -20,25 +22,23 @@ var monitor = new monitorModel();
  */
 exports.index = function(req, res){
     if (req.session.isLogin) {
-        var activePage = (req.query.pages) ? (req.query.pages) : 1;
-        var limit = 3;
-        var skip = (activePage-1) * limit;
+        var activePage = (req.query.pages) ? Number(req.query.pages) : 1;
+        var skip = (activePage-1) * define.INCIDNT_PAGER_LIMIT_NUM;
         var status = (req.query.status) ? Number(req.query.status) : 0;
-        var prop = (status !== 0) ? 'status' : null;
         async.series(
             [function(callback) {
-                monitor.getMonitor(status, skip, limit, callback);
+                monitor.getMonitor(status, skip, define.INCIDNT_PAGER_LIMIT_NUM, callback);
             },function(callback) {
-                console.log(prop);
-                monitor.count(prop, status, callback);
+                monitor.countByStatus(status, callback);
             }]
             ,function(err, result) {
-                console.log(result[1]);
                 setStatusDispName(result[0]);
-                result[0].pageNum = Math.ceil(result[1] / limit);
+                //ページング処理
+                var maxPage = Math.ceil(result[1] / define.INCIDNT_PAGER_LIMIT_NUM);
+                var pager = utils.pager(activePage, maxPage, define.INCIDNT_PAGER_NUM);
                 res.render('chat/incidnt', 
-                { title: 'incidnt管理', incidnts: result[0], status: status, 
-                    activePage: activePage, _id: req.session._id,userName: req.session.name, role:req.session.role});
+                { title: 'incidnt管理', incidnts: result[0], status: status, total:result[1],
+                    pager:pager, _id: req.session._id,userName: req.session.name, role:req.session.role});
             }
         );
         
@@ -47,17 +47,36 @@ exports.index = function(req, res){
     }
 };
 /**
- * リクエストを受け取り、IDに合致した定型文を取得する（ajax）
+ * リクエストを受け取り、監視メッセージを取得する（ajax）
  * 
  * @author niikawa
- * @method getTagsById
+ * @method getIncidnt
  * @param {Object} req 画面からのリクエスト
  * @param {Object} res 画面へのレスポンス
  */
-exports.getTagsById = function(req, res) {
+exports.getIncidnt = function(req, res) {
+    
+    var activePage = (req.body.pages) ? Number(req.body.pages) : 1;
+    var skip = (activePage-1) * define.INCIDNT_PAGER_LIMIT_NUM;
+    var status = (req.body.status) ? Number(req.body.status) : 0;
+    async.series(
+        [function(callback) {
+            monitor.getMonitor(status, skip, define.INCIDNT_PAGER_LIMIT_NUM, callback);
+        },function(callback) {
+            monitor.countByStatus(status, callback);
+        }]
+        ,function(err, result) {
+            setStatusDispName(result[0]);
+            //ページング処理
+            var maxPage = Math.ceil(result[1] / define.INCIDNT_PAGER_LIMIT_NUM);
+            var pager = utils.pager(activePage, maxPage, define.INCIDNT_PAGER_NUM);
+            res.send({incidnts: result[0], total:result[1], pager:pager});
+        }
+    );
+    
 };
 /**
- * リクエストを受け取り、ステータスを更新する
+ * リクエストを受け取り、ステータスを更新する(ajax)
  * 
  * @author niikawa
  * @method changeStatus
@@ -69,10 +88,10 @@ exports.changeStatus = function(req, res) {
     if (req.body._id) {
         var data = {_id:req.body._id, status:req.body.status, userId:req.session._id};
         monitor.changeStatus(data, function(err){
-            if (!err)res.send({msg:'ok'});
+            if (!err)res.send({status:true});
         });
     } else {
-        
+        res.send({status:false});
     }
 };
 /**

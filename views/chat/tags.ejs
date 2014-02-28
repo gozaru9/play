@@ -17,7 +17,18 @@
                     <div class="page-header pull-right ">
                         <button data-toggle="modal" data-target="#tagsCreateForm" type="button" id="tagsCreateButton" class="btn btn-info">create new</button>
                     </div>
-                    <h2 class="page-header">tags</h2>
+                    <h2 class="page-header">tags</h2><em>全<%= total %>件</em>
+                    
+                    <% if (pager.maxPage > 1) {%>
+                    <ul class="pagination btn-sm">
+                        <li><a href="/tags/?pages=1">&laquo;</a></li>
+                        <% for(var i=pager.startPage; i<=pager.endPage; i++) {%>
+                            <li <% if (pager.activePage == i) {%>class="active"<% } %>>
+                                <a href="/tags/?pages=<%= i %>"><%= i %></a></li>
+                        <% } %>
+                        <li><a href="/tags/?pages=<%= pager.maxPage %>">&raquo;</a></li>
+                    </ul>
+                    <% } %>
                     <table class="table table-hover">
                         <thead>
                             <th>name</th>
@@ -38,6 +49,16 @@
                         <% }) %>
                         </tbody>
                     </table>
+                    <% if (pager.maxPage > 1) {%>
+                    <ul class="pagination btn-sm">
+                        <li><a href="/tags/?pages=1">&laquo;</a></li>
+                        <% for(var i=pager.startPage; i<=pager.endPage; i++) {%>
+                            <li <% if (pager.activePage == i) {%>class="active"<% } %>>
+                                <a href="/tags/?pages=<%= i %>"><%= i %></a></li>
+                        <% } %>
+                        <li><a href="/tags/?pages=<%= pager.maxPage %>">&raquo;</a></li>
+                    </ul>
+                    <% } %>
                 </div>
             </div>
         </div>

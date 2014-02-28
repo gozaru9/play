@@ -12,7 +12,7 @@
         <div class="chat-container">
             <div class="row">
                 <h2 class="page-header">incidnt</h2>
-                <div class="btn-group" data-toggle="buttons">
+                <div class="btn-group col-md-6" data-toggle="buttons">
                     <label class="btn btn-success <% if (status === 0) { %>active<% } %>">
                         <input id="allRadio" name="statusRadio" type="radio" value=0> ALL
                     </label>
@@ -29,18 +29,35 @@
                         <input id="removeRadio" name="statusRadio" type="radio" value=9> REMOVE
                     </label>
                 </div>
+                <input type="hidden" id="viewStatus" value="<%= status %>">
+                <input type="hidden" id="activePage" value="<%= pager.activePage %>">
+                
                 <hr>
-                <% if (incidnts.pageNum > 1) {%>
-                <ul class="pagination">
+                <!--
+                <div class="col-md-6">
+                <select id="statusSelect" class="form-control visible-xs" style="width:250px">
+                    <option value="0" <% if (status === 0) { %>selected="selected"<% } %>">ALL</option>
+                    <option value="1" <% if (status === 1) { %>selected="selected"<% } %>">OPNE</option>
+                    <option value="2" <% if (status === 2) { %>selected="selected"<% } %>">IN PROGRESS</option>
+                    <option value="3" <% if (status === 3) { %>selected="selected"<% } %>">CLOSE</option>
+                    <option value="9" <% if (status === 9) { %>selected="selected"<% } %>">REMOVE</option>
+                </select>
+                </div>
+                <div class="col-md-6">
+                <label class="">表示件数：</label>
+                <input id="dispNum" type="text" name="dispNum" value="20" size="4">
+                </div>
+                -->
+                <% if (pager.maxPage > 1) {%>
+                <ul id="pagerTop" class="pagination btn-sm">
                     <li><a href="/incidnt/?status=<%= status %>&pages=1">&laquo;</a></li>
-                    <% for(var i=1; i<=incidnts.pageNum; i++) {%>
-                        <li <% if (activePage == i) {%>class="active"<% } %>>
+                    <% for(var i=pager.startPage; i<=pager.endPage; i++) {%>
+                        <li <% if (pager.activePage == i) {%>class="active"<% } %>>
                             <a href="/incidnt/?status=<%= status %>&pages=<%= i %>"><%= i %></a></li>
                     <% } %>
-                    <li><a href="/incidnt/?status=<%= status %>&pages=<%= incidnts.pageNum %>">&raquo;</a></li>
+                    <li><a href="/incidnt/?status=<%= status %>&pages=<%= pager.maxPage %>">&raquo;</a></li>
                 </ul>
                 <% } %>
-                
                 <table class="table table-hover">
                     <thead>
                         <th class="col-md-3 hidden-xs text-center">タグ</th>
@@ -49,15 +66,15 @@
                         <th class="col-md-3 hidden-xs text-center">TO</th>
                         <th class="col-md-12 col-xs-8 text-center"><span class="glyphicon glyphicon-comment"></span></th>
                     </thead>
-                    <tbody>
+                    <tbody id="incidntsTable">
                     <% incidnts.forEach(function(incidnt){ %>
-                        <tr name="<%= incidnt.statusName %>">
+                        <tr>
                             <td class="hidden-xs">
                                 <p><span class="tag text-center" style="background-color:<%= incidnt.messages[0].tag[0].color %>"><%= incidnt.messages[0].tag[0].name %></span></p>
                             </td>
                             <td>
-                                <div class="dropdown">
-                                  <a href="<%= incidnt._id %>" class="dropdown-toggle" data-toggle="dropdown"><%= incidnt.statusName %></a>
+                                <div name="statusListDiv" class="dropdown">
+                                  <a name="" href="<%= incidnt._id %>" class="dropdown-toggle" data-toggle="dropdown"><%= incidnt.statusName %></a>
                                   <ul name="statusList" class="dropdown-menu">
 
                                     <li <% if (incidnt.status === 1) { %>class="disabled"<% } %>><a href="#" value="1">open</a></li>
@@ -65,7 +82,7 @@
                                     <li <% if (incidnt.status === 3) { %>class="disabled"<% } %>><a href="#" value="3">close</a></li>
                                     <li <% if (incidnt.status === 9) { %>class="disabled"<% } %>><a href="#" value="9">remove</a></li>
                                   </ul>
-                                </div>                     
+                                  </div>
                             </td>
                             <td class="hidden-xs"><%= incidnt.messages[0].user.name %></td>
                             <td class="hidden-xs"><%= incidnt.messages[0].to.names.join() %></td>
@@ -74,17 +91,16 @@
                     <% }) %>
                     </tbody>
                 </table>
-                <% if (incidnts.pageNum > 1) {%>
-                <ul class="pagination">
+                <% if (pager.maxPage > 1) {%>
+                <ul id="pagerBottom" class="pagination btn-sm">
                     <li><a href="/incidnt/?status=<%= status %>&pages=1">&laquo;</a></li>
-                    <% for(var i=1; i<=incidnts.pageNum; i++) {%>
-                        <li <% if (activePage == i) {%>class="active"<% } %>>
+                    <% for(var i=pager.startPage; i<=pager.endPage; i++) {%>
+                        <li <% if (pager.activePage == i) {%>class="active"<% } %>>
                             <a href="/incidnt/?status=<%= status %>&pages=<%= i %>"><%= i %></a></li>
                     <% } %>
-                    <li><a href="/incidnt/?status=<%= status %>&pages=<%= incidnts.pageNum %>">&raquo;</a></li>
+                    <li><a href="/incidnt/?status=<%= status %>&pages=<%= pager.maxPage %>">&raquo;</a></li>
                 </ul>
                 <% } %>
-                
             </div>
         </div>
     </div>

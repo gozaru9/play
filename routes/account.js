@@ -1,17 +1,41 @@
-//ユーザーモデルを読み込む
+var async = require('async');
+var define = require('../config/define.js');
+var utilsClass = require('../util/utils');
+var utils = new utilsClass(); 
 var userModel = require('../model/userModel');
 var myModel = new userModel();
 
 //ユーザーの一覧を取得し画面描画
 exports.index = function(req, res){
-    if (req.session.isLogin) {
+    if (req.session.isLogin && req.session.role === 1) {
+        
+        var activePage = (req.query.pages) ? Number(req.query.pages) : 1;
+        var skip = (activePage-1) * define.USER_PAGER_LIMIT_NUM;
+        async.series(
+            [function(callback) {
+                
+                myModel.getUser(skip, define.USER_PAGER_LIMIT_NUM, callback);
+
+            },function(callback) {
+                
+                myModel.count(callback);
+            }]
+            ,function(err, result) {
+                //ページング処理
+                var maxPage = Math.ceil(result[1] / define.USER_PAGER_LIMIT_NUM);
+                var pager = utils.pager(activePage, maxPage, define.USER_PAGER_NUM);
+                
+                var data = {users: result[0], message: ''};
+                res.render('account/index', 
+                    { title: 'ユーザー管理', items: data, pager:pager, total:result[1],
+                        _id: req.session._id, userName:req.session.name, role:req.session.role});
+            }
+        );
+        
+        
         myModel.getAll(res,
             function(res,docs){
                 
-                var data = {users: docs, message: ''};
-                res.render('account/index', 
-                    { title: 'ユーザー管理', items: data, _id: req.session._id, 
-                        userName:req.session.name, role:req.session.role});
             }
         );
     } else {
