@@ -12,7 +12,7 @@
         <div class="chat-container">
             <div class="row">
                 <h2 class="page-header">incidnt</h2>
-                <div class="btn-group col-md-6" data-toggle="buttons">
+                <div class="btn-group col-md-12 hidden-xs" data-toggle="buttons">
                     <label class="btn btn-success <% if (status === 0) { %>active<% } %>">
                         <input id="allRadio" name="statusRadio" type="radio" value=0> ALL
                     </label>
@@ -31,11 +31,8 @@
                 </div>
                 <input type="hidden" id="viewStatus" value="<%= status %>">
                 <input type="hidden" id="activePage" value="<%= pager.activePage %>">
-                
-                <hr>
-                <!--
-                <div class="col-md-6">
-                <select id="statusSelect" class="form-control visible-xs" style="width:250px">
+                <div class="visible-xs">
+                <select id="statusSelect" class="form-control " style="width:250px">
                     <option value="0" <% if (status === 0) { %>selected="selected"<% } %>">ALL</option>
                     <option value="1" <% if (status === 1) { %>selected="selected"<% } %>">OPNE</option>
                     <option value="2" <% if (status === 2) { %>selected="selected"<% } %>">IN PROGRESS</option>
@@ -43,6 +40,7 @@
                     <option value="9" <% if (status === 9) { %>selected="selected"<% } %>">REMOVE</option>
                 </select>
                 </div>
+                <!--
                 <div class="col-md-6">
                 <label class="">表示件数：</label>
                 <input id="dispNum" type="text" name="dispNum" value="20" size="4">
@@ -73,10 +71,9 @@
                                 <p><span class="tag text-center" style="background-color:<%= incidnt.messages[0].tag[0].color %>"><%= incidnt.messages[0].tag[0].name %></span></p>
                             </td>
                             <td>
-                                <div name="statusListDiv" class="dropdown">
-                                  <a name="" href="<%= incidnt._id %>" class="dropdown-toggle" data-toggle="dropdown"><%= incidnt.statusName %></a>
+                                <div class="dropdown">
+                                  <a href="<%= incidnt._id %>" class="dropdown-toggle" data-toggle="dropdown"><%= incidnt.statusName %></a>
                                   <ul name="statusList" class="dropdown-menu">
-
                                     <li <% if (incidnt.status === 1) { %>class="disabled"<% } %>><a href="#" value="1">open</a></li>
                                     <li <% if (incidnt.status === 2) { %>class="disabled"<% } %>><a href="#" value="2">in progress</a></li>
                                     <li <% if (incidnt.status === 3) { %>class="disabled"<% } %>><a href="#" value="3">close</a></li>

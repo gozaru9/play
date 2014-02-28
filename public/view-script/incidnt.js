@@ -54,19 +54,19 @@ var getIncidnt = function(condition) {
                 element += '<td class="hidden-xs">'+data.incidnts[i].messages[0].to.names.join()+'</td>';
                 element += '<td>'+data.incidnts[i].messages[0].message+'</td></tr>';
             }
+            $('#pagerTop').children().remove();
+            $('#pagerBottom').children().remove();
             if (data.pager.maxPage > 1) {
                 var pageElement = '';
                 pageElement += '<li><a href="/incidnt/?status='+condition.status+'&pages=1">&laquo;</a></li>';
-                for (var pageIndex=data.pager.startPage; pageIndex<data.pager.endPage; pageIndex++) {
+                for (var pageIndex=data.pager.startPage; pageIndex<=data.pager.endPage; pageIndex++) {
                     var activeClass = '';
                     if (data.pager.activePage == pageIndex) activeClass = 'class="active"';
                     pageElement += '<li '+activeClass+'>';
                     pageElement += '<a href="/incidnt/?status='+condition.status+'&pages='+pageIndex+'">'+pageIndex+'</a></li>';
                 }
-                pageElement += '<li><a href="/incidnt/?status='+condition.status+'&pages="'+data.pager.maxPage+'&raquo;</a></li>';
-                $('#pagerTop').children().remove();
+                pageElement += '<li><a href="/incidnt/?status='+condition.status+'&pages="'+data.pager.maxPage+'">'+'&raquo;</a></li>';
                 $('#pagerTop').append(pageElement);
-                $('#pagerBottom').children().remove();
                 $('#pagerBottom').append(pageElement);
             }
             $('#incidntsTable').children().remove();
@@ -133,6 +133,9 @@ $(function() {
         
         location.href="/incidnt/?status="+$(this).val();
     });
+    $("#statusSelect").change(function(){
+        location.href="/incidnt/?status="+$(this).val();
+    })
     $('ul[name=statusList]').on('click', 'a', function(){
         statusChange($(this));
     });

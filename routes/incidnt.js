@@ -66,11 +66,29 @@ exports.getIncidnt = function(req, res) {
             monitor.countByStatus(status, callback);
         }]
         ,function(err, result) {
-            setStatusDispName(result[0]);
-            //ページング処理
-            var maxPage = Math.ceil(result[1] / define.INCIDNT_PAGER_LIMIT_NUM);
-            var pager = utils.pager(activePage, maxPage, define.INCIDNT_PAGER_NUM);
-            res.send({incidnts: result[0], total:result[1], pager:pager});
+            if (result[0].length === 0 && activePage > 1) {
+                //表示しているページのインシデントがなくなっているため
+                //前ページのものを取得する必要がある
+                activePage = activePage-1;
+                skip = (activePage-1) * define.INCIDNT_PAGER_LIMIT_NUM;
+                monitor.getMonitor(status, skip, define.INCIDNT_PAGER_LIMIT_NUM, function(err, items) {
+                    console.log(err);
+                    //ページング処理
+                    var maxPage = Math.ceil(result[1] / define.INCIDNT_PAGER_LIMIT_NUM);
+                    var pager = utils.pager(activePage, maxPage, define.INCIDNT_PAGER_NUM);
+                    setStatusDispName(items);
+                    res.send({incidnts: items, total:result[1], pager:pager});
+                });
+
+            } else {
+                
+                console.log('normal function----------------------------------------');
+                //ページング処理
+                var maxPage = Math.ceil(result[1] / define.INCIDNT_PAGER_LIMIT_NUM);
+                var pager = utils.pager(activePage, maxPage, define.INCIDNT_PAGER_NUM);
+                setStatusDispName(result[0]);
+                res.send({incidnts: result[0], total:result[1], pager:pager});
+            }
         }
     );
     
@@ -103,7 +121,7 @@ exports.changeStatus = function(req, res) {
  * @param {Object} res 画面へのレスポンス
  */
 function setStatusDispName(data) {
-    
+    console.log('------------set diso status---------');
     var num = data.length;
     for (var index=0; index < num ; index++) {
         
