@@ -21,4 +21,7 @@
   "main": "app.js",
   "author": "niikawa",
   "license": "BSD-2-Clause",
+  "engines": {
+    "node": "0.10.x"
+  },
 }
