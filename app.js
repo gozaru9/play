@@ -73,7 +73,7 @@ if ('development' == app.get('env')) {
 }
 
 //TOP
-app.get('/', chat.index);
+app.get('/', chat.login);
 app.get('/dashboard', dashboard.index);
 app.get('/login', login.index);
 //コード

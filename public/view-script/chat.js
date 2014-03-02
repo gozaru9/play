@@ -237,6 +237,7 @@ $(function() {
         $('#'+target).hide(500);
         $('#'+target).removeClass("active");
         var msgAdd = false;
+        moveTop();
         if ($('#'+id).length === 0) {
             msgAdd = true;
             console.log('room join');
@@ -319,6 +320,7 @@ $(function() {
         };
 		socket.emit('msg send', data);
         $('#message').val('');
+        $('#message').focus();
 	});
 	//過去のメッセージを取得
 	$('a[name=beforeday]').click(function(){

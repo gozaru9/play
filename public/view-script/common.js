@@ -32,6 +32,10 @@ var successMessage = function(message, position) {
         type     : 'success'
     });
 };
+var moveTop = function() {
+    $('html,body').animate({ scrollTop: 0 }, 'slow','swing');
+    return false;
+};
 $(function() {
 
     $('#profiletDiv').focusout(function() {
