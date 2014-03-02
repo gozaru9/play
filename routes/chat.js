@@ -12,6 +12,7 @@ var tagsModel = require('../model/tagsModel');
 var tags = new tagsModel();
 var monitorModel = require('../model/monitorModel');
 var monitor = new monitorModel();
+var logger = require('../util/logger');
 
 /**
  * chat modeule
@@ -27,6 +28,7 @@ var monitor = new monitorModel();
  * @param {Object} res 画面へのレスポンス
  */
 exports.index = function(req, res){
+    //logger.requestDebug('this is chat request log');
 
     console.log('session');
     console.log(req.session);

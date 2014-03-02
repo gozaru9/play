@@ -97,6 +97,12 @@ table {
 .error {
     background-color:#FF7F50 !important;
 }
+#loading {
+    opacity: 0.5;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+}
 /*     Header
 /* ------------------------------------- */
 #header {

@@ -14,7 +14,8 @@
     "connect-mongo": "~0.4.0",
     "cookie": "~0.1.0",
     "mongoose": "~3.8.7",
-    "socket.io": "~0.9.16"
+    "socket.io": "~0.9.16",
+    "log4js": "~0.6.10"
   },
   "description": "ERROR: No README data found!",
   "main": "app.js",

@@ -7,9 +7,8 @@ var http = require('http');
 var path = require('path');
 var app = express();
 var Session = express.session.Session;
-
 //各画面の定義
-var routes = require('./routes');
+//var routes = require('./routes');
 var dashboard = require('./routes/dashboard');
 var account = require('./routes/account');
 var tags = require('./routes/tags');
@@ -38,7 +37,6 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.set('secretKey', configDB.secret);
 app.set('cookieSessionKey', 'sid');
-
 app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.json());

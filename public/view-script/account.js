@@ -173,7 +173,8 @@ $(function() {
         }
         var fd = new FormData();
         fd.append('file', targetFile);
-        console.log(targetFile.name);
+        $("#loading").html("<img src='/images/image.gif'/>");
+        
         $.ajax({
             url: "/account/registcsv",
             type: "POST",
@@ -186,6 +187,11 @@ $(function() {
                 } else {
                     successMessage('登録が完了しました。<br>画面をリフレッシュしますか？<a href="/account">はい</a>');
                 }
+            },error: function(data) {
+                
+                
+            },complete : function(data) {
+                $("#loading").empty();
             }
         });
         
