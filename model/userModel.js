@@ -5,7 +5,12 @@ var crypto = require('crypto');
 var collection = 'users';
 var moment =require('moment');
 
-// ModelのSchema Class定義する
+/**
+ * ユーザーを保持するコレクション.
+ * 
+ * @property chatSchema
+ * @type {Object}
+ */
 var usersSchema = new mongoose.Schema({
   created: {type: Date, default: Date.now},
   updated: {type: Date, default: Date.now},
@@ -31,6 +36,15 @@ usersSchema.pre('save', function (next) {
 // モデル化。model('モデル名', '定義したスキーマクラス')
 var myModel = mongoose.model(collection, usersSchema);
 
+/**
+ * User Model Class.
+ *
+ * @author niikawa
+ * @namespace model
+ * @class userModel
+ * @constructor
+ * @extends Core
+ */
 var userModel = function userModel() {
     
     this.nextFunc = '';
@@ -43,7 +57,7 @@ util.inherits(userModel, Core);
 
 /**
  * ログイン
- * 
+ * 未使用
  * @author niikawa
  * @parameter mailAddress
  * @parameter password
@@ -62,7 +76,7 @@ userModel.prototype.login = function(mailAddress, password, callback){
 /**
  * ユーザーを取得する.
  * 
- * @method getTags
+ * @method getUser
  * @author niikawa
  * @param {Number} skip
  * @param {Number} limit
@@ -73,10 +87,11 @@ userModel.prototype.getUser = function(skip, limit, callback) {
     User.find().sort({'created': 1}).skip(skip).limit(limit).exec(callback);
 };
 /**
- * 登録
+ * ユーザーを登録する
  * 
+ * @method save
  * @author niikawa
- * @param req
+ * @param {Object} req
  * */
 userModel.prototype.save = function(req){
     req.body.role = req.body.role ? 1 : 0;
@@ -102,13 +117,14 @@ userModel.prototype.save = function(req){
     });
 };
 /**
- * 登録
+ * CSVからのユーザー情報を登録する
  * 
+ * @method saveByCsv
  * @author niikawa
- * @param req
- * */
+ * @param {String} id
+ * @param {Object} data
+ */
 userModel.prototype.saveByCsv = function(id, data){
-    console.log(data);
     var user = new myModel(data);
     user.creatBy = id;
     user.updateBy = id;
@@ -125,9 +141,10 @@ userModel.prototype.saveByCsv = function(id, data){
 /**
  * ユーザーとソケットIDを紐づける
  * 
+ * @method updateSocketId
  * @author niikawa
- * @param userId
- * @aram socketId
+ * @param {String} userId
+ * @aram {String} socketId
  * */
 userModel.prototype.updateSocketId = function (userId, socketId) {
     
@@ -148,10 +165,11 @@ userModel.prototype.updateSocketId = function (userId, socketId) {
 /**
  * ステータスを更新する
  * 
+ * @method updateStatus
  * @author niikawa
- * @param userId
- * @param status 1:Available,2:Busy,3:Away,4:Return home
- * */
+ * @param {String} userId
+ * @param {Number} status 1:Available,2:Busy,3:Away,4:Return home
+ */
 userModel.prototype.updateStatus = function(userId, status) {
 
     var User = mongoose.model(collection);
@@ -165,6 +183,13 @@ userModel.prototype.updateStatus = function(userId, status) {
         }
     });
 };
+/**
+ * ログアウトする
+ * 
+ * @method logout
+ * @author niikawa
+ * @param {String} id
+ */
 userModel.prototype.logout = function(id) {
     
     var User = mongoose.model(collection);
@@ -179,13 +204,16 @@ userModel.prototype.logout = function(id) {
     });
 };
 /**
- * 同一のメールアドレスを持つユーザーがいないことを確認
+ * 同一のメールアドレスを持つユーザーがいないことを確認する
+ * idがから文字ではない場合は、「id以外」の条件を追加してカウントする
  * 
+ * @method exsitsMailAddress
  * @author niikawa
- * */
+ * @param {String} id
+ * @param {String} mailAddress
+ * @param {Function} callback
+ */
 userModel.prototype.exsitsMailAddress = function(id, mailAddress, callback) {
-    console.log(id);
-    console.log(mailAddress);
     var User = mongoose.model(collection);
     if ('' === id) {
         
@@ -196,10 +224,12 @@ userModel.prototype.exsitsMailAddress = function(id, mailAddress, callback) {
     }
 };
 /**
- * 更新
+ * 更新する
  * 
+ * @method update
  * @author niikawa
- * @param req
+ * @param {Object} req
+ * @param {Function} callback
  * */
 userModel.prototype.update = function(req, callback) {
 
@@ -220,8 +250,9 @@ userModel.prototype.update = function(req, callback) {
     });
 };
 /**
- * プロフィール更新
+ * プロフィールを更新する
  * 
+ * @method profileUpdate
  * @author niikawa
  * @param {Object} req
  * @param {Function} callback
@@ -240,8 +271,12 @@ userModel.prototype.profileUpdate = function(req, callback) {
     });
 };
 /**
- * 削除
+ * 削除する
  * 
+ * @method removeById
+ * @author niikawa
+ * @param {Object} req
+ * @param {Function} callback
  * */
 userModel.prototype.removeById = function(res, id,callback) {
      
