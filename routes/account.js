@@ -128,7 +128,9 @@ exports.registcsv = function(req, res) {
                 });
             
             }, function(err){
-                res.send({validationInfo:validationInfo});
+                fs.unlink(req.files.file.path, function(err){
+                    res.send({validationInfo:validationInfo});
+                });
             });
         }
     });
