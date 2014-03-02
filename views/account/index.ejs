@@ -10,7 +10,6 @@
             loadMessage("<%= items.message %>");
         });
         </script>
-        
     </head>
     <body>
         <%- include ../header.ejs %>
@@ -18,15 +17,38 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="page-header pull-right">
-                        <button id="accountCreateButton" class="btn btn-info" data-toggle="modal" data-target="#createForm">create new</button>  
+                        <button id="accountCreateButton" class="btn btn-info" data-toggle="modal" data-target="#createForm">create new</button>
                     </div>
                     <h2 class="page-header">ユーザー管理</h2>
-        
+
                     <div class="clearfix"></div>
-                    
+
+                    <div class="panel-group" id="accordion">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">CSVでユーザーを取り込む</a>
+                                </h4>
+                            </div>
+                            <div id="collapseOne" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div id="drop" style="height:100px; padding:10px; border:1px dashed" ondragover="onDragOver(event)" ondrop="onDrop(event)"  >ここにファイルをドロップ</div>
+                                        </div>
+                                        <div class="col-md-9">
+                                        <p>ファイルプロパティ</p>
+                                        <div id="disp" ></div>
+                                        <button id="fileUpload" class="btn btn-success">アップロードする</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="readFileInfomation">
                     <!-- /entry-dialog -->
                     <%- include create.ejs %>
-            
                     <% if (pager.maxPage > 1) {%>
                     <ul class="pagination btn-sm">
                         <li><a href="/account/?pages=1">&laquo;</a></li>

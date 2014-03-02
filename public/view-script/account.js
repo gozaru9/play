@@ -14,7 +14,7 @@ var clear = function() {
     $('#inputName').val('');
     $('#inputEmail').val('');
     $('#completeButton').val('');
-    $('#role').prop('checked', false);
+    $('#accountRole').prop('checked', false);
     $('#accountId').val('');
     $('#inputPassword').val('');
     $('#inputPasswordConfirm').val('');
@@ -30,11 +30,48 @@ var message = function(message, position) {
     });
 };
 var loadMessage = function(msg) {
-    if ('' !== msg) {
-        message(msg, 'top-center');
-    }
+    if ('' !== msg) message(msg, 'top-center');
 };
+var successMessage = function(message) {
+    $().toastmessage('showToast', {
+        text     : message,
+        sticky   : true,
+        position : 'top-center',
+        type     : 'success'
+    });
+}
+var reader = null;
+var targetFile = null;
+function onDrop(event) {
+    var files = event.dataTransfer.files;
+    var disp = document.getElementById("disp");
+    disp.innerHTML = "";
+    targetFile = files[0];
+    var f = files[0];
+    var fileNameArr = f.name.split('.');
+    if (fileNameArr[fileNameArr.length-1] !== 'csv') {
+        message('csvをドロップしてください', 'top-center');
+    } else {
+        reader = new FileReader();
+        reader.readAsText(f);
+    }
+    disp.innerHTML += "ファイル名 :" + f.name + "<br>ファイルサイズ:" + f.size / 1000 + " KB " + "<br />";
+    event.preventDefault();
+}
+
+function onDragOver(event) {
+    event.preventDefault();
+} 
+
 $(function() {
+
+    if (window.File) {
+        document.getElementById("drop").addEventListener("drop", onDrop, false);
+        
+    } else {
+        window.alert("本ブラウザではFile APIが使えません");
+    }
+    
     $('#hederMenu').children().removeClass('active');
     $('#accountView').addClass('active');
 
@@ -66,8 +103,8 @@ $(function() {
                     $('#inputName').val(data.target.name);
                     $('#inputEmail').val(data.target.mailAddress);
                     $('#completeButton').val(data.target._id);
-                    if(data.target.role === 1) 
-                        $('#role').prop("checked", true);
+                    if(Number(data.target.role) === 1) 
+                        $('#accountRole').prop("checked", true);
                 }
         　　},
         　　error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -123,5 +160,36 @@ $(function() {
             createFormSubmitByParam('/account/delete',data);
             return false;
         }
+    });
+    $('#fileUpload').click(function() {
+        var disp = document.getElementById("disp");
+        
+        reader.onerror = function (evt) {
+            disp.innerHTML = "読み取り時にエラーが発生しました。";
+        }
+        reader.onload = function (evt) {
+          // FileReaderが取得したテキストをそのままdivタグに出力
+          disp.innerHTML = reader.result;
+        }
+        var fd = new FormData();
+        fd.append('file', targetFile);
+        console.log(targetFile.name);
+        $.ajax({
+            url: "/account/registcsv",
+            type: "POST",
+            data: fd,
+            contentType: false,
+            processData: false,
+            success:function(data){
+                if (data.validationInfo.status) {
+                    message(data.validationInfo.message, 'top-center');
+                } else {
+                    successMessage('登録が完了しました。<br>画面をリフレッシュしますか？<a href="/account">はい</a>');
+                }
+            }
+        });
+        
+//        reader.readAsText($('readFileInfomation').val(), 'shift-jis');
+        
     });
 });

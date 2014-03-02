@@ -43,12 +43,12 @@ app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded());
-app.use(express.bodyParser());
+app.use(express.bodyParser({uploadDir:'./uploads'}));
 app.use(express.methodOverride());
 app.use(express.cookieParser(app.get('secretKey')));
 var sessionStore = new MongoStore({
         mongoose_connection : db.connections[0],
-        clear_interval: 60 * 60 // Interval in seconds to clear expired sessions. 60 * 60 = 1 hour
+        clear_interval: 60 * 60// Interval in seconds to clear expired sessions. 60 * 60 = 1 hour
     });
 app.use(express.session({
     //cookieにexpressのsessionIDを保存する際のキーを設定
@@ -58,7 +58,7 @@ app.use(express.session({
     cookie: {
         httpOnly: false,
         // 60 * 60 * 1000 = 3600000 msec = 1 hour
-        maxAge: new Date(Date.now() + 60 * 60 * 1000)
+        //maxAge: new Date(Date.now() + 60 * 60 * 1000),
     }
 }));
 /*
@@ -91,6 +91,7 @@ app.post('/account/regist', account.regist);
 app.get('/account/regist', account.regist);
 app.post('/account/delete', account.delete);
 app.post('/account/update', account.update);
+app.post('/account/registcsv', account.registcsv);
 //タグ管理
 app.get('/tags', tags.index);
 app.post('/tags/regist', tags.create);

@@ -4,6 +4,7 @@ var utilsClass = require('../util/utils');
 var utils = new utilsClass(); 
 var userModel = require('../model/userModel');
 var myModel = new userModel();
+var fs = require('fs');
 
 //ユーザーの一覧を取得し画面描画
 exports.index = function(req, res){
@@ -31,7 +32,6 @@ exports.index = function(req, res){
                         _id: req.session._id, userName:req.session.name, role:req.session.role});
             }
         );
-        
         
         myModel.getAll(res,
             function(res,docs){
@@ -76,7 +76,65 @@ exports.regist = function(req, res){
         res.redirect('/account');
     }
 };
-
+exports.registcsv = function(req, res) {
+    
+    fs.readFile(req.files.file.path, 'utf8', function(err, text) {
+        var data = text.split(/\r\n|\r|\n/);
+        var num = data.length;
+        var validationInfo = {status: false, target:[], message: ''};
+        var userList = [];
+        var mailList = {};
+        //ロールバックできないため、まず全ユーザーのバリデーションチェックを行う
+        for (var i = 0; i < num; i++) {
+            var splitData = data[i].split(',');
+            if (splitData[0] === '') continue;
+            var userinfo = {name: splitData[0], mailAddress:splitData[1], 
+                password:splitData[2], passwordConfirm: splitData[2], role:Number(splitData[3])};
+            userList.push(userinfo);
+            validationInfo = validation(userinfo);
+            if (validationInfo.status) {
+                validationInfo.message = i+1+'行目に不備があります。<br>'+validationInfo.message;
+                break;
+            }
+            //読み込んだCSVで同一のメールアドレスが存在しているかをチェック
+            if (userinfo.mailAddress in mailList) {
+                validationInfo.status　= true;
+                validationInfo.message = i+1+'行目に同じメールアドレスが存在します。';
+                break;
+            }
+            mailList[userinfo.mailAddress] = userinfo;
+        }
+        if (validationInfo.status) {
+            fs.unlink(req.files.file.path, function(err){
+                res.send({validationInfo:validationInfo});
+            });
+        } else {
+            
+            var counter = 0;
+            async.forEachSeries(userList, function(user, callback){
+                counter++;
+                myModel.exsitsMailAddress('', user.mailAddress, function(err, count) {
+                    if (count === 0) {
+                        myModel.saveByCsv(req.session._id, user);
+                    } else {
+                        
+                        validationInfo.status = true;
+                        validationInfo.target = [];
+                        validationInfo.message = counter+'行目から取り込めませんでした:<br>'+user.mailAddress+'はすでに使用されているメールアドレスです';
+                        res.send({validationInfo:validationInfo});
+                        return false;
+                    }
+                    callback();
+                });
+            
+            }, function(err){
+                fs.unlink(req.files.file.path, function(err){
+                    res.send({validationInfo:validationInfo});
+                });
+            });
+        }
+    });
+};
 exports.profileUpdate = function(req, res) {
     var validationInfo = {status: false, target:[], message: ''};
     validationInfo.message = checkPassword(req.body);
@@ -160,6 +218,7 @@ exports.delete = function(req, res) {
 };
 function validation(data) {
     var validationInfo = {status: false, target:[], message: ''};
+    console.log(data);
     //プロパティチェック
     if (!data.name || !data.mailAddress || !data.password || !data.passwordConfirm) {
         validationInfo.message = 'パラメータが改竄されています';
@@ -169,14 +228,16 @@ function validation(data) {
         validationInfo.message = 'ユーザー名は必須です';
     }
     if (data.mailAddress.trim().length === 0) {
-        
-        validationInfo.message = 'メールアドレス名は必須です';
+        validationInfo.message = 'メールアドレスは必須です';
     }
     if (data.password.trim().length === 0) {
-        
         validationInfo.message = 'パスワードは必須です';
     }
-    validationInfo.message = checkPassword();
+    var checkMessage = checkPassword(data);
+    if ('' !== checkMessage) {
+        
+        validationInfo.message = checkMessage;
+    }
     if (validationInfo.message !== '') validationInfo.status = true;
     return validationInfo;
 }

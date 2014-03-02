@@ -442,7 +442,6 @@ exports.memberUpdate = function(req, res) {
                 var addUsers = {};
                 for (index = 0; index < userNum; index++) {
                     if ( !(users[index]._id in beforeUsersList) ) {
-                        //addUsers.push(users[index]);
                         addUsers[users[index]._id] = users[index];
                     }
                 }

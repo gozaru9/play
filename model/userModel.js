@@ -102,6 +102,27 @@ userModel.prototype.save = function(req){
     });
 };
 /**
+ * 登録
+ * 
+ * @author niikawa
+ * @param req
+ * */
+userModel.prototype.saveByCsv = function(id, data){
+    console.log(data);
+    var user = new myModel(data);
+    user.creatBy = id;
+    user.updateBy = id;
+    user.password = crypto.createHash('md5').update(user.password).digest("hex");
+    user.save(function(err){
+        if (err) {
+            console.log(err);
+            throw err;
+        } else {
+            console.log('DB CONNECTION OK');
+        }
+    });
+};
+/**
  * ユーザーとソケットIDを紐づける
  * 
  * @author niikawa
@@ -163,9 +184,16 @@ userModel.prototype.logout = function(id) {
  * @author niikawa
  * */
 userModel.prototype.exsitsMailAddress = function(id, mailAddress, callback) {
-    
+    console.log(id);
+    console.log(mailAddress);
     var User = mongoose.model(collection);
-    User.find({ $and: [{'mailAddress':mailAddress} , {'_id': {$ne: id}}] }).count(callback);
+    if ('' === id) {
+        
+        User.find({'mailAddress':mailAddress}).count(callback);
+    } else {
+        
+        User.find({ $and: [{'mailAddress':mailAddress} , {'_id': {$ne: id}}] }).count(callback);
+    }
 };
 /**
  * 更新
