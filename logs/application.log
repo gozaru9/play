@@ -12,3 +12,8 @@
 [2014-03-03 01:20:09.862] [DEBUG] application - chat.getUserByRoomId start
 [2014-03-03 01:20:09.884] [DEBUG] application - chat.craeteMemberStatus start
 [2014-03-03 01:20:09.890] [DEBUG] application - chat.craeteMemberStatus end
+[2014-03-03 01:22:11.298] [DEBUG] application - chat.updateUnRead start
+[2014-03-03 01:22:13.852] [DEBUG] application - chat.updateUnRead start
+[2014-03-03 01:22:13.884] [DEBUG] application - chat.getUserByRoomId start
+[2014-03-03 01:22:13.895] [DEBUG] application - chat.craeteMemberStatus start
+[2014-03-03 01:22:13.897] [DEBUG] application - chat.craeteMemberStatus end
