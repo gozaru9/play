@@ -233,6 +233,9 @@ function validation(data) {
     if (data.password.trim().length === 0) {
         validationInfo.message = 'パスワードは必須です';
     }
+    if (data.mailAddress.trim().match(/.+@.+\..+/)==null) {
+        validationInfo.message = 'メールアドレスの形式が不正です';
+    }
     var checkMessage = checkPassword(data);
     if ('' !== checkMessage) {
         

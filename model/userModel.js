@@ -62,7 +62,7 @@ util.inherits(userModel, Core);
  * @parameter mailAddress
  * @parameter password
  * @parameter callback
- * */
+ */
 userModel.prototype.login = function(mailAddress, password, callback){
 
     var User = this.db.model(collection);
