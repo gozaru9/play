@@ -1,17 +1,16 @@
 /**
- * incidnt modeule
+ * incidnt server side
  * @namespace routes
  * @modeule incidnt.js
  */
 var async = require('async');
-/**
- * incidnt
- * */
 var define = require('../config/define.js');
 var utilsClass = require('../util/utils');
 var utils = new utilsClass(); 
 var monitorModel = require('../model/monitorModel');
 var monitor = new monitorModel();
+var logger = require('../util/logger');
+
 /**
  * リクエストを受け取り、incidnt画面を描画する
  * 
@@ -21,17 +20,25 @@ var monitor = new monitorModel();
  * @param {Object} res 画面へのレスポンス
  */
 exports.index = function(req, res){
+    logger.appDebug('incidnt.index start');
     if (req.session.isLogin) {
         var activePage = (req.query.pages) ? Number(req.query.pages) : 1;
         var skip = (activePage-1) * define.INCIDNT_PAGER_LIMIT_NUM;
         var status = (req.query.status) ? Number(req.query.status) : 0;
         async.series(
             [function(callback) {
+                
                 monitor.getMonitor(status, skip, define.INCIDNT_PAGER_LIMIT_NUM, callback);
             },function(callback) {
+                
                 monitor.countByStatus(status, callback);
             }]
             ,function(err, result) {
+                
+                if (err) {
+                    logger.appError('incidnt.index : データ取得に失敗');
+                    logger.appError(err);
+                }
                 setStatusDispName(result[0]);
                 //ページング処理
                 var maxPage = Math.ceil(result[1] / define.INCIDNT_PAGER_LIMIT_NUM);
@@ -55,24 +62,40 @@ exports.index = function(req, res){
  * @param {Object} res 画面へのレスポンス
  */
 exports.getIncidnt = function(req, res) {
-    
+    logger.appDebug('incidnt.getIncidnt start');
     var activePage = (req.body.pages) ? Number(req.body.pages) : 1;
     var skip = (activePage-1) * define.INCIDNT_PAGER_LIMIT_NUM;
     var status = (req.body.status) ? Number(req.body.status) : 0;
     async.series(
         [function(callback) {
+            
             monitor.getMonitor(status, skip, define.INCIDNT_PAGER_LIMIT_NUM, callback);
         },function(callback) {
+            
             monitor.countByStatus(status, callback);
         }]
         ,function(err, result) {
+            
+            if (err) {
+                logger.appError('incidnt.getIncidnt : データ取得に失敗');
+                logger.appError(err);
+            }
+            
+            //TODO 以下の処理は美しくないからリファクタリングしたい
+            
             if (result[0].length === 0 && activePage > 1) {
+                
                 //表示しているページのインシデントがなくなっているため
                 //前ページのものを取得する必要がある
                 activePage = activePage-1;
                 skip = (activePage-1) * define.INCIDNT_PAGER_LIMIT_NUM;
                 monitor.getMonitor(status, skip, define.INCIDNT_PAGER_LIMIT_NUM, function(err, items) {
-                    console.log(err);
+                    
+                    if (err) {
+                        logger.appError('incidnt.getIncidnt getMonitor : データ取得に失敗');
+                        logger.appError(err);
+                    }
+                    
                     //ページング処理
                     var maxPage = Math.ceil(result[1] / define.INCIDNT_PAGER_LIMIT_NUM);
                     var pager = utils.pager(activePage, maxPage, define.INCIDNT_PAGER_NUM);
@@ -82,7 +105,6 @@ exports.getIncidnt = function(req, res) {
 
             } else {
                 
-                console.log('normal function----------------------------------------');
                 //ページング処理
                 var maxPage = Math.ceil(result[1] / define.INCIDNT_PAGER_LIMIT_NUM);
                 var pager = utils.pager(activePage, maxPage, define.INCIDNT_PAGER_NUM);
@@ -102,11 +124,17 @@ exports.getIncidnt = function(req, res) {
  * @param {Object} res 画面へのレスポンス
  */
 exports.changeStatus = function(req, res) {
-    
+    logger.appDebug('incidnt.changeStatus start');
     if (req.body._id) {
         var data = {_id:req.body._id, status:req.body.status, userId:req.session._id};
         monitor.changeStatus(data, function(err){
-            if (!err)res.send({status:true});
+            if (err) {
+                logger.appError('incidnt.changeStatus : 更新に失敗');
+                logger.appError(err);
+                res.send({status:false});
+            } else {
+                res.send({status:true});
+            }
         });
     } else {
         res.send({status:false});
@@ -116,12 +144,12 @@ exports.changeStatus = function(req, res) {
  * リクエストを受け取り、タグを作成する
  * 
  * @author niikawa
- * @method lobby
+ * @method setStatusDispName
  * @param {Object} req 画面からのリクエスト
  * @param {Object} res 画面へのレスポンス
  */
 function setStatusDispName(data) {
-    console.log('------------set diso status---------');
+    logger.appDebug('setStatusDispName');
     var num = data.length;
     for (var index=0; index < num ; index++) {
         
@@ -145,14 +173,3 @@ function setStatusDispName(data) {
         }
     }
 }
-
-/**
- * リクエストを受け取り、タグを削除する
- * 
- * @author niikawa
- * @method lobby
- * @param {Object} req 画面からのリクエスト
- * @param {Object} res 画面へのレスポンス
- */
-exports.delete = function(req, res) {
-};

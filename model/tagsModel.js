@@ -72,7 +72,6 @@ tagsModel.prototype.getTags = function(skip, limit, callback) {
  * @param {Function} callback
  */
 tagsModel.prototype.save = function(req, callback) {
-    
     var Tags = new myModel(req.body);
     Tags.creatBy = req.session._id;
     Tags.updateBy = req.session._id;
@@ -98,8 +97,6 @@ tagsModel.prototype.update = function(data, callback) {
             error.message = '対象のタグがありませんでした。';
             callback(error, '');
         } else {
-            console.log('-----------tags update---------');
-            console.log(data);
             target.updateBy = data.updateBy;
             target.updated = moment().format('YYYY-MM-DD hh:mm:ss');
             target.name = data.name;
@@ -110,8 +107,16 @@ tagsModel.prototype.update = function(data, callback) {
         }
     });
 };
-tagsModel.prototype.exists = function (property, val, callback) {
+/**
+ * 同一タグ名の存在有無をチェックする.
+ * 
+ * @method exists
+ * @author niikawa
+ * @param {String} val 
+ * @param {Function} callback
+ */
+tagsModel.prototype.exists = function (val, callback) {
     var Tags = this.db.model(collection);
-    Tags.find({'name':val}, callback).count();
+    Tags.find({'name':val}).count(callback);
 };
 module.exports = tagsModel;

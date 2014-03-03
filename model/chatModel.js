@@ -375,7 +375,6 @@ chatModel.prototype.getMyRoomParts = function(req) {
  * @param {Function} callback
  */
 chatModel.prototype.getMyMessages = function(id,callback) {
-     console.log('-------------get my messages ------------');
     var My = this.db.model(collection3);
     My.findOne({'recipient': id}, callback).populate('messages', null, null, { sort: { 'created': 1 } });
      

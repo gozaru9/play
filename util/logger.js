@@ -22,7 +22,7 @@ exports.requestError = function(mesage){
 exports.requestFatal = function(mesage){
     reqLogger.fatal(mesage);
 };
-exports.actiontDebug = function(mesage){
+exports.appDebug = function(mesage){
     appLogger.debug(mesage);
 };
 exports.appInfo = function(mesage){

@@ -62,7 +62,7 @@ $(function() {
         if ( $('#tagName').val().trim().length === 0 ) return;
         var data = {id:$('#tagCompleteButton').val(),
                     name :$('#tagName').val().trim(),
-                    isMonitor:$('#isMonitor').val(),
+                    isMonitor:$('#isMonitor').prop("checked"),
                     color:$('#selectColor').val()};
         if ( $('#tagCompleteButton').val()) {
             createFormSubmitByParam('/tags/update',data);

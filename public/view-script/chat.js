@@ -4,7 +4,6 @@ var tabMove = function() {
 };
 var tabReturn = function() {
     $('#isActive').val(1);
-    console.log('tabReturn');
     updateActiveRoomUnRead();
 };
 var updateActiveRoomUnRead = function() {
@@ -54,8 +53,6 @@ var updateUnReadNumAndScrolBottom = function(data) {
     var unReadNum = 1;
     if (target != data.roomId) {
         var num = $('span[name='+data.roomId+']').html();
-        console.log('go----------------');
-        console.log(num);
         if (num === undefined) {
             $('li[name='+data.roomId+']').children().append($('<span>',{class:"badge pull-right",name: data.roomId}).text(unReadNum));
         } else {
@@ -66,7 +63,6 @@ var updateUnReadNumAndScrolBottom = function(data) {
 	} else {
         if (Number($('#isActive').val()) === 0) {
             var dispRoomUnReadNum = $('span[name='+target+']').html();
-            console.log(dispRoomUnReadNum);
             if (dispRoomUnReadNum === undefined) {
                 $('li[name='+target+']').children().append($('<span>',{class:"badge pull-right",name: target}).text(1));
             } else {
@@ -80,7 +76,6 @@ var updateUnReadNumAndScrolBottom = function(data) {
 	}
 };
 var resizeArea = function() {
-    console.log(jQuery(window).width());
     if (jQuery(window).width() < 550) {
         var h = jQuery(window).height()-$('#messageFooter').height()-230;
         $('div[name=messageArea]').css('height', h);
@@ -240,7 +235,6 @@ $(function() {
         moveTop();
         if ($('#'+id).length === 0) {
             msgAdd = true;
-            console.log('room join');
             socket.emit('join room', id);
             var element = $("<div>", {name: "messageArea", class: "panel-body active", id: id});
             $('#roomContents').append(element).show(500);
@@ -381,7 +375,6 @@ $(function() {
             
             createMemberList(data.users);
         }
-        console.log($('li[name='+data.roomId+']').text());
         if($('li[name='+data.roomId+']').text() !== '') {
             $().toastmessage('showToast', {
                 text     : '['+data.roomName+']<br>'+'のメンバーが変更されました',
@@ -401,7 +394,6 @@ $(function() {
     /* to**/
     $('#toDiv').delegate('a', 'click', function() {
         $('#toDiv').removeClass("open");
-        console.log('選択したＩＤ：'+$(this).attr('href'));
         if ($('#cryptoId').val() === $(this).attr('href') ) return false;
         var isSelect = false;
         var toTarget = $('input[name=toList]:hidden').get();

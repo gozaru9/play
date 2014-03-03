@@ -15,10 +15,11 @@ var monitor = new monitorModel();
 var logger = require('../util/logger');
 
 /**
- * chat modeule
+ * chat server side
  * @namespace routes
  * @modeule chat.js
  */
+ 
 /**
  * リクエストを受け取り、chat画面を描画する
  * 
@@ -28,11 +29,8 @@ var logger = require('../util/logger');
  * @param {Object} res 画面へのレスポンス
  */
 exports.index = function(req, res){
-    //logger.requestDebug('this is chat request log');
-
-    console.log('session');
-    console.log(req.session);
-    console.log('----------------chat index--------------');
+    logger.appDebug('chat start');
+    logger.appDebug(req.session);
     if (req.session.isLogin) {
         
         var isMyRoom = req.body.room === 'myRoom';
@@ -72,38 +70,38 @@ exports.index = function(req, res){
             }]
             ,function(err, results) {
                 
-                console.log('-----------async end function-------------');
+                if (err) {
+                    logger.appError('chat.index データ取得エラー');
+                    logger.appError(err);
+                }
                 var rooms = results[2];
                 var allUsers = results[results.length-1];
                 unRead.getUnReadByUserId(req.session._id, function(err, target) {
+                    
+                    if (err) {
+                        logger.appError('chat.index unRead.getUnReadByUserId error');
+                        logger.appError(err);
+                    }
+                    
                     var name = '';
                     var users=[];
                     var messages=[];
                     var now = moment().format('YYYY-MM-DD HH:mm:ss');
                     setUnReadNum(req.session._id, rooms, target, now, req.body.room);
                     if(req.body.room) {
-                        
+                        //TO用のルームの場合（ほんとはこんな判定したくない）
                         if (isMyRoom) {
-                            
-                            console.log(results[3]);
-                            
                             name = 'MY ROOM';
                             users = results[3].users;
                             messages = results[3].messages;
-                            console.log('myroom messages-------------------------------');
-                            console.log(results[3].messages);
-                            
                         } else {
                             
                             var roomLength = Array.isArray(rooms) ? rooms.length : 0;
                             for(var i=0; i<roomLength; i++) {
                                 if (rooms[i]._id == req.body.room) {
-        
                                     name = rooms[i].name;
                                     users = rooms[i].users;
                                     messages = rooms[i].messages;
-                                    //選択したルームの未読数を0にする
-    
                                     break;
                                 }
                             }
@@ -114,7 +112,6 @@ exports.index = function(req, res){
                         allUsers[allUserIndex].status = getStatusClass(allUsers[allUserIndex].loginStatus);
                     }
                     //TODO ここはGroup By Count にしたいがmongooseのスキルが足りない
-                    console.log(results[5]);
                     var inc = results[5];
                     var incNum = inc.length;
                     var open = 0;
@@ -142,7 +139,6 @@ exports.index = function(req, res){
                     }
                     var incData = {openCount:open, progCount:prog, closeCount:close, removeCount:remove, allCount:incNum};
                     var fixed = results[0].concat(results[1]);
-                    console.log('---------------render start--------------------');
                     res.render('chat/index', {title: 'chat', userName:req.session.name, _id:req.session._id, role:req.session.role,
                         rooms:rooms, targetRoomId:req.body.room, roomName:name, users:users, 
                         messages:messages, allUsers:allUsers, fixed:fixed, tags:results[4], incidnt:incData});
@@ -150,7 +146,6 @@ exports.index = function(req, res){
             });
 
     } else {
-        
         res.render('login/index', {title: 'LOGIN', errMsg:''});
     }
 };
@@ -164,13 +159,13 @@ exports.index = function(req, res){
  */
 exports.lobby = function(req, res){
 
+    logger.appDebug('lobby start');
     if (req.session.isLogin) {
         //ログイン通知をするかの条件を設定
         if (req.query.notice !== undefined) {
             req.session.loginNotice = false;
             //loginからの遷移ではない場合
             req.session.unreadjudgmentTime = moment().format('YYYY-MM-DD HH:mm:ss');
-            console.log(req.session.unreadjudgmentTime);
         }
         async.series(
             [function (callback) {
@@ -183,6 +178,11 @@ exports.lobby = function(req, res){
             ,function(err, results) {
                 
                 unRead.getUnReadByUserId(req.session._id, function(err, target) {
+
+                    if (err) {
+                        logger.appError('chat.lobby : unRead.getUnReadByUserId error');
+                        logger.appError(err);
+                    }
                     
                     var rooms = results[0];
                     setUnReadNum(req.session._id, rooms, target, req.session.unreadjudgmentTime);
@@ -198,8 +198,8 @@ exports.lobby = function(req, res){
                 });
         });
     } else {
-        console.log('lobby session isLogin false');
-        console.log(req.session);
+        
+        logger.appWarn('chat.lobby : session.isLogin is false');
         res.render('login/index', {title: 'LOGIN', errMsg:''});
     }
 };
@@ -212,6 +212,7 @@ exports.lobby = function(req, res){
  * @param {Object} res 画面へのレスポンス
  */
 exports.fixedSectence = function(req, res){
+    logger.appDebug('chat.fixedSectence start');
     if (req.session.isLogin) {
         
         async.parallel(
@@ -224,8 +225,10 @@ exports.fixedSectence = function(req, res){
             }]
             ,function(err, results) {
                 
-                console.log(err);
-                if (err) throw err;
+                if (err) {
+                    logger.appError('chat.fixedSectence : データ取得エラー');
+                    logger.appError(err);
+                }
                 res.render('chat/fixedSectence', 
                     {title: 'fixedSectence', userName:req.session.name, role:req.session.role, 
                     _id:req.session._id, mineFixed:results[1], openFixed:results[0]});
@@ -244,16 +247,18 @@ exports.fixedSectence = function(req, res){
  * @param {Object} res 画面へのレスポンス
  */
 exports.login = function(req, res){
-    
+    logger.appDebug('chat.login start');
     model.login(req.body.mailAddress, req.body.password, 
         function(err, results) {
             if (err) {
+                logger.appError('chat.login : データ取得エラー');
+                logger.appError(err);
                 res.render('/login', {title: 'LOGIN', errMsg:''});
             }
-            console.log('-----------login------');
-            console.log(results[0]);
-
+            
             if (results.length === 0) {
+                logger.appWarn('chat.login : ログイン失敗');
+                logger.appWarn(req.body.mailAddress+':'+req.body.password);
                 res.redirect('/login');
             }
             
@@ -261,13 +266,9 @@ exports.login = function(req, res){
             req.session.name = results[0].name;
             req.session.role = results[0].role;
             req.session.isLogin = true;
-            req.session.loginNotice = true;
-            req.session.unreadjudgmentTime = results[0].unreadjudgmentTime;
+            req.session.loginNotice = true; //ログイン通知有無を判定するための値
+            req.session.unreadjudgmentTime = results[0].unreadjudgmentTime;//未読数を算出する際に使用する値
             model.updateStatus(req.session._id, 1);
-            
-            console.log('-----------login set session------');
-            console.log(req.session);
-            
             res.redirect('/chat/lobby');
         });
 };
@@ -280,7 +281,7 @@ exports.login = function(req, res){
  * @param {Object} res 画面へのレスポンス
  */
 exports.logout = function(req, res){
-
+    logger.appDebug('chat logout');
     model.logout(req.session._id);
     req.session.destroy();
     res.redirect('/login');
@@ -293,7 +294,8 @@ exports.logout = function(req, res){
  * @param {Object} req 画面からのリクエスト
  * @param {Object} res 画面へのレスポンス
  */
-exports.create = function(req, res){
+exports.create = function(req, res) {
+    logger.appDebug('chat.create start');
     chat.setNextParam([res,req]);
     chat.setNextFunc(
         function(parameter){
@@ -311,7 +313,7 @@ exports.create = function(req, res){
  * @param {Object} res 画面へのレスポンス
  */
 exports.getMyRoom = function(req, res) {
-    
+    logger.appDebug('chat.getMyRoom start');
     async.waterfall(
         [function (callback) {
             chat.getMyRoom(req, callback);
@@ -325,7 +327,10 @@ exports.getMyRoom = function(req, res) {
             callback(null,rooms);
         }]
         ,function(err, roomList) {
-            
+            if (err) {
+                logger.appError('chat.getMyRoom : データ取得に失敗');
+                logger.appError(err);
+            }
             res.send({rooms:roomList});
         });
 };
@@ -339,8 +344,12 @@ exports.getMyRoom = function(req, res) {
  * @param {Object} res 画面へのレスポンス
  */
 exports.getMyRoomList = function(req, res) {
-
+    logger.appDebug('chat.getMyRoomList start');
     chat.getMyRoom(req, function(err, result) {
+        if (err) {
+            logger.appError('chat.getMyRoomList : データ取得に失敗');
+            logger.appError(err);
+        }
         res.send({roomList:result});
     });
 };
@@ -354,7 +363,7 @@ exports.getMyRoomList = function(req, res) {
  */
 exports.getUserByRoomId = function(req, res) {
     
-    console.log('-----------getUserByRoomId-------------');
+    logger.appDebug('chat.getUserByRoomId start');
     if (req.body.roomId) {
 
         async.series(
@@ -367,18 +376,22 @@ exports.getUserByRoomId = function(req, res) {
                     chat.getById(req.body.roomId, callback);
                 }
             },function (callback) {
-                model.getAll(req, callback);
+                model.getAllSync(callback);
             }]
             ,function(err, results) {
                 
-                console.log(results[0]);
+                if (err) {
+                    logger.appError('chat.getUserByRoomId : データ取得に失敗:'+req.body.roomId);
+                    logger.appError(err);
+                }
                 var room = results[0];
                 var allUsers = results[1];
     
                 if (!room) {
-                    console.log(' room is not found:'+req.body.roomId);
+                    logger.appWarn('chat.getUserByRoomId : 対象の部屋が存在しない:'+req.body.roomId);
                 }
                 var users = [];
+                //TOの部屋の場合
                 if (req.body.roomId === 'myRoom') {
                     users[0] = {'_id': req.session._id, 'name':req.session.name};
                 } else {
@@ -402,7 +415,7 @@ exports.getUserByRoomId = function(req, res) {
  * @param {Object} res 画面へのレスポンス
  */
 exports.memberUpdate = function(req, res) {
-    
+    logger.appDebug('chat.memberUpdate start');
     if (req.body.roomId) {
 
         async.series(
@@ -417,6 +430,10 @@ exports.memberUpdate = function(req, res) {
                 model.getAll(req.body, callback);
             }]
             ,function(err, results) {
+                if (err) {
+                    logger.appError('chat.memberUpdate : データ取得に失敗');
+                    logger.appError(err);
+                }
                 var users = req.body.users;
                 var beforeUsers = results[0];
                 var allUsers = results[2];
@@ -477,7 +494,7 @@ exports.memberUpdate = function(req, res) {
  * @param {Function} callback 
  */
 exports.memberUpdateBySocket = function(data, callback) {
-    
+    logger.appDebug('chat.memberUpdateBySocket start');
     if (data.roomId) {
 
         async.series(
@@ -492,6 +509,10 @@ exports.memberUpdateBySocket = function(data, callback) {
                 model.getAll(data, callback);
             }]
             ,function(err, results) {
+                if (err) {
+                    logger.appError('chat.memberUpdateBySocket : データ取得に失敗');
+                    logger.appError(err);
+                }
                 var users = data.users;
                 var beforeUsers = results[0].users;
                 var allUsers = results[2];
@@ -555,10 +576,14 @@ exports.memberUpdateBySocket = function(data, callback) {
  * @param {Object} res 画面へのレスポンス
  */
 exports.updateUnRead = function(req,res) {
+    logger.appDebug('chat.updateUnRead start');
     var data = req.body;
     data.userId = req.session._id;
     unRead.updateUnRead(data, function(err, result) {
-        
+        if (err) {
+            logger.appError('chat.updateUnRead : 更新に失敗');
+            logger.appError(err);
+        }
         res.send({msg:'ok!'});
     });
 };
@@ -571,14 +596,16 @@ exports.updateUnRead = function(req,res) {
  * @param {Object} res 画面へのレスポンス
  */
 exports.fixedSectenceSave = function(req, res) {
-    
-    console.log('------fixedSectenceSave--------');
+    logger.appDebug('chat.fixedSectenceSave start');
     async.series(
         [function(callback) {
             fixed.save(req, callback);
         }]
         ,function(err, result) {
-            if (err) console.log('fixedSectenceSave err');
+            if (err) {
+                logger.appError('chat.fixedSectenceSave : データ登録に失敗');
+                logger.appError(err);
+            }
             res.redirect('chat/fixedSectence');
         }
     );
@@ -592,8 +619,7 @@ exports.fixedSectenceSave = function(req, res) {
  * @param {Object} res 画面へのレスポンス
  */
 exports.fixedSectenceUpdate = function(req, res) {
-    
-    console.log('------fixedSectenceUpdate--------');
+    logger.appDebug('chat.fixedSectenceUpdate start');
     if (req.body.id) {
         
         async.series(
@@ -603,7 +629,11 @@ exports.fixedSectenceUpdate = function(req, res) {
                 fixed.update(data, callback);
             }]
             ,function(err, result) {
-                if (err) console.log('fixedSectenceUpdate err');
+                
+                if (err) {
+                    logger.appError('chat.fixedSectenceUpdate : 更新に失敗');
+                    logger.appError(err);
+                }
                 res.redirect('chat/fixedSectence');
             }
         );
@@ -621,8 +651,7 @@ exports.fixedSectenceUpdate = function(req, res) {
  * @param {Object} res 画面へのレスポンス
  */
 exports.fixedSectenceDelete = function(req, res) {
-    
-    console.log('------fixedSectenceDelete--------');
+    logger.appDebug('chat.fixedSectenceDelete start');
     if (req.body._id) {
         fixed.remove(req.body._id);
     }
@@ -637,7 +666,7 @@ exports.fixedSectenceDelete = function(req, res) {
  * @param {Object} res 画面へのレスポンス
  */
 exports.getFixedById = function(req, res) {
-    
+    logger.appDebug('chat.getFixedById start');
     if (req.body.fixedId) {
         
         async.series(
@@ -645,6 +674,10 @@ exports.getFixedById = function(req, res) {
                 fixed.getById(req.body.fixedId, callback);
             }]
             ,function(err, result) {
+                if (err) {
+                    logger.appError('chat.getFixedById : データ取得に失敗');
+                    logger.appError(err);
+                }
                 console.log(result[0]);
                 res.send({target: result[0]});
             }
@@ -684,9 +717,7 @@ function getStatusClass (val) {
  * @param {Array} allUsers 全ユーザー
  */
 function craeteMemberStatus(roomMember, allUsers) {
-    console.log('-------craeteMemberStatus---------');
-    console.log(roomMember);
-    
+    logger.appDebug('chat.craeteMemberStatus start');
     var roomUserNum = roomMember.length;
     var allUsersNum = allUsers.length;
     for (var roomMemberIndex = 0; roomMemberIndex < roomUserNum; roomMemberIndex++)  {
@@ -701,6 +732,7 @@ function craeteMemberStatus(roomMember, allUsers) {
             }
         }
     }
+    logger.appDebug('chat.craeteMemberStatus end');
     return roomMember;
 }
 /**
@@ -715,8 +747,7 @@ function craeteMemberStatus(roomMember, allUsers) {
  * @param {String} unReadOffRoomId
  */
 function setUnReadNum(userId, rooms, unReads, unreadjudgmentTime, unReadOffRoomId) {
-    console.log('----------set unread num params---------------'); 
-
+    logger.appDebug('chat.setUnReadNum start');
     var length = unReads.length;
     var roomNum = rooms.length;
     var index = 0;
@@ -762,9 +793,6 @@ function setUnReadNum(userId, rooms, unReads, unreadjudgmentTime, unReadOffRoomI
                 break;
             }
         }
-        console.log('room name :'+ rooms[index].name);
-        console.log('add unread num :'+ unReadNum);
-        console.log('unread num :'+ rooms[index].unReadNum);
         //未読最新数に更新する
         if (unReadOffRoomId == rooms[index]._id) {
             rooms[index].unReadNum = 0;
@@ -772,9 +800,9 @@ function setUnReadNum(userId, rooms, unReads, unreadjudgmentTime, unReadOffRoomI
             rooms[index].unReadNum += unReadNum;
         }
         var data = {userId: userId, roomId: rooms[index]._id, unReadNum: rooms[index].unReadNum};
+        //非同期になるが気にしない
         unRead.updateUnRead(data, null);
     }
-    console.log('----------set unread num params end---------------'); 
-    
+    logger.appDebug('chat.setUnReadNum end');
     return;
 }

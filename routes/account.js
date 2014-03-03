@@ -5,23 +5,39 @@ var utils = new utilsClass();
 var userModel = require('../model/userModel');
 var myModel = new userModel();
 var fs = require('fs');
+var logger = require('../util/logger');
 
-//ユーザーの一覧を取得し画面描画
+/**
+ * account server side
+ * @namespace routes
+ * @modeule account.js
+ */
+ 
+/**
+ * ユーザーの一覧を取得し画面描画する
+ * 
+ * @author niikawa
+ * @method index
+ * @param {Object} req 画面からのリクエスト
+ * @param {Object} res 画面へのレスポンス
+ */
 exports.index = function(req, res){
+    logger.appDebug('account.index start');
     if (req.session.isLogin && req.session.role === 1) {
         
         var activePage = (req.query.pages) ? Number(req.query.pages) : 1;
         var skip = (activePage-1) * define.USER_PAGER_LIMIT_NUM;
         async.series(
             [function(callback) {
-                
                 myModel.getUser(skip, define.USER_PAGER_LIMIT_NUM, callback);
-
             },function(callback) {
-                
                 myModel.count(callback);
             }]
             ,function(err, result) {
+                if (err) {
+                    logger.appError('account.index : データ取得に失敗');
+                    logger.appError(err);
+                }
                 //ページング処理
                 var maxPage = Math.ceil(result[1] / define.USER_PAGER_LIMIT_NUM);
                 var pager = utils.pager(activePage, maxPage, define.USER_PAGER_NUM);
@@ -32,20 +48,27 @@ exports.index = function(req, res){
                         _id: req.session._id, userName:req.session.name, role:req.session.role});
             }
         );
-        
-        myModel.getAll(res,
-            function(res,docs){
-                
-            }
-        );
     } else {
         res.render('login/index', {title: 'LOGIN', errMsg:''});
     }
 };
+/**
+ * IDに合致するユーザー情報を取得する
+ * 
+ * @author niikawa
+ * @method index
+ * @param {Object} req 画面からのリクエスト
+ * @param {Object} res 画面へのレスポンス
+ */
 exports.getById = function(req, res) {
-    
+    logger.appDebug('account.getById start');
     myModel.getById(req.body._id, function(err, item){
+        if (err) {
+            logger.appError('account.getById : データ取得に失敗');
+            logger.appError(err);
+        }
         var errinfo = {status:false, message:''};
+        //mongooseからのメッセージは英文なのでデータが取得できていなかった場合に詰める
         if (null === item) {
             errinfo.status = true;
             errinfo.message = '対象のユーザーが存在しません';
@@ -53,7 +76,15 @@ exports.getById = function(req, res) {
         res.send({target: item, errinfo:errinfo});
     });
 };
-exports.parts = function(req, res){
+/**
+ * 未使用のはず
+ * 
+ * @author niikawa
+ * @method parts
+ * @param {Object} req 画面からのリクエスト
+ * @param {Object} res 画面へのレスポンス
+ */
+ exports.parts = function(req, res){
     
     myModel.getAll(res,
         function(res,docs){
@@ -61,8 +92,14 @@ exports.parts = function(req, res){
         }
     );
 };
-
-// ユーザーの登録
+/**
+ * ユーザーの登録を行う
+ * 
+ * @author niikawa
+ * @method regist
+ * @param {Object} req 画面からのリクエスト
+ * @param {Object} res 画面へのレスポンス
+ */
 exports.regist = function(req, res){
 
     if (req.method == 'GET') {
@@ -71,14 +108,22 @@ exports.regist = function(req, res){
 
     } else {
         
-        console.log('save execute');
         myModel.save(req);
         res.redirect('/account');
     }
 };
-exports.registcsv = function(req, res) {
-    
+/**
+ * CSVからのユーザーの一括登録を行う
+ * 
+ * @author niikawa
+ * @method registcsv
+ * @param {Object} req 画面からのリクエスト
+ * @param {Object} res 画面へのレスポンス
+ */
+ exports.registcsv = function(req, res) {
+    logger.appDebug('aoount.registcsv start');
     fs.readFile(req.files.file.path, 'utf8', function(err, text) {
+        //TODO ほんとはライブラリを入れたかった
         var data = text.split(/\r\n|\r|\n/);
         var num = data.length;
         var validationInfo = {status: false, target:[], message: ''};
@@ -128,6 +173,10 @@ exports.registcsv = function(req, res) {
                 });
             
             }, function(err){
+                if (err) {
+                    logger.appError('account.registcsv : 登録に失敗');
+                    logger.appError(err);
+                }
                 fs.unlink(req.files.file.path, function(err){
                     res.send({validationInfo:validationInfo});
                 });
@@ -135,7 +184,19 @@ exports.registcsv = function(req, res) {
         }
     });
 };
+/**
+ * プロフィールの更新を行う
+ * 
+ * @author niikawa
+ * @method profileUpdate
+ * @param {Object} req 画面からのリクエスト
+ * @param {Object} res 画面へのレスポンス
+ */
 exports.profileUpdate = function(req, res) {
+    
+    //今のバージョンではパスワードのみ更新
+    
+    logger.appDebug('account.profileUpdate start');
     var validationInfo = {status: false, target:[], message: ''};
     validationInfo.message = checkPassword(req.body);
     if ('' !== validationInfo.message) {
@@ -144,7 +205,6 @@ exports.profileUpdate = function(req, res) {
     } else {
         
         myModel.getById(req.session._id, function(err, item) {
-            
             //データ改ざんの可能性あり
             if (item.mailAddress !== req.body.mailAddress) {
                 validationInfo.status = true;
@@ -154,13 +214,26 @@ exports.profileUpdate = function(req, res) {
             } else {
                 myModel.profileUpdate(req, function(err) {
                     
+                    if (err) {
+                        logger.appError('account.profileUpdate : 更新に失敗');
+                        logger.appError(err);
+                    }
                     res.send({validationInfo: validationInfo});
                 });
             }
         });
     }
-}
+};
+/**
+ * バリデーション(ajax版)
+ * 
+ * @author niikawa
+ * @method validation
+ * @param {Object} req 画面からのリクエスト
+ * @param {Object} res 画面へのレスポンス
+ */
 exports.validation = function(req, res) {
+    logger.appDebug('account.validation start');
     var validationInfo = validation(req.body);
     if (validationInfo.status) {
         if ('' === req.body.accountId) {
@@ -174,7 +247,10 @@ exports.validation = function(req, res) {
     } else {
         
         myModel.exsitsMailAddress(req.body.accountId, req.body.mailAddress, function(err, count) {
-            
+            if (err) {
+                logger.appError('accont.validation exsitsMailAddress : データ取得に失敗');
+                logger.appError(err);
+            }
             if (count !== 0) {
                 validationInfo.status = true;
                 validationInfo.target = [];
@@ -184,12 +260,21 @@ exports.validation = function(req, res) {
         });
     }
 };
-
-//ユーザーの更新
+/**
+ * ユーザー情報を更新する
+ * 
+ * @author niikawa
+ * @method update
+ * @param {Object} req 画面からのリクエスト
+ * @param {Object} res 画面へのレスポンス
+ */
 exports.update = function(req, res) {
-    
+    logger.appDebug('account.update start');
     myModel.exsitsMailAddress(req.body.accountId, req.body.mailAddress, function(err, count) {
-
+        if (err) {
+            logger.appError('account.update exsitsMailAddress : データ取得に失敗');
+            logger.appError(err);
+        }
         if (count !== 0) {
 
             myModel.getAll(res, function(res, docs){
@@ -198,27 +283,45 @@ exports.update = function(req, res) {
                 { title: 'ユーザー管理', items: data, _id: req.session._id, 
                     userName:req.session.name, role:req.session.role});
             });
-        }
-        
-        myModel.update(req, function(err) {
+        } else {
             
-            res.redirect('/account');
-        });
+            myModel.update(req, function(err) {
+                if (err) {
+                    logger.appError('account.update : データの更新に失敗');
+                    logger.appError(err);
+                }
+                res.redirect('/account');
+            });
+        }
     });
 };
-
-//ユーザーの削除
+/**
+ * ユーザー情報を削除する
+ * 
+ * @author niikawa
+ * @method delete
+ * @param {Object} req 画面からのリクエスト
+ * @param {Object} res 画面へのレスポンス
+ */
 exports.delete = function(req, res) {
-    
+    logger.appDebug('chat.delete start');
     myModel.removeById(res,req.body._id,
         function(){
             res.redirect('/account');
         }
     );
 };
-function validation(data) {
+/**
+ * バリデーションを実行する
+ * 
+ * @author niikawa
+ * @method validation
+ * @param {Object} req 画面からのリクエスト
+ * @param {Object} res 画面へのレスポンス
+ * @return {Object} 
+ */
+ function validation(data) {
     var validationInfo = {status: false, target:[], message: ''};
-    console.log(data);
     //プロパティチェック
     if (!data.name || !data.mailAddress || !data.password || !data.passwordConfirm) {
         validationInfo.message = 'パラメータが改竄されています';
@@ -244,6 +347,15 @@ function validation(data) {
     if (validationInfo.message !== '') validationInfo.status = true;
     return validationInfo;
 }
+/**
+ * パスワードのチェックを実行する
+ * 
+ * @author niikawa
+ * @method checkPassword
+ * @param {Object} req 画面からのリクエスト
+ * @param {Object} res 画面へのレスポンス
+ * @return {String} message OKの場合は空文字
+ */
 function checkPassword(data) {
     //固有チェック
     if (data.password.trim() !== data.passwordConfirm.trim()) {

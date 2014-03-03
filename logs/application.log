@@ -1,0 +1,14 @@
+[2014-03-03 01:18:10.125] [DEBUG] application - chat.updateUnRead start
+[2014-03-03 01:18:21.163] [DEBUG] application - chat.updateUnRead start
+[2014-03-03 01:18:21.688] [DEBUG] application - chat.updateUnRead start
+[2014-03-03 01:18:21.737] [DEBUG] application - chat.getUserByRoomId start
+[2014-03-03 01:18:21.746] [DEBUG] application - chat.craeteMemberStatus start
+[2014-03-03 01:18:21.746] [DEBUG] application - chat.craeteMemberStatus end
+[2014-03-03 01:18:35.301] [DEBUG] application - chat.updateUnRead start
+[2014-03-03 01:18:39.291] [DEBUG] application - chat.updateUnRead start
+[2014-03-03 01:20:01.540] [DEBUG] application - chat.updateUnRead start
+[2014-03-03 01:20:09.315] [DEBUG] application - chat.updateUnRead start
+[2014-03-03 01:20:09.831] [DEBUG] application - chat.updateUnRead start
+[2014-03-03 01:20:09.862] [DEBUG] application - chat.getUserByRoomId start
+[2014-03-03 01:20:09.884] [DEBUG] application - chat.craeteMemberStatus start
+[2014-03-03 01:20:09.890] [DEBUG] application - chat.craeteMemberStatus end
