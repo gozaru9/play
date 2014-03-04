@@ -742,7 +742,7 @@ exports.messageDownLoad = function(req, res) {
                         }
                         
                         var fileName = 'message.txt';
-                        var zipName = item.name+'_'+now.format('YYYYMMDD_HHmmss')+'.zip';
+                        var zipName = item.name+'_'+now.format('YYYYMMDD_HHmmssSSS')+'.zip';
                         var zip = new require('node-zip')();
                         zip.file(fileName, line);
                         var data = zip.generate({base64:false,compression:'DEFLATE'});

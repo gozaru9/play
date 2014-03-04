@@ -7,3 +7,28 @@
 [2014-03-04 00:00:27.249] [DEBUG] application - chat.updateUnRead start
 [2014-03-04 00:00:27.927] [DEBUG] application - chat messageDownLoad start
 [2014-03-04 00:00:30.593] [DEBUG] application - chat.updateUnRead start
+[2014-03-04 00:14:15.288] [DEBUG] application - chat.login start
+[2014-03-04 00:14:15.753] [DEBUG] application - lobby start
+[2014-03-04 00:14:16.214] [DEBUG] application - chat.setUnReadNum start
+[2014-03-04 00:14:16.293] [DEBUG] application - chat.setUnReadNum end
+[2014-03-04 00:14:23.496] [DEBUG] application - chat start
+[2014-03-04 00:14:23.499] [DEBUG] application - { cookie: 
+   { path: '/',
+     _expires: null,
+     originalMaxAge: null,
+     httpOnly: false },
+  _id: '52d3e341e086ad0000000002',
+  name: 'にーかわ',
+  role: 1,
+  isLogin: true,
+  loginNotice: true,
+  unreadjudgmentTime: '2014-03-02 17:24:05' }
+[2014-03-04 00:14:24.011] [DEBUG] application - chat.setUnReadNum start
+[2014-03-04 00:14:24.071] [DEBUG] application - chat.setUnReadNum end
+[2014-03-04 00:14:26.198] [DEBUG] application - chat.getUserByRoomId start
+[2014-03-04 00:14:26.218] [DEBUG] application - chat.craeteMemberStatus start
+[2014-03-04 00:14:26.219] [DEBUG] application - chat.craeteMemberStatus end
+[2014-03-04 00:14:30.171] [DEBUG] application - chat.updateUnRead start
+[2014-03-04 00:14:30.179] [DEBUG] application - chat.updateUnRead start
+[2014-03-04 00:14:31.072] [DEBUG] application - chat messageDownLoad start
+[2014-03-04 00:14:47.027] [DEBUG] application - chat.updateUnRead start
