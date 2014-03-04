@@ -49,7 +49,7 @@ exports.index = function(req, res){
                 
             },function(callback) {
                 //Toメッセージ用メッセージ取得 results[3]
-                chat.getMyMessages(req.session._id, callback);
+                chat.getMyMessagesAll(req.session._id, callback);
 
             }, function(callback) {
                 //タグ取得 results[4]
@@ -174,22 +174,18 @@ exports.lobby = function(req, res){
             },function(callback) {
                 unRead.getUnReadByUserId(req.session._id, callback);
             },function(callback) {
-                chat.getMyMessages(req.session._id, callback);
+                chat.getMyMessagesAll(req.session._id, callback);
             }]
             ,function(err, results) {
                 
                 if (err) {
-                    logger.appError('chat.lobby : unRead.getUnReadByUserId error');
+                    logger.appError('chat.lobby error');
                     logger.appError(err);
                 }
                 
                 var rooms = results[0];
                 setUnReadNum(req.session._id, rooms, results[2], req.session.unreadjudgmentTime);
                 var myRoom = setUnReadNumMyRoom(results[3], req.session.unreadjudgmentTime);
-
-                logger.appDebug('lobby my room');
-                logger.appDebug(myRoom);
-
                 var allUsers = results[1];
                 var allUsersNum = allUsers.length;
                 for (var allUserIndex = 0; allUserIndex < allUsersNum; allUserIndex++) {
@@ -893,7 +889,7 @@ function setUnReadNum(userId, rooms, unReads, unreadjudgmentTime, unReadOffRoomI
         var messagesNum = rooms[index].messages.length;
         var unReadNum = 0;
         if (messagesNum <= 0) continue;
-        for (messagesNum; messagesNum !== 0;messagesNum--) {
+        for (messagesNum; messagesNum > 0;messagesNum--) {
             
             var messageTime = moment(rooms[index].messages[messagesNum-1].time);
             if (messageTime.isAfter(judgmentTime)) {
@@ -916,10 +912,17 @@ function setUnReadNum(userId, rooms, unReads, unreadjudgmentTime, unReadOffRoomI
     logger.appDebug('chat.setUnReadNum end');
     return;
 }
-
+/**
+ * 未読数を取得する
+ * 
+ * @author niikawa
+ * @method setUnReadNumMyRoom
+ * @param {Object} myMessages
+ * @param {Date} unreadjudgmentTime
+ */
 function setUnReadNumMyRoom(myMessages, unreadjudgmentTime) {
     
-    var num = myMessages.messages.length;
+    var messagesNum = myMessages.messages.length;
     var unReadNum = 0;
     var judgmentTime = '';
     if (unreadjudgmentTime === null) {
@@ -928,14 +931,9 @@ function setUnReadNumMyRoom(myMessages, unreadjudgmentTime) {
         judgmentTime = moment(unreadjudgmentTime);
     }
     
-    for (var index=0; index < num; index++) {
+    for (messagesNum; messagesNum > 0;messagesNum--) {
         
-        var messageTime = moment(myMessages.messages[index].time);
-
-    logger.appDebug('messageTime:'+messageTime.format('YYYY-MM-DD HH:mm:ss'));
-    logger.appDebug('judgmentTime:'+judgmentTime.format('YYYY-MM-DD HH:mm:ss'));
-    
-
+        var messageTime = moment(myMessages.messages[messagesNum-1].time);
         if (messageTime.isAfter(judgmentTime)) {
             unReadNum++;
         } else {

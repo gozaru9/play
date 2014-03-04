@@ -235,7 +235,7 @@ var chatRoom = io.sockets.on('connection', function (socket) {
         data.userName=socket.handshake.session.name;
         data.time=moment().format('YYYY-MM-DD HH:mm:ss');
         chatRoom.in(data.roomId).emit('msg push', data);
-        var lobbyPush = {roomId: data.roomId};
+        var lobbyPush = {roomId: data.roomId, toTarget:data.toTarget};
         socket.broadcast.emit('msg push lobby', lobbyPush);
         if ((data.tag.length !== 0)) {
             socket.broadcast.emit('incident push', '');

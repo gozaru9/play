@@ -31,7 +31,6 @@ var createMemberList = function(users) {
     document.getElementById("toUl").innerHTML = toElement;
 };
 var createMessageElement = function(roomId, data) {
-    //TODO リファクタリングしたい
     var names = (data.toNameList) ? data.toNameList.join() : data.to.names.join();
     var namesElement = '';
     if (names !==  '') namesElement = '<p><span class="label label-success text-center">TO</span>'+' &nbsp;'+names+'</p>';
@@ -73,7 +72,7 @@ var updateUnReadNumAndScrolBottom = function(data) {
             updateUnReadNum(data.roomId, unReadNum);
         }
         $('#'+data.roomId).animate({ scrollTop: getScrolBottom($('#'+data.roomId))}, 'slow');
-	}
+    }
 };
 var resizeArea = function() {
     if (jQuery(window).width() < 550) {
@@ -118,13 +117,7 @@ var getMyRoom = function (isMyCreate, roomName) {
             }
     　　},
     　　error: function(XMLHttpRequest, textStatus, errorThrown) {
-            $().toastmessage('showToast', {
-                text     : '通信に失敗しました',
-                sticky   : true,
-                type     : 'error'
-            });
-    　　      console.log(XMLHttpRequest);
-            console.log(textStatus);
+            errorMessage();
     　　},
     });
 };
@@ -164,11 +157,7 @@ $(function() {
         for (var toTargetIndex=0; toTargetIndex < toNum; toTargetIndex++) {
             if (my == data.toTarget[toTargetIndex]) {
                 createMessageElement('myRoom', data);
-                $().toastmessage('showToast', {
-                    text     : '['+data.roomName+']<br>'+'にTOで指定されたメッセージがあります',
-                    sticky   : true,
-                    type     : 'notice'
-                });
+                infoMessage('['+data.roomName+']<br>'+'にTOで指定されたメッセージがあります');
                 var dispRoomUnReadNum = $('span[name=myRoom]').html();
                 if (dispRoomUnReadNum === undefined) {
                     $('li[name=myRoom]').children().append($('<span>',{class:"badge pull-right",name: 'myRoom'}).text(1));
@@ -211,13 +200,7 @@ $(function() {
                 }
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
-                $().toastmessage('showToast', {
-                    text     : '情報の取得に失敗しました',
-                    sticky   : true,
-                    type     : 'error'
-                });
-                console.log(XMLHttpRequest);
-                console.log(textStatus);
+                errorMessage();
             },
         });
 	});
@@ -274,13 +257,7 @@ $(function() {
                 $('#'+id).animate({ scrollTop: getScrolBottom($('#'+id))}, 'slow');
         　　},
         　　error: function(XMLHttpRequest, textStatus, errorThrown) {
-                $().toastmessage('showToast', {
-                    text     : '情報の取得に失敗しました',
-                    sticky   : true,
-                    type     : 'error'
-                });
-                console.log(XMLHttpRequest);
-                console.log(textStatus);
+                errorMessage();
         　　},
         });
         return false;
@@ -367,11 +344,7 @@ $(function() {
             $('#sendButton').attr("disabled", "disabled");
             $('#sendButton').val('');
         }
-        $().toastmessage('showToast', {
-            text     : '['+data.roomName+']<br>のメンバーから外れました',
-            sticky   : true,
-            type     : 'warning'
-        });
+        warningMessage('['+data.roomName+']<br>のメンバーから外れました');
         $('li[name='+data.roomId+']').remove();
     });
     socket.on('member edit complete', function (data) {
@@ -380,11 +353,7 @@ $(function() {
             createMemberList(data.users);
         }
         if($('li[name='+data.roomId+']').text() !== '') {
-            $().toastmessage('showToast', {
-                text     : '['+data.roomName+']<br>'+'のメンバーが変更されました',
-                sticky   : true,
-                type     : 'success'
-            });
+            successMessage('['+data.roomName+']<br>'+'のメンバーが変更されました');
         }
     });
     /* fixed sentence**/

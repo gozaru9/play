@@ -33,8 +33,9 @@ var warningMessage = function(message, position) {
     });
 };
 var errorMessage = function(message, position) {
+    var dispMessage = (message.trim().length === 0) ? '通信エラー' : message;
     $().toastmessage('showToast', {
-        text     : message,
+        text     : dispMessage,
         sticky   : true,
         position : position,
         type     : 'error'
@@ -100,7 +101,6 @@ $(function() {
             errorMessage('入力されたパスワードが一致しません', 'top-center');
             return false;
         }
-        var id = $('#cryptoId').val();
         var checkInfo = {mailAddress:$('#mailAddress').text(), password:$('#accountPassword').val(), passwordConfirm: $('#accountPasswordConfirm').val()};
         $.ajax({
             type: 'POST',

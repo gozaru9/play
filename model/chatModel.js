@@ -371,11 +371,11 @@ chatModel.prototype.getMyRoomParts = function(req) {
     }).populate('messages');
 };
 /**
- * 自分あてのＴＯメッセージを取得する.
+ * 本日以降の自分あてのＴＯメッセージを取得する.
  * 
  * @method getMyMessages
  * @author niikawa
- * @param {String} id 削除対象のID
+ * @param {String} id ユーザーID
  * @param {Function} callback
  */
 chatModel.prototype.getMyMessages = function(id,callback) {
@@ -388,8 +388,24 @@ chatModel.prototype.getMyMessages = function(id,callback) {
             var opts = {path:'messages.tag', model:'tags'};
             Tags.populate(chatItem, opts, callback);
         });
-        
-//    My.findOne({'recipient': id}, callback).populate('messages', null, null, { sort: { 'created': 1 } });
+};
+/**
+ * 自分あてのＴＯメッセージをすべて取得する.
+ * 
+ * @method getMyMessagesAll
+ * @author niikawa
+ * @param {String} id ユーザーID
+ * @param {Function} callback
+ */
+chatModel.prototype.getMyMessagesAll = function(id,callback) {
+    var My = this.db.model(collection3);
+    var Tags = this.db.model('tags');
+    My.findOne({'recipient': id}).lean().populate('messages', null, null, { sort: { 'created': 1 } })
+        .exec(function(err, chatItem) {
+            
+            var opts = {path:'messages.tag', model:'tags'};
+            Tags.populate(chatItem, opts, callback);
+        });
 };
 /**
  * 自分がルームに入れるかを判定する
