@@ -115,8 +115,6 @@ util.inherits(chatModel, Core);
 chatModel.prototype.save = function(req) {
     
     var chat = new myModel(req.body);
-    console.log('-------chat seve----------------');
-    console.log(chat);
 
     //コールバック内で使用するため参照を保持
     var nextFunc  = this.nextFunc;
@@ -228,8 +226,6 @@ chatModel.prototype.addMyMessage = function(data) {
  */
 chatModel.prototype.memberUpdate = function(data, callback) {
 
-    console.log('-------chatModel member update----------------');
-    console.log(data);
     var Chat = this.db.model(collection);
     Chat.findOne({ "_id" : data.roomId}, function(err, room){
         room.users = data.users;
@@ -324,14 +320,7 @@ function getMessage(id, before, callback) {
  */
 chatModel.prototype.getMyRoom = function(req, callback) {
 
-    console.log('-------chatModel getMyRoom----------------');
-    
-    //コールバック内で使用するため参照を保持
-//    var nextFunc  = this.nextFunc;
-//    var parameter = this.parameter;
-    
     var Chat = this.db.model(collection);
-
     var id = req.session._id;
     Chat.find({ "users._id" : { $in:[id] } }, callback).populate('messages', null, null, { sort: { 'created': 1 } });
 };
@@ -349,7 +338,6 @@ chatModel.prototype.getMyRoomParts = function(req) {
     var parameter = this.parameter;
     
     var Chat = this.db.model(collection);
-
     var id = req.session._id;
     Chat.find({ "users._id" : { $in:[id] } }, function(err, room) {
 
@@ -377,7 +365,23 @@ chatModel.prototype.getMyRoomParts = function(req) {
 chatModel.prototype.getMyMessages = function(id,callback) {
     var My = this.db.model(collection3);
     My.findOne({'recipient': id}, callback).populate('messages', null, null, { sort: { 'created': 1 } });
-     
+};
+/**
+ * 自分がルームに入れるかを判定する
+ * 
+ * @method roomInCheck
+ * @author niikawa
+ * @param {String} id ユーザーID
+ * @param {String} roomId ルームID
+ * @param {Function} callback
+ */
+chatModel.prototype.roomInCheck = function(id, roomId, callback) {
+    var Chat = this.db.model(collection);
+    Chat.find( {$and: [{'_id' : roomId}, {"users._id" : { $in:[id] }} ] }, function(err, room) {
+        var exsits = true;
+        if (room.length === 0) exsits = false;
+        callback(err, exsits);
+    });
 };
 /**
  * 部屋を削除する.

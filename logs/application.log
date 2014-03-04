@@ -1,19 +1,9 @@
-[2014-03-03 01:18:10.125] [DEBUG] application - chat.updateUnRead start
-[2014-03-03 01:18:21.163] [DEBUG] application - chat.updateUnRead start
-[2014-03-03 01:18:21.688] [DEBUG] application - chat.updateUnRead start
-[2014-03-03 01:18:21.737] [DEBUG] application - chat.getUserByRoomId start
-[2014-03-03 01:18:21.746] [DEBUG] application - chat.craeteMemberStatus start
-[2014-03-03 01:18:21.746] [DEBUG] application - chat.craeteMemberStatus end
-[2014-03-03 01:18:35.301] [DEBUG] application - chat.updateUnRead start
-[2014-03-03 01:18:39.291] [DEBUG] application - chat.updateUnRead start
-[2014-03-03 01:20:01.540] [DEBUG] application - chat.updateUnRead start
-[2014-03-03 01:20:09.315] [DEBUG] application - chat.updateUnRead start
-[2014-03-03 01:20:09.831] [DEBUG] application - chat.updateUnRead start
-[2014-03-03 01:20:09.862] [DEBUG] application - chat.getUserByRoomId start
-[2014-03-03 01:20:09.884] [DEBUG] application - chat.craeteMemberStatus start
-[2014-03-03 01:20:09.890] [DEBUG] application - chat.craeteMemberStatus end
-[2014-03-03 01:22:11.298] [DEBUG] application - chat.updateUnRead start
-[2014-03-03 01:22:13.852] [DEBUG] application - chat.updateUnRead start
-[2014-03-03 01:22:13.884] [DEBUG] application - chat.getUserByRoomId start
-[2014-03-03 01:22:13.895] [DEBUG] application - chat.craeteMemberStatus start
-[2014-03-03 01:22:13.897] [DEBUG] application - chat.craeteMemberStatus end
+[2014-03-04 00:00:02.653] [DEBUG] application - chat.updateUnRead start
+[2014-03-04 00:00:04.129] [DEBUG] application - chat.updateUnRead start
+[2014-03-04 00:00:04.306] [DEBUG] application - chat.updateUnRead start
+[2014-03-04 00:00:07.563] [DEBUG] application - chat messageDownLoad start
+[2014-03-04 00:00:18.377] [DEBUG] application - chat.updateUnRead start
+[2014-03-04 00:00:27.056] [DEBUG] application - chat.updateUnRead start
+[2014-03-04 00:00:27.249] [DEBUG] application - chat.updateUnRead start
+[2014-03-04 00:00:27.927] [DEBUG] application - chat messageDownLoad start
+[2014-03-04 00:00:30.593] [DEBUG] application - chat.updateUnRead start

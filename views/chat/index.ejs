@@ -79,7 +79,22 @@
                 <div id="all"></div>
                 <div class="col-md-9">
                     <div class="page-header">
-                        <h3 id="roomName"></h3>
+                        <div class="row">
+                            <div class="col-md-10">
+                                <h3 id="roomName"></h3>
+                            </div>
+                            <div class="col-md-2 pull-right" style="margin-top:20px">
+                                <div id="messageDownload" class="btn-group">
+                                    <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown">ダウンロード <span class="caret"></span></button>
+                                    <ul class="dropdown-menu">
+                                        <li><a name="messageDownload" href="#" value="beforedayStatus1">1日前</a></li>
+                                        <li><a name="messageDownload" href="#" value="beforedayStatus2">7日前</a></li>
+                                        <li><a name="messageDownload" href="#" value="beforedayStatus3">60日前</a></li>
+                                        <li><a name="messageDownload" href="#" value="beforedayStatus4">3ヶ月前</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div id="chatMainDiv" class="chat-panel panel panel-default">
                         <div class="panel-heading">

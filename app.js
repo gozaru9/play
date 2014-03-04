@@ -116,6 +116,7 @@ app.post('/chat/fixedSectence/update', chat.fixedSectenceUpdate);
 app.post('/chat/fixedSectence/delete', chat.fixedSectenceDelete);
 app.post('/chat/getFixedById', chat.getFixedById);
 app.post('/chat/updateUnRead', chat.updateUnRead);
+app.post('/chat/messageDownLoad', chat.messageDownLoad);
 //TODO
 app.get('/todo', todo.index);
 app.post('/todo', todo.index);

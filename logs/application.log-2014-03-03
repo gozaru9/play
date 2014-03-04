@@ -1,0 +1,17 @@
+[2014-03-03 23:56:50.324] [DEBUG] application - chat.updateUnRead start
+[2014-03-03 23:56:50.949] [DEBUG] application - chat.updateUnRead start
+[2014-03-03 23:56:51.122] [DEBUG] application - chat.updateUnRead start
+[2014-03-03 23:56:52.251] [DEBUG] application - chat messageDownLoad start
+[2014-03-03 23:56:52.381] [DEBUG] application - [ '' ]
+[2014-03-03 23:57:55.340] [DEBUG] application - chat.updateUnRead start
+[2014-03-03 23:58:06.607] [DEBUG] application - chat.updateUnRead start
+[2014-03-03 23:58:06.841] [DEBUG] application - chat.updateUnRead start
+[2014-03-03 23:58:06.936] [DEBUG] application - chat.updateUnRead start
+[2014-03-03 23:58:09.464] [DEBUG] application - chat messageDownLoad start
+[2014-03-03 23:58:09.573] [DEBUG] application - 【追加機能】
+・過去のメッセージを取得する機能
+・初期表示時は本日のメッセージのみ表示
+・DBから取得したメッセージがTO指定の場合の表示
+
+を追加しましたので、リフレッシュしてください。
+[2014-03-03 23:59:32.625] [DEBUG] application - chat.updateUnRead start

@@ -13,6 +13,7 @@ var tags = new tagsModel();
 var monitorModel = require('../model/monitorModel');
 var monitor = new monitorModel();
 var logger = require('../util/logger');
+var fs = require('fs');
 
 /**
  * chat server side
@@ -683,6 +684,90 @@ exports.getFixedById = function(req, res) {
             }
         );
     }
+};
+/**
+ * リクエストを受け取り、指定された部屋のメッセージをダウンロードさせる（ajax）
+ * 
+ * @author niikawa
+ * @method messageDownLoad
+ * @param {Object} req 画面からのリクエスト
+ * @param {Object} res 画面へのレスポンス
+ */
+exports.messageDownLoad = function(req, res) {
+    logger.appDebug('chat messageDownLoad start');
+    //ルームのメンバーに登録されているかを判定する
+    chat.roomInCheck(req.session._id, req.body.roomId, function(err, isRoomIn) {
+        
+        var execute = {status:true, path:'', message:''};
+        if (isRoomIn) {
+            chat.getMessageById(req.body, function(err, item){
+                if (err) {
+                    logger.appError('chat messageDownLoad getMessageById データの取得に失敗しました');
+                    logger.appError(err);
+                    logger.appError('request value');
+                    logger.appError(req.body);
+                }
+                var lineNum = item.messages.length;
+                var line = '';
+                if (lineNum !== 0) {
+                    var now = moment();
+                    //ヘッダー
+                    line += '-----------------------------------------------------------------'+'\n';
+                    line += item.name + '  ダウンロード日時:'+now.format('YYYY-MM-DD HH:mm:ss')+'\n';
+                    line += '-----------------------------------------------------------------'+'\n';
+                    //メッセージのフォーマットは以下の通りとする
+                    //YYYY-MM-DD HH:mm:ss ユーザー名 TO:TOユーザー名 タグ:タグ名
+                    try {
+                        
+                        for (var messageindex = 0; messageindex < lineNum; messageindex++) {
+                            var time = moment(item.messages[messageindex].created).format('YYYY-MM-DD HH:mm:ss');
+                            line += (time + ' ' + item.messages[messageindex].user.name);
+                            
+                            if (item.messages[messageindex].to) {
+                                
+                                if (item.messages[messageindex].to.names.length !== 0
+                                    && item.messages[messageindex].to.names[0] !== '') {
+                                    var toList = item.messages[messageindex].to.names.join();
+                                    line += (' TO:'+toList);
+                                }
+                            }
+                            if (item.messages[messageindex].tag) {
+                                
+                                if (item.messages[messageindex].tag.length !== 0) {
+                                    line += (' タグ:'+item.messages[messageindex].tag[0].name);
+                                }
+                            }
+                            line += '\n';
+                            line += item.messages[messageindex].message + '\n';
+                        }
+                        
+                        var fileName = 'message.txt';
+                        var zipName = item.name+'_'+now.format('YYYYMMDD_HHmmss')+'.zip';
+                        var zip = new require('node-zip')();
+                        zip.file(fileName, line);
+                        var data = zip.generate({base64:false,compression:'DEFLATE'});
+                        fs.writeFileSync('public/downloads/'+zipName, data, 'binary');
+                        execute.path = '/downloads/'+zipName;
+                    
+                    } catch(err) {
+                        
+                        execute.status = false;
+                        execute.message = 'ダウンロードするメッセージがありません';
+                    }
+                } else {
+                    
+                    execute.status = false;
+                    execute.message = 'ダウンロードするメッセージがありません';
+                }
+                res.send({execute: execute});
+            });
+
+        } else {
+            execute.status = false;
+            execute.message = '指定された部屋のメンバーではありません';
+            res.send({execute: execute});
+        }
+    });
 };
 /**
  * パラメータに応じたステータスを表示するclass名を返却する
