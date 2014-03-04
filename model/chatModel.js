@@ -246,7 +246,6 @@ chatModel.prototype.getMessageById = function(data, callback) {
     //1日前
     if (data.status === 'beforedayStatus1') {
         before = moment().subtract('days', 1).format(format);
-        
     //7日前
     } else if (data.status === 'beforedayStatus2') {
         before = moment().subtract('days', 7).format(format);

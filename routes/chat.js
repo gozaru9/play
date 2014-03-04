@@ -757,7 +757,7 @@ exports.messageDownLoad = function(req, res) {
                 } else {
                     
                     execute.status = false;
-                    execute.message = 'ダウンロードするメッセージがありません';
+                    execute.message = 'ダウンロードに失敗しました';
                 }
                 res.send({execute: execute});
             });
