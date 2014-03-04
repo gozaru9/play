@@ -16,6 +16,22 @@ var accountClear = function() {
     $('#accountPasswordConfirm').removeClass('error');
     $('#accountCompleteButton').attr("disabled", "disabled"); 
 };
+var infoMessage = function(message, position) {
+    $().toastmessage('showToast', {
+        text     : message,
+        sticky   : true,
+        position : position,
+        type     : 'notice'
+    });
+};
+var warningMessage = function(message, position) {
+    $().toastmessage('showToast', {
+        text     : message,
+        sticky   : true,
+        position : position,
+        type     : 'warning'
+    });
+};
 var errorMessage = function(message, position) {
     $().toastmessage('showToast', {
         text     : message,

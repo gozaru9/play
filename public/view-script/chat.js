@@ -432,7 +432,10 @@ $(function() {
     });
     /* ダウンロード**/
     $('a[name=messageDownload]').click(function(){
-        
+        if ($('#sendButton').val() === 'myRoom') {
+            infoMessage('MyRoomはダウンロードできません','top-center');
+            return false;
+        }
         var search = {roomId:$('#sendButton').val(), status:$(this).attr('value')};
         $.ajax({
             type: 'POST',
