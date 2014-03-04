@@ -311,8 +311,10 @@ var chatRoom = io.sockets.on('connection', function (socket) {
     });
     //過去のメッセージを取得
     socket.on('get beforeday', function(data) {
-        
-        Chat.getMessageById(data, function(err, roomInfo) {
+        //TODO これはいけてない
+        var isMyRoom = data.roomId === 'myRoom';
+        data._id = socket.handshake.session._id;
+        Chat.getMessageById(data, isMyRoom, function(err, roomInfo) {
             var push = {roomId: data.roomId, messages: roomInfo.messages};
             socket.emit('beforeday push', push);
         });
@@ -320,7 +322,6 @@ var chatRoom = io.sockets.on('connection', function (socket) {
     //部屋作成時の通知
     socket.on('create chat', function(chat) {
         
-        console.log('create chat----------------------');
         var memberLen = chat.users.length;
         for (var i=0; i < memberLen; i++) {
             User.getById(chat.users[i]._id, function(err, user) {

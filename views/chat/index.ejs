@@ -54,6 +54,7 @@
                             resizeArea();
                     　　},
                     　　error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    　　    
                             $().toastmessage('showToast', {
                                 text     : 'データの取得に失敗しました',
                                 sticky   : true,
@@ -80,11 +81,11 @@
                 <div class="col-md-9">
                     <div class="page-header">
                         <div class="row">
-                            <div class="col-md-10">
+                            <div class="col-md-8 col-sm-8">
                                 <h3 id="roomName"></h3>
                             </div>
-                            <div class="col-md-2 pull-right" style="margin-top:20px">
-                                <div id="messageDownload" class="btn-group">
+                            <div class="col-md-4 col-sm-4 hidden-xs" style="margin-top:20px">
+                                <div id="messageDownload" class="btn-group pull-right">
                                     <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown">ダウンロード <span class="caret"></span></button>
                                     <ul class="dropdown-menu">
                                         <li><a name="messageDownload" href="#" value="beforedayStatus1">1日前</a></li>
@@ -198,6 +199,9 @@
                           <li name="myRoom">
                             <a name="roomSelectRadio" href="#">
                               MY ROOM
+                              <% if (myRoom.unReadNum != 0) { %>
+                              <span name="myRoom" class="badge pull-right"><%= myRoom.unReadNum %></span>
+                              <% } %>
                             </a>
                           </li>
                         <% rooms.forEach(function(room){ %>

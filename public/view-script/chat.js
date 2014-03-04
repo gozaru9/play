@@ -163,6 +163,7 @@ $(function() {
         var my = $('#cryptoId').val();
         for (var toTargetIndex=0; toTargetIndex < toNum; toTargetIndex++) {
             if (my == data.toTarget[toTargetIndex]) {
+                createMessageElement('myRoom', data);
                 $().toastmessage('showToast', {
                     text     : '['+data.roomName+']<br>'+'にTOで指定されたメッセージがあります',
                     sticky   : true,
@@ -432,10 +433,6 @@ $(function() {
     });
     /* ダウンロード**/
     $('a[name=messageDownload]').click(function(){
-        if ($('#sendButton').val() === 'myRoom') {
-            infoMessage('MyRoomはダウンロードできません','top-center');
-            return false;
-        }
         var search = {roomId:$('#sendButton').val(), status:$(this).attr('value')};
         $.ajax({
             type: 'POST',
@@ -456,6 +453,5 @@ $(function() {
                 errorMessage('情報の取得に失敗しました','top-center');
         　　},
         });
-        
-	});
+    });
 });

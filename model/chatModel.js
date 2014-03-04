@@ -239,8 +239,10 @@ chatModel.prototype.memberUpdate = function(data, callback) {
  * @method getMessageById
  * @author niikwa
  * @param {Object} data data.roomId data.statsu
+ * @param {Boolean} isMyRoom
+ * @param {Object} callback
  */
-chatModel.prototype.getMessageById = function(data, callback) {
+chatModel.prototype.getMessageById = function(data, isMyRoom, callback) {
     var format = 'YYYY-MM-DD 00:00:00';
     var before = moment().format(format);
     //1日前
@@ -258,15 +260,30 @@ chatModel.prototype.getMessageById = function(data, callback) {
     } else if (data.status === 'beforedayStatus4') {
         before = moment().subtract('months', 3).format(format);
     }
-    var Chat = this.db.model(collection);
     var Tags = this.db.model('tags');
-    Chat.findOne({'_id': data.roomId}).lean().populate(
-        'messages', null , { 'created': { $gte: before } }, { sort: { 'created': 1 } })
-        .exec(function(err, chatItem) {
-            
-            var opts = {path:'messages.tag', model:'tags'};
-            Tags.populate(chatItem, opts, callback);
-        });
+    
+    if (isMyRoom) {
+        
+        var My = this.db.model(collection3);
+        My.findOne({'recipient': data._id}).lean().populate(
+            'messages', null , { 'created': { $gte: before } }, { sort: { 'created': 1 } })
+            .exec(function(err, chatItem) {
+                
+                var opts = {path:'messages.tag', model:'tags'};
+                Tags.populate(chatItem, opts, callback);
+            });
+    } else {
+        
+        var Chat = this.db.model(collection);
+        Chat.findOne({'_id': data.roomId}).lean().populate(
+            'messages', null , { 'created': { $gte: before } }, { sort: { 'created': 1 } })
+            .exec(function(err, chatItem) {
+                
+                var opts = {path:'messages.tag', model:'tags'};
+                Tags.populate(chatItem, opts, callback);
+            });
+    }
+
     
 //    getMessage(data.roomId, before, callback);
 };
@@ -321,7 +338,7 @@ chatModel.prototype.getMyRoom = function(req, callback) {
 
     var Chat = this.db.model(collection);
     var id = req.session._id;
-    Chat.find({ "users._id" : { $in:[id] } }, callback).populate('messages', null, null, { sort: { 'created': 1 } });
+    Chat.find({ "users._id" : { $in:[id] } },null, {sort:{'created': 1}},callback).populate('messages', null, null, { sort: { 'created': 1 } });
 };
 /**
  * 自分の入れる部屋を取得する.
@@ -363,7 +380,16 @@ chatModel.prototype.getMyRoomParts = function(req) {
  */
 chatModel.prototype.getMyMessages = function(id,callback) {
     var My = this.db.model(collection3);
-    My.findOne({'recipient': id}, callback).populate('messages', null, null, { sort: { 'created': 1 } });
+    var Tags = this.db.model('tags');
+    My.findOne({'recipient': id}).lean().populate(
+        'messages', null , { 'created': { $gte: moment().format('YYYY-MM-DD 00:00:00') } }, { sort: { 'created': 1 } })
+        .exec(function(err, chatItem) {
+            
+            var opts = {path:'messages.tag', model:'tags'};
+            Tags.populate(chatItem, opts, callback);
+        });
+        
+//    My.findOne({'recipient': id}, callback).populate('messages', null, null, { sort: { 'created': 1 } });
 };
 /**
  * 自分がルームに入れるかを判定する

@@ -79,7 +79,7 @@ coreModel.prototype.getAllSync = function(callback){
     console.log('------------get all sync----------');
     var target = this.db.model(this.modelName);
     
-    target.find({}, callback).sort( { _id : 1} );
+    target.find({}, callback).sort( { 'created' : 1} );
 };
 
 /**
