@@ -101,6 +101,7 @@ app.get('/incidnt', incidnt.index);
 app.post('/incidnt/changeStatus', incidnt.changeStatus);
 app.post('/incidnt/getIncidnt', incidnt.getIncidnt);
 //チャット
+app.get('/chat', login.index);
 app.post('/chat', chat.index);
 app.post('/chat/login', chat.login);
 app.get('/chat/logout', chat.logout);
@@ -167,7 +168,7 @@ io.configure(function () {
 
         } else {
             
-          return callback('Cookie が見つかりませんでした', false);
+            return callback('Cookie が見つかりませんでした', false);
         }
         // 認証 OK
         callback(null, true);

@@ -76,8 +76,6 @@ unReadModel.prototype.updateUnRead = function(data, callback) {
     
     var UnRead = this.db.model(collection);
     UnRead.findOne({ "userId" : data.userId.toString(), 'roomId': data.roomId.toString()}, function(err, target){
-        console.log('----------unRead model updateUnRead------');
-        console.log(target);
         if (target === null) {
             
             var saveUnRead = new myModel();
@@ -87,9 +85,8 @@ unReadModel.prototype.updateUnRead = function(data, callback) {
             saveUnRead.save();
             
         } else {
-            
             target.updated = moment().format('YYYY-MM-DD HH:mm:ss');
-            target.number = data.unReadNum;
+            target.number = Number(data.unReadNum);
             target.save();
         }
         if (callback !== null) {

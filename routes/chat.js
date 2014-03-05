@@ -636,9 +636,9 @@ exports.memberUpdateBySocket = function(data, callback) {
  */
 exports.updateUnRead = function(req,res) {
     logger.appDebug('chat.updateUnRead start');
-    var data = req.body;
-    data.userId = req.session._id;
-    unRead.updateUnRead(data, function(err, result) {
+    
+    req.body.userId = req.session._id;
+    unRead.updateUnRead(req.body, function(err, result) {
         if (err) {
             logger.appError('chat.updateUnRead : 更新に失敗');
             logger.appError(err);
@@ -953,12 +953,21 @@ function setUnReadNum(userId, rooms, unReads, unreadjudgmentTime, unReadOffRoomI
         for (messagesNum; messagesNum > 0;messagesNum--) {
             
             var messageTime = moment(rooms[index].messages[messagesNum-1].time);
+            logger.appDebug('-------------------------------------------');
+            logger.appDebug(messageTime.format('YYYY-MM-DD HH:mm:ss'));
+            logger.appDebug(judgmentTime.format('YYYY-MM-DD HH:mm:ss'));
             if (messageTime.isAfter(judgmentTime)) {
                 unReadNum++;
             } else {
                 break;
             }
         }
+        
+        logger.appDebug(rooms[index].name);
+        logger.appDebug(unReadNum);
+        logger.appDebug(rooms[index].unReadNum);
+        
+        
         //未読最新数に更新する
         if (unReadOffRoomId == rooms[index]._id) {
             rooms[index].unReadNum = 0;

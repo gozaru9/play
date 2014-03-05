@@ -48,7 +48,7 @@ var createMessageElement = function(roomId, data) {
         +tagsElement+namesElement+'<p>'+nl2br(escapeHTML(data.message))+'</p></div></li></ul></div>'));
 };
 var updateUnReadNumAndScrolBottom = function(data) {
-    var target = $('div[name*=roomList]').find(".active").attr("name");
+    var target = $('#sendButton').val();
     var unReadNum = 1;
     if (target != data.roomId) {
         var num = $('span[name='+data.roomId+']').html();
@@ -60,6 +60,7 @@ var updateUnReadNumAndScrolBottom = function(data) {
         }
         updateUnReadNum(data.roomId, unReadNum);
 	} else {
+        console.log($('#isActive').val());
         if (Number($('#isActive').val()) === 0) {
             var dispRoomUnReadNum = $('span[name='+target+']').html();
             if (dispRoomUnReadNum === undefined) {
