@@ -363,10 +363,16 @@ var chatRoom = io.sockets.on('connection', function (socket) {
                 io.sockets.socket(target.addUsers[addKey].socketId).emit('member add', addSendData);
                 io.sockets.socket(target.addUsers[addKey].socketId).emit('member add lobby', addSendData);
             }
+            
             var isRoomNameEdit = (target.roomName !== data.name);
-            var roomSendData = {roomId: data.roomId, roomName: data.name, users: data.users,
-                deforeName:target.roomName,isRoomNameEdit:isRoomNameEdit};
-            chatRoom.in(data.roomId).emit('member edit complete', roomSendData);
+            var isMemberEdit = (Object.keys(target.deleteUsers).length > 0 || Object.keys(target.addUsers).length > 0);
+            //変更が発生していた場合にのみ通知
+            if ( isMemberEdit || isRoomNameEdit ) {
+                    
+                var roomSendData = {roomId: data.roomId, roomName: data.name, users: data.users,
+                    deforeName:target.roomName, isRoomNameEdit:isRoomNameEdit, isMemberEdit:isMemberEdit};
+                chatRoom.in(data.roomId).emit('member edit complete', roomSendData);
+            }
         });
     });
     //部屋とのコネクションを切る
@@ -377,8 +383,6 @@ var chatRoom = io.sockets.on('connection', function (socket) {
     });
     socket.on('incident status change', function(data) {
         
-        console.log('incident status change');
-        console.log(data);
         var deforeStatusId = '';
         switch (data.before) {
             case 'open':

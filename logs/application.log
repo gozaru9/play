@@ -1,0 +1,155 @@
+[2014-03-05 00:25:21.173] [DEBUG] application - chat.login start
+[2014-03-05 00:25:21.533] [DEBUG] application - lobby start
+[2014-03-05 00:25:22.179] [DEBUG] application - chat.setUnReadNum start
+[2014-03-05 00:25:22.280] [DEBUG] application - chat.setUnReadNum end
+[2014-03-05 00:25:26.943] [DEBUG] application - chat.login start
+[2014-03-05 00:25:27.151] [DEBUG] application - lobby start
+[2014-03-05 00:25:27.388] [DEBUG] application - chat.setUnReadNum start
+[2014-03-05 00:25:27.466] [DEBUG] application - chat.setUnReadNum end
+[2014-03-05 00:25:30.502] [DEBUG] application - chat start
+[2014-03-05 00:25:30.502] [DEBUG] application - { cookie: 
+   { path: '/',
+     _expires: null,
+     originalMaxAge: null,
+     httpOnly: false },
+  _id: '52d3e341e086ad0000000002',
+  name: 'にーかわ',
+  role: 1,
+  isLogin: true,
+  loginNotice: true,
+  unreadjudgmentTime: '2014-03-04 21:23:54' }
+[2014-03-05 00:25:31.169] [DEBUG] application - chat.setUnReadNum start
+[2014-03-05 00:25:31.184] [DEBUG] application - chat.setUnReadNum end
+[2014-03-05 00:25:33.069] [DEBUG] application - chat.getUserByRoomId start
+[2014-03-05 00:25:33.079] [DEBUG] application - chat.craeteMemberStatus start
+[2014-03-05 00:25:33.080] [DEBUG] application - chat.craeteMemberStatus end
+[2014-03-05 00:25:40.566] [DEBUG] application - chat.updateUnRead start
+[2014-03-05 00:25:40.580] [DEBUG] application - chat.getUserByRoomId start
+[2014-03-05 00:25:40.600] [DEBUG] application - chat.craeteMemberStatus start
+[2014-03-05 00:25:40.602] [DEBUG] application - chat.craeteMemberStatus end
+[2014-03-05 00:25:42.595] [DEBUG] application - chat.getRoomEditInfo start
+[2014-03-05 00:25:47.838] [DEBUG] application - chat.updateUnRead start
+[2014-03-05 00:25:47.840] [DEBUG] application - chat.getUserByRoomId start
+[2014-03-05 00:25:47.855] [DEBUG] application - chat.craeteMemberStatus start
+[2014-03-05 00:25:47.855] [DEBUG] application - chat.craeteMemberStatus end
+[2014-03-05 00:25:49.404] [DEBUG] application - chat.getRoomEditInfo start
+[2014-03-05 00:25:54.352] [DEBUG] application - chat.memberUpdateBySocket start
+[2014-03-05 00:25:54.374] [ERROR] application - chat.memberUpdateBySocket : データ取得に失敗
+[2014-03-05 00:25:54.374] [ERROR] application - { roomId: '530edbe161213cd8a826e2d5',
+  name: 'そうしんようのへや12',
+  users: 
+   [ { _id: '52d3e341e086ad0000000002', name: 'にーかわ' },
+     { _id: '52dbf01fba910a0000000001', name: 'てすとくん' } ] }
+[2014-03-05 00:25:54.379] [DEBUG] application - chat.craeteMemberStatus start
+[2014-03-05 00:25:54.379] [DEBUG] application - chat.craeteMemberStatus end
+[2014-03-05 00:26:01.750] [DEBUG] application - chat start
+[2014-03-05 00:26:01.751] [DEBUG] application - { cookie: 
+   { path: '/',
+     _expires: null,
+     originalMaxAge: null,
+     httpOnly: false },
+  _id: '52dbf01fba910a0000000001',
+  name: 'てすとくん',
+  role: 0,
+  isLogin: true,
+  loginNotice: true,
+  unreadjudgmentTime: '2014-03-04 22:27:38' }
+[2014-03-05 00:26:02.094] [DEBUG] application - chat.setUnReadNum start
+[2014-03-05 00:26:02.168] [DEBUG] application - chat.setUnReadNum end
+[2014-03-05 00:26:03.768] [DEBUG] application - chat.getUserByRoomId start
+[2014-03-05 00:26:03.823] [DEBUG] application - chat.craeteMemberStatus start
+[2014-03-05 00:26:03.823] [DEBUG] application - chat.craeteMemberStatus end
+[2014-03-05 00:26:05.628] [DEBUG] application - chat.updateUnRead start
+[2014-03-05 00:26:08.071] [DEBUG] application - chat.getRoomEditInfo start
+[2014-03-05 00:26:11.643] [DEBUG] application - chat.memberUpdateBySocket start
+[2014-03-05 00:26:11.687] [ERROR] application - chat.memberUpdateBySocket : データ取得に失敗
+[2014-03-05 00:26:11.687] [ERROR] application - { roomId: '530edbe161213cd8a826e2d5',
+  name: 'そうしんようのへや13',
+  users: 
+   [ { _id: '52d3e341e086ad0000000002', name: 'にーかわ' },
+     { _id: '52dbf01fba910a0000000001', name: 'てすとくん' } ] }
+[2014-03-05 00:26:11.689] [DEBUG] application - chat.craeteMemberStatus start
+[2014-03-05 00:26:11.689] [DEBUG] application - chat.craeteMemberStatus end
+[2014-03-05 00:26:20.741] [DEBUG] application - lobby start
+[2014-03-05 00:26:21.275] [DEBUG] application - chat.setUnReadNum start
+[2014-03-05 00:26:21.294] [DEBUG] application - chat.setUnReadNum end
+[2014-03-05 00:26:28.463] [DEBUG] application - chat start
+[2014-03-05 00:26:28.464] [DEBUG] application - { cookie: 
+   { path: '/',
+     _expires: null,
+     originalMaxAge: null,
+     httpOnly: false },
+  _id: '52d3e341e086ad0000000002',
+  name: 'にーかわ',
+  role: 1,
+  isLogin: true,
+  loginNotice: false,
+  unreadjudgmentTime: '2014-03-05 00:26:20' }
+[2014-03-05 00:26:29.072] [DEBUG] application - chat.setUnReadNum start
+[2014-03-05 00:26:29.092] [DEBUG] application - chat.setUnReadNum end
+[2014-03-05 00:26:36.001] [DEBUG] application - chat.getUserByRoomId start
+[2014-03-05 00:26:36.067] [DEBUG] application - chat.craeteMemberStatus start
+[2014-03-05 00:26:36.069] [DEBUG] application - chat.craeteMemberStatus end
+[2014-03-05 00:26:36.078] [DEBUG] application - chat.updateUnRead start
+[2014-03-05 00:26:37.218] [DEBUG] application - chat.getRoomEditInfo start
+[2014-03-05 00:26:41.865] [DEBUG] application - chat.memberUpdateBySocket start
+[2014-03-05 00:26:41.886] [ERROR] application - chat.memberUpdateBySocket : データ取得に失敗
+[2014-03-05 00:26:41.887] [ERROR] application - { roomId: '530edbe161213cd8a826e2d5',
+  name: 'そうしんようのへや13',
+  users: 
+   [ { _id: '52d3e341e086ad0000000002', name: 'にーかわ' },
+     { _id: '52dbf01fba910a0000000001', name: 'てすとくん' },
+     { _id: '52f19c81c5c4770000000002', name: '谷田 真孝' } ] }
+[2014-03-05 00:26:41.902] [DEBUG] application - chat.craeteMemberStatus start
+[2014-03-05 00:26:41.902] [DEBUG] application - chat.craeteMemberStatus end
+[2014-03-05 00:26:47.350] [DEBUG] application - chat.getRoomEditInfo start
+[2014-03-05 00:26:51.672] [DEBUG] application - chat.updateUnRead start
+[2014-03-05 00:26:51.789] [DEBUG] application - incidnt.index start
+[2014-03-05 00:26:51.802] [DEBUG] application - setStatusDispName
+[2014-03-05 00:26:56.467] [DEBUG] application - lobby start
+[2014-03-05 00:26:57.077] [DEBUG] application - chat.setUnReadNum start
+[2014-03-05 00:26:57.098] [DEBUG] application - chat.setUnReadNum end
+[2014-03-05 00:27:04.354] [DEBUG] application - chat start
+[2014-03-05 00:27:04.355] [DEBUG] application - { cookie: 
+   { path: '/',
+     _expires: null,
+     originalMaxAge: null,
+     httpOnly: false },
+  _id: '52dbf01fba910a0000000001',
+  name: 'てすとくん',
+  role: 0,
+  isLogin: true,
+  loginNotice: false,
+  unreadjudgmentTime: '2014-03-05 00:26:56' }
+[2014-03-05 00:27:04.595] [DEBUG] application - chat.setUnReadNum start
+[2014-03-05 00:27:04.670] [DEBUG] application - chat.setUnReadNum end
+[2014-03-05 00:27:07.900] [DEBUG] application - chat.getUserByRoomId start
+[2014-03-05 00:27:07.980] [DEBUG] application - chat.craeteMemberStatus start
+[2014-03-05 00:27:07.981] [DEBUG] application - chat.craeteMemberStatus end
+[2014-03-05 00:27:10.994] [DEBUG] application - chat.updateUnRead start
+[2014-03-05 00:27:11.104] [DEBUG] application - chat.updateUnRead start
+[2014-03-05 00:27:11.106] [DEBUG] application - chat.updateUnRead start
+[2014-03-05 00:27:20.158] [DEBUG] application - chat.updateUnRead start
+[2014-03-05 00:27:20.185] [DEBUG] application - chat.getRoomEditInfo start
+[2014-03-05 00:27:24.387] [DEBUG] application - chat.memberUpdateBySocket start
+[2014-03-05 00:27:24.407] [ERROR] application - chat.memberUpdateBySocket : データ取得に失敗
+[2014-03-05 00:27:24.408] [ERROR] application - { roomId: '530edbe161213cd8a826e2d5',
+  name: 'そうしんようのへや13',
+  users: 
+   [ { _id: '52d3e341e086ad0000000002', name: 'にーかわ' },
+     { _id: '52dbf01fba910a0000000001', name: 'てすとくん' } ] }
+[2014-03-05 00:27:24.409] [DEBUG] application - chat.craeteMemberStatus start
+[2014-03-05 00:27:24.409] [DEBUG] application - chat.craeteMemberStatus end
+[2014-03-05 00:27:27.599] [DEBUG] application - chat.getRoomEditInfo start
+[2014-03-05 00:27:28.457] [DEBUG] application - chat.memberUpdateBySocket start
+[2014-03-05 00:27:28.473] [ERROR] application - chat.memberUpdateBySocket : データ取得に失敗
+[2014-03-05 00:27:28.474] [ERROR] application - { roomId: '530edbe161213cd8a826e2d5',
+  name: 'そうしんようのへや13',
+  users: 
+   [ { _id: '52d3e341e086ad0000000002', name: 'にーかわ' },
+     { _id: '52dbf01fba910a0000000001', name: 'てすとくん' } ] }
+[2014-03-05 00:27:28.481] [DEBUG] application - chat.craeteMemberStatus start
+[2014-03-05 00:27:28.481] [DEBUG] application - chat.craeteMemberStatus end
+[2014-03-05 00:27:37.338] [DEBUG] application - chat.updateUnRead start
+[2014-03-05 00:27:37.514] [DEBUG] application - chat.updateUnRead start
+[2014-03-05 00:27:39.286] [DEBUG] application - chat.updateUnRead start

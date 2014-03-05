@@ -68,7 +68,7 @@ var updateUnReadNumAndScrolBottom = function(data) {
                 unReadNum = Number(dispRoomUnReadNum)+1;
                 $('span[name='+target+']').text(unReadNum);
             }
-            window.document.title = $('#roomName').text()+'['+unReadNum+']';
+            window.document.title = '['+unReadNum+']'+$('#roomName').text();
             updateUnReadNum(data.roomId, unReadNum);
         }
         $('#'+data.roomId).animate({ scrollTop: getScrolBottom($('#'+data.roomId))}, 'slow');
@@ -386,7 +386,7 @@ $(function() {
             successMessage('['+data.deforeName+']<br>'+'から'+'['+data.roomName+']<br>'+'に部屋名が変更されました');
             
         }
-        if($('li[name='+data.roomId+']').text() !== '') {
+        if(data.isMemberEdit && $('li[name='+data.roomId+']').text() !== '') {
             successMessage('['+data.roomName+']<br>'+'のメンバーが変更されました');
         }
     });
