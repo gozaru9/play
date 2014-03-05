@@ -2213,3 +2213,92 @@
 [2014-03-04 21:52:01.560] [DEBUG] application - chat.getUserByRoomId start
 [2014-03-04 21:52:01.573] [DEBUG] application - chat.craeteMemberStatus start
 [2014-03-04 21:52:01.573] [DEBUG] application - chat.craeteMemberStatus end
+[2014-03-04 21:59:27.276] [DEBUG] application - chat.updateUnRead start
+[2014-03-04 22:05:37.795] [DEBUG] application - chat.updateUnRead start
+[2014-03-04 22:05:42.220] [DEBUG] application - chat start
+[2014-03-04 22:05:42.220] [DEBUG] application - { cookie: 
+   { path: '/',
+     _expires: null,
+     originalMaxAge: null,
+     httpOnly: false },
+  _id: '52dbf01fba910a0000000001',
+  name: 'てすとくん',
+  role: 0,
+  isLogin: true,
+  loginNotice: true,
+  unreadjudgmentTime: '2014-03-04 16:17:56' }
+[2014-03-04 22:05:42.597] [DEBUG] application - chat.setUnReadNum start
+[2014-03-04 22:05:42.671] [DEBUG] application - chat.setUnReadNum end
+[2014-03-04 22:05:44.367] [DEBUG] application - chat.getUserByRoomId start
+[2014-03-04 22:05:44.481] [DEBUG] application - chat.craeteMemberStatus start
+[2014-03-04 22:05:44.482] [DEBUG] application - chat.craeteMemberStatus end
+[2014-03-04 22:05:46.588] [DEBUG] application - chat.updateUnRead start
+[2014-03-04 22:05:50.145] [DEBUG] application - chat.getRoomEditInfo start
+[2014-03-04 22:06:15.863] [DEBUG] application - chat.updateUnRead start
+[2014-03-04 22:06:17.126] [DEBUG] application - chat.getRoomEditInfo start
+[2014-03-04 22:06:29.069] [DEBUG] application - chat.updateUnRead start
+[2014-03-04 22:06:38.589] [DEBUG] application - chat.updateUnRead start
+[2014-03-04 22:06:38.664] [DEBUG] application - chat.getRoomEditInfo start
+[2014-03-04 22:06:56.461] [DEBUG] application - chat.updateUnRead start
+[2014-03-04 22:06:58.914] [DEBUG] application - chat.getRoomEditInfo start
+[2014-03-04 22:07:05.217] [DEBUG] application - chat.updateUnRead start
+[2014-03-04 22:07:06.167] [DEBUG] application - chat.updateUnRead start
+[2014-03-04 22:07:17.401] [DEBUG] application - chat.updateUnRead start
+[2014-03-04 22:07:20.395] [DEBUG] application - chat start
+[2014-03-04 22:07:20.396] [DEBUG] application - { cookie: 
+   { path: '/',
+     _expires: null,
+     originalMaxAge: null,
+     httpOnly: false },
+  _id: '52dbf01fba910a0000000001',
+  name: 'てすとくん',
+  role: 0,
+  isLogin: true,
+  loginNotice: true,
+  unreadjudgmentTime: '2014-03-04 16:17:56' }
+[2014-03-04 22:07:20.681] [DEBUG] application - chat.setUnReadNum start
+[2014-03-04 22:07:20.693] [DEBUG] application - chat.setUnReadNum end
+[2014-03-04 22:07:22.318] [DEBUG] application - chat.getUserByRoomId start
+[2014-03-04 22:07:22.333] [DEBUG] application - chat.craeteMemberStatus start
+[2014-03-04 22:07:22.334] [DEBUG] application - chat.craeteMemberStatus end
+[2014-03-04 22:07:24.778] [DEBUG] application - chat.getRoomEditInfo start
+[2014-03-04 22:11:52.524] [DEBUG] application - chat.updateUnRead start
+[2014-03-04 22:11:56.353] [DEBUG] application - chat start
+[2014-03-04 22:11:56.353] [DEBUG] application - { cookie: 
+   { path: '/',
+     _expires: null,
+     originalMaxAge: null,
+     httpOnly: false },
+  _id: '52dbf01fba910a0000000001',
+  name: 'てすとくん',
+  role: 0,
+  isLogin: true,
+  loginNotice: true,
+  unreadjudgmentTime: '2014-03-04 16:17:56' }
+[2014-03-04 22:11:56.495] [DEBUG] application - chat.setUnReadNum start
+[2014-03-04 22:11:56.569] [DEBUG] application - chat.setUnReadNum end
+[2014-03-04 22:11:58.229] [DEBUG] application - chat.getUserByRoomId start
+[2014-03-04 22:11:58.240] [DEBUG] application - chat.craeteMemberStatus start
+[2014-03-04 22:11:58.240] [DEBUG] application - chat.craeteMemberStatus end
+[2014-03-04 22:11:59.173] [DEBUG] application - chat.getRoomEditInfo start
+[2014-03-04 22:12:06.875] [DEBUG] application - chat.updateUnRead start
+[2014-03-04 22:14:30.568] [DEBUG] application - chat.updateUnRead start
+[2014-03-04 22:14:32.587] [DEBUG] application - chat start
+[2014-03-04 22:14:32.588] [DEBUG] application - { cookie: 
+   { path: '/',
+     _expires: null,
+     originalMaxAge: null,
+     httpOnly: false },
+  _id: '52dbf01fba910a0000000001',
+  name: 'てすとくん',
+  role: 0,
+  isLogin: true,
+  loginNotice: true,
+  unreadjudgmentTime: '2014-03-04 16:17:56' }
+[2014-03-04 22:14:32.788] [DEBUG] application - chat.setUnReadNum start
+[2014-03-04 22:14:32.795] [DEBUG] application - chat.setUnReadNum end
+[2014-03-04 22:14:34.447] [DEBUG] application - chat.getUserByRoomId start
+[2014-03-04 22:14:34.458] [DEBUG] application - chat.craeteMemberStatus start
+[2014-03-04 22:14:34.458] [DEBUG] application - chat.craeteMemberStatus end
+[2014-03-04 22:14:36.605] [DEBUG] application - chat.getRoomEditInfo start
+[2014-03-04 22:14:47.869] [DEBUG] application - chat.updateUnRead start
