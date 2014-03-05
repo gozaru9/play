@@ -982,7 +982,9 @@ function setUnReadNum(userId, rooms, unReads, unreadjudgmentTime, unReadOffRoomI
  * @param {Date} unreadjudgmentTime
  */
 function setUnReadNumMyRoom(myMessages, unreadjudgmentTime) {
-    
+    if (null === myMessages) {
+        return {roomId:'myRoom',unReadNum:0};
+    }
     var messagesNum = myMessages.messages.length;
     var unReadNum = 0;
     var judgmentTime = '';

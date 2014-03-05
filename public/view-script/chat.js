@@ -348,7 +348,7 @@ $(function() {
         
         if ($('#editRoomName').val().trim().length === 0) {
             errorMessage('部屋名を入力してください', 'top-center');
-            return false
+            return false;
         }
         var users = [];
         $("select[name=selectedEditMember]").children().each(function() {
